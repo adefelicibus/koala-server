@@ -1,21 +1,21 @@
 <?xml version='1.0' encoding='utf-8'?>
 <toolbox>
-  <section id="protpred" name="ProtPred Tools">
-    <tool file="protpred/buildconformation2pg.xml" />
-    <tool file="protpred/mono2pg.xml" />
-    <tool file="protpred/nsgaii2pg.xml" />
-    <tool file="protpred/random2pg.xml" />
-    <tool file="protpred/montecarlo2pg.xml" />
+  <section id="protpred-2pg" name="ProtPred Tools">
+    <tool file="protpred-2pg/buildconformation2pg.xml" />
+    <tool file="protpred-2pg/mono2pg.xml" />
+    <tool file="protpred-2pg/nsgaii2pg.xml" />
+    <tool file="protpred-2pg/random2pg.xml" />
+    <tool file="protpred-2pg/montecarlo2pg.xml" />
   </section>
-  <section id="protpred_eda" name="ProtPred-EDA Tools">
+  <section id="protpred-eda" name="ProtPred-EDA Tools">
     <!-- <tool file="protpred_eda/protprededa.xml" /> -->
-    <tool file="protpred_eda/protprededa_rw.xml" />
-    <tool file="protpred_eda/protprededa_mcm.xml" />
-    <tool file="protpred_eda/protprededa_eda.xml" />
-    <tool file="protpred_eda/protprededa_rboa.xml" />
-    <tool file="protpred_eda/protprededa_ga.xml" />
-    <tool file="protpred_eda/protprededa_de.xml" />
-    <tool file="protpred_eda/protprededa_ceda.xml" />
+    <tool file="protpred-eda/protprededa_rw.xml" />
+    <tool file="protpred-eda/protprededa_mcm.xml" />
+    <tool file="protpred-eda/protprededa_eda.xml" />
+    <tool file="protpred-eda/protprededa_rboa.xml" />
+    <tool file="protpred-eda/protprededa_ga.xml" />
+    <tool file="protpred-eda/protprededa_de.xml" />
+    <tool file="protpred-eda/protprededa_ceda.xml" />
   </section>
   <section id="meamt" name="MEAMT Tools">
     <tool file="meamt/meamt_pop.xml" />
@@ -38,20 +38,20 @@
   </section>
   <section id="getext" name="Get/Edit Data">
     <tool file="data_source/upload.xml"/>
-    <tool file="pdb_tools/pdb_download.xml"/>
-    <tool file="pdb_tools/rename_atoms_pdb.xml"/>
-    <tool file="pdb_tools/check_pdb.xml"/>
-    <tool file="pdb_tools/split_pdb.xml"/>
-    <tool file="pdb_tools/merge_pdb.xml"/>
+    <tool file="pdb-tools/pdb_download.xml"/>
+    <tool file="pdb-tools/rename_atoms_pdb.xml"/>
+    <tool file="pdb-tools/check_pdb.xml"/>
+    <tool file="pdb-tools/split_pdb.xml"/>
+    <tool file="pdb-tools/merge_pdb.xml"/>
   </section>
   <section id="gromacstools" name="GROMACS Tools">
-    <tool file="gromacs_tools/definebox.xml"/>
-    <tool file="gromacs_tools/genion.xml"/>
-    <tool file="gromacs_tools/grompp.xml"/>
-    <tool file="gromacs_tools/mdrun.xml"/>
-    <tool file="gromacs_tools/pdb2gmx.xml"/>
-    <tool file="gromacs_tools/remover_agua.xml"/>
-    <tool file="gromacs_tools/solvate.xml"/>
+    <tool file="gromacs-tools/definebox.xml"/>
+    <tool file="gromacs-tools/genion.xml"/>
+    <tool file="gromacs-tools/grompp.xml"/>
+    <tool file="gromacs-tools/mdrun.xml"/>
+    <tool file="gromacs-tools/pdb2gmx.xml"/>
+    <tool file="gromacs-tools/remover_agua.xml"/>
+    <tool file="gromacs-tools/solvate.xml"/>
   </section>
     <!-- <tool file="data_source/ucsc_tablebrowser.xml" />
     <tool file="data_source/ucsc_tablebrowser_test.xml" />
