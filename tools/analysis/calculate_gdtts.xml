@@ -1,0 +1,95 @@
+<tool id="calculate_gdtts" name="Calculate GDT-TS " version="1.0.0">
+    <description>from a set of PDB files</description>
+    <command interpreter="python">
+
+        #if $source.source_select == "pdbs"
+            #set $compressed = 0
+            #set $inputFiles = $source.input_pdbs
+        #else
+            #set $compressed = 1
+            #set $inputFiles = $source.input_compressed
+        #end if
+
+        calculate_gdtts.py
+        -i "$pdb_reference"
+        -a "$pdb_reference.name"
+        -p "$inputFiles"
+        -z "$html_file"
+        -k "$html_file.files_path"
+        -t "$toolname"
+        -g "$__root_dir__"
+        -n
+        #if $source.source_select == "pdbs"
+            #set $names = "'"
+                #for $name in $source.input_pdbs:
+                    $names$name.name
+                    #set $names = ","
+                #end for
+                $names'
+        #else
+            #set $names = "'"
+                #for $name in $source.input_compressed:
+                    $names$name.name
+                    #set $names = ","
+                #end for
+                $names'
+        #end if
+        $names
+        -s $compressed
+        -x $active_jmol
+        -b $__app__.security.encode_id( '%s' % $html_file.id )
+
+        <!-- #if $source.source_select == "pdbs"
+            #set $names = "'"
+                #for $name in $source.input_pdbs:
+                    $names$name.name
+                    #set $names = ","
+                #end for
+                $names'
+        #else
+            #set $names = "'None'"
+        #end if
+        $names -->
+
+
+    </command>
+    <inputs>
+        <param name="pdb_reference" type="data" multiple="false" format="pdb" label="PDB Reference" />
+        <conditional name="source">
+            <param name="source_select" type="select" label="Source of the PDB Files" help="">
+                <option value="pdbs">PDB Files</option>
+                <option value="compressed">Compressed File</option>
+            </param>
+            <when value="compressed">
+                <param name="input_compressed" type="data" multiple="true" format="zip, gz" label="Compressed file" help="A compressed file with PDB files. This tools does not accept a file with subfolders."/>
+            </when>
+            <when value="pdbs">
+                <param name="input_pdbs" type="data" multiple="true" format="pdb" label="PDB Files" />
+            </when>
+        </conditional>
+        <param type="boolean" name="active_jmol" value="false" label="Use Jmol visualization?" help="Jmol offers a 3D visualization of the molecule. You must have JavaScript enabled on your browser."/>
+        <param type="hidden" name="toolname" value="CalculateGDTTS"/>
+        <!--TODO: Advanced Options:
+         2. TM-score normalized with an assigned scale d0 e.g. 5 A:
+        >TMscore model native -d 5
+
+        3. TM-score normalized by a specific length, e.g. 120 AA:
+        >TMscore model native -l 120
+        -->
+
+    </inputs>
+    <outputs>
+        <data format="html" name="html_file" label="${toolname}.html"/>
+    </outputs>
+    <help>
+
+**What it does**
+
+Calculate GDT-TS.
+
+    </help>
+    <citations>
+        <citation type="doi">10.1002/prot.20264</citation>
+    </citations>
+
+</tool>

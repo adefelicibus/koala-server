@@ -1,0 +1,74 @@
+<tool id="split_pdb" name="Split models" version="1.0.0">
+    <description>of a PDB file</description>
+    <command interpreter="python">
+
+        #if $create_compressed.chk_compress == True
+            #set $output_zip = $pdbs
+        #else
+            #set $output_zip = "None"
+        #end if
+
+        split_pdb.py
+          -i "$input_pdb"
+          -n "${input_pdb.name}"
+          -o "$new_pdb"
+          -d "$new_pdb.files_path"
+          -c "$new_pdb.id"
+          -e "$create_compressed.chk_compress"
+          -z "$output_zip"
+          -g "$__new_file_path__"
+          -r "$__root_dir__"
+          -t "$toolname"
+
+    </command>
+    <inputs>
+
+        <param name="input_pdb" type="data" multiple="false" format="pdb" label="PDB File" />
+        <conditional name="create_compressed">
+            <param name="chk_compress" type="boolean" label="Create a compressed file with all the splited files?" help="" checked="False"/>
+        </conditional>
+        <param type="hidden" name="toolname" value="SplitPDBTool"/>
+    <!--
+      Dar a opção de alterar o output:
+        - Escolher um número de arquivos para incluir no history
+        - Permitir escolher qual model vai para o history
+    -->
+
+    </inputs>
+    <outputs>
+        <data name="new_pdb" format="data" label="SplitPDB" hidden="True"/>
+        <data name="pdbs" format="zip" label="PDBsSplited.zip">
+            <filter>create_compressed['chk_compress'] == True</filter>
+        </data>
+    </outputs>
+    <help>
+
+**What it does**
+::
+
+    This tool splits the models inside one PDB file into several PDB files.
+    Each model will be a PDB file in your history.
+
+::
+
+    The output file(s) will be renamed using the name of the input PDB file. Exemple:
+    If the input PDB file has the name PDBfile.pdb, the result(s) will be named as:
+
+    - PDBfile-M1.pdb
+    - PDBfile-M2.pdb...
+
+    where M1 means the model that is described in that PDB file.
+
+::
+
+    If you select to have an output with the PDB files compressed, the tool will generate another dataset
+    with a zip file that contains all the splited PDB files.
+
+-----
+
+.. class:: warningmark
+
+To see all the output files, you wiil need to refresh your history.
+
+  </help>
+</tool>

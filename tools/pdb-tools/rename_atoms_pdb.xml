@@ -1,0 +1,73 @@
+<tool id="rename_atoms" name="Rename atoms" version="1.0.0">
+    <description>of a PDB file according to GROMACS.</description>
+    <command interpreter="python">
+
+        rename_atoms_pdb.py
+          -i "$input_pdb"
+          -n "${input_pdb.name}"
+          -f "$force_field"
+          -o "$new_pdb"
+          -d "$new_pdb.files_path"
+          -r "$__root_dir__"
+
+    </command>
+    <inputs>
+        <param name="input_pdb" type="data" multiple="false" format="pdb" label="PDB File" />
+        <param name="force_field" type="select" label="Force field" help="">
+            <option value="amber99sb-ildn">AMBER99</option>
+            <option value="charmm27">CHARMM27</option>
+        </param>
+
+    </inputs>
+    <outputs>
+        <data name="new_pdb" format="pdb" label="${input_pdb.name}.atomrenamed.pdb"/>
+    </outputs>
+    <help>
+
+.. class:: warningmark
+
+This tool requires *PDB* format.
+
+-----
+
+::
+
+    PDB files often use inconsistent nomenclature, and the selected force fields themselves are even worse.
+    Note, in general, that residue nomenclature can be found in the force field's .rtp files,
+    so the tool can check what names need to be supplied in the input coordinate file.
+
+::
+
+    The availables force fields in this tool are:
+
+        - CHARMM27
+        - AMBER99
+
+        The residue nomenclature of the PDB file will be checked using these force field's .rtp files.
+
+::
+
+    The rtp file extension stands for residue toplogy.
+    Such a file is needed by pdb2gmx to make a GROMACS topology for a protein contained in a .pdb file.
+    The file contains the default interaction type for the 4 bonded interactions and residue entries,
+    which consist of atoms and optionally bonds, angles dihedrals and impropers.
+
+::
+
+    If the input PDB file has a problem with the atom U nomenclature, the GROMACS program will output:
+
+        "Fatal error:
+        Residue 'U' not found in residue topology database"
+
+    This tool checks the atoms nomenclature on the PDB file with the GROMACS residues database and
+    replace by the corresponding atom name.
+
+::
+
+    The output of this tool will be the PDB file with all the necessary atoms renamed.
+
+    </help>
+    <citations>
+        <citation type="doi">10.1002/jcc.20291</citation>
+    </citations>
+</tool>

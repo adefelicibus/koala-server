@@ -1,0 +1,29 @@
+<tool id="tool_genion" name="Genion" version="1.0.0">
+    <description>
+        <!--O programa Genion lê um arquivo de entrada run (.tpr) e acrescenta íons para o sistema.-->
+        the Genion program reads an input file run (.tpr) and adds ions to the system.
+    </description>
+
+    <command interpreter="bash">
+
+        genion.sh $input_tpr $input_top $source_conc $output_gro $output_top
+
+    </command>
+
+    <inputs>
+        <param format="tpr" name="input_tpr" type="data" label="Source file TPR"/>
+        <param format="top" name="input_top" type="data" label="Source file TOP"/>
+        <param name="source_conc" type="float" value="0.000" min="0.000" max="1.0" label="Concentration"/>
+    </inputs>
+
+    <outputs>
+        <data format="gro" name="output_gro" label="Gromacs File by Genion"/>
+        <data format="top" name="output_top" label="Topology File by Genion"/>
+    </outputs>
+
+    <help>
+        This tool receives as input a .tpr input file, adds ions to the system, and returns a gromacs file (.gro) + updated topology.
+        <!--Esta tool recebe como entrada um arquivo de entrada .tpr, acrescenta íons para o sistema, e retorna um arquivo do gromacs (.gro) + topologia atualizada.-->
+    </help>
+
+</tool>

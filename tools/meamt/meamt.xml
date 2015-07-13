@@ -1,0 +1,90 @@
+<tool id="meamt" name="MEAMT algorithm" version="1.0.0">
+    <description> applied to PSP</description>
+    <command interpreter="python">
+
+        #if $source_fasta.source_select == "input_ref"
+            #set $SequenceAminoAcids = $source_fasta.input_target
+            #set $from_fasta = 1
+        #else
+            #set $SequenceAminoAcids = $source_fasta.input_text
+            #set $from_fasta = 0
+        #end if
+
+        #if $create_compressed.chk_compress == True
+            #set $output_zip = $pdbs
+        #else
+            #set $output_zip = "None"
+        #end if
+
+        meamt.py
+        -i "$SequenceAminoAcids"
+        -s "$IniPopFileName"
+        -n "$NumberGeration"
+        -l "$Fitness_Energy"
+        -a "$vdw_w"
+        -b "$hbond_w"
+        -c "$solv_w"
+        -d "$charge_w"
+        -w "$from_fasta"
+        -o "$html_file"
+        -e "$email"
+        -g "$html_file.files_path"
+        -m "$output_zip"
+        -t "$toolname"
+        -p "$create_compressed.chk_compress"
+        -r "$__root_dir__"
+        -x $active_jmol
+        -f $__app__.security.encode_id( '%s' % $html_file.id )
+
+    </command>
+    <inputs>
+        <conditional name="source_fasta">
+            <param name="source_select" type="select" label="Source of the amino acids sequence" help="You can use a file in your history as an input or you can insert your own amino acid sequence.">
+                <option value="input_ref">An upload file</option>
+                <option value="database">Own Sequence</option>
+            </param>
+            <when value="database">
+                <param name="input_text" type="text" optional="false"  area="true" size="5x35" label="Your own amino acids sequence" help="Copy and paste your amino acid sequence into the box." />
+            </when>
+            <when value="input_ref">
+                <param name="input_target" type="data" format="fasta" label="Sequence File" />
+            </when>
+        </conditional>
+        <param name="IniPopFileName" type="data" format="txt" label="Population File" />
+        <param name="NumberGeration" label="Number of Generation" type="integer" optional="false" value="1" min="1"/>
+        <param name="Fitness_Energy" type="select" display="checkboxes" multiple="true" optional="false" label="Objectives" help="">
+            <option value="hbond" selected="True">Hydrogen Bond</option>
+            <option value="charge" selected="True">Electrostatic</option>
+            <option value="solv" selected="True">Solvatation</option>
+            <option value="vdw" selected="True">Van der Waals</option>
+        </param>
+        <param name="vdw_w" label="Van der Waals Weight" type="float" optional="false" value="1" min="1"/>
+        <param name="hbond_w" label="Hydrogen Bond Weight" type="float" optional="false" value="0.5" min="0"/>
+        <param name="solv_w" label="Solvatation Weight" type="float" optional="false" value="0.5" min="0"/>
+        <param name="charge_w" label="Electrostatic Weight" type="float" optional="false" value="0.5" min="0"/>
+        <param name="email" type="text" label="User's Email Adress (optional)" optional="true" size="30" help="Email address to which the notice will be sent when the run ends"/>
+        <conditional name="create_compressed">
+            <param name="chk_compress" type="boolean" label="Create a compressed file with all the PDB files?" help="" checked="False"/>
+        </conditional>
+        <param type="boolean" name="active_jmol" value="false" label="Use Jmol visualization?" help="Jmol offers a 3D visualization of the molecule. You must have JavaScript enabled on your browser."/>
+        <param type="hidden" name="toolname" value="MEAMT_Tool"/>
+    </inputs>
+    <outputs>
+        <data format="html" name="html_file" label="${toolname}.html"/>
+        <data name="pdbs" format="zip" label="${toolname}.zip">
+            <filter>create_compressed['chk_compress'] == True</filter>
+        </data>
+    </outputs>
+    <help>
+
+**What it does**
+
+Run MEAMT algorithm
+
+    </help>
+
+    <citations>
+        <citation type="doi">10.1002/jcc.23315</citation>
+    </citations>
+
+</tool>

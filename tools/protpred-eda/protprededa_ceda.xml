@@ -1,0 +1,133 @@
+<tool id="protprededa_ceda" name="ProtPred-EDA CEDA " version="1.0.0">
+    <description>an evolutionary algorithm applied to PSP</description>
+    <command interpreter="python">
+
+        #if $source_fasta.source_select == "input_ref"
+            #set $SequenceFile = $source_fasta.input_target
+            #set $from_fasta = 1
+        #else
+            #set $SequenceFile = $source_fasta.input_text
+            #set $from_fasta = 0
+        #end if
+
+        #set $SamplingMode_EDA = ""
+        #set $MixtureComponents_EDA = ""
+        #set $Threshold_EDA = ""
+        #set $MixtureComponents_CEDA = ""
+        #set $Threshold_CEDA = ""
+        #set $Lambda = ""
+        #set $CutTree = ""
+        #set $SamplingMode_CEDA = $source_Optim_CEDA.SamplingMode_CEDA
+        #if $source_Optim_CEDA.SamplingMode_CEDA == "fgm":
+            #set $MixtureComponents_CEDA = $source_Optim_CEDA.MixtureComponents_CEDA
+            #set $Threshold_CEDA = $source_Optim_CEDA.Threshold_CEDA
+            #set $Lambda = $source_Optim_CEDA.Lambda_CEDA
+            #set $CutTree = $source_Optim_CEDA.CutTree
+        #end if
+
+        protprededa_ceda.py
+        "$Threshold"
+        "$MaxEval"
+        "$VanderWaals"
+        "$Coulomb"
+        "$Solvatation"
+        "$HydrogenBond"
+        "$Torsion"
+        "$from_fasta"
+        "$SequenceFile"
+        "$UseAngleDB"
+        "$AminoAcidL"
+        "$Lambda"
+        "$SelSize"
+        "$TouSize"
+        "$SelMethod"
+        "$MaxEval1"
+        "$MaxEval2"
+        "$Overlap"
+        "$SamplingMode_CEDA"
+        "$MixtureComponents_CEDA"
+        "$Threshold_CEDA"
+        "$CutTree"
+        "$output"
+        "$output.files_path"
+        "$email"
+        "$toolname"
+        "$__root_dir__"
+
+    </command>
+    <inputs>
+
+        <conditional name="source_fasta">
+            <param name="source_select" type="select" label="Source of amino acid sequence" help="You can use a file in your history as an input or you can insert your own aminoacid sequence.">
+                <option value="input_ref">An upload file</option>
+                <option value="database">Own Sequence</option>
+            </param>
+            <when value="database">
+                <param name="input_text" type="text" optional="false"  area="true" size="5x35" label="Your own amino acids sequence" help="Copy and paste your amino acid sequence into the box."/>
+            </when>
+            <when value="input_ref">
+                <param name="input_target" type="data" format="fasta" label="Sequence File" />
+            </when>
+        </conditional>
+
+        <param name="MaxEval1" type="integer" optional="false" label="Number of evaluation of population U" value="500000" help="maximum number of evaluation of population U"/>
+        <param name="MaxEval2" type="integer" optional="false" label="Number of evaluation of population W" value="500000" help="maximum number of evaluation of population W"/>
+        <param name="Overlap" type="integer" optional="false" label="Overlap" value="0" min="0" max="3" help="Overlad 0 - 3."/>
+        <conditional name="source_Optim_CEDA">
+            <param name="SamplingMode_CEDA" type="select" label="Probabilistic Model" help="">
+                <option value="univariate">UNI - Univariate</option>
+                <option value="kde2d">KDE2D - Bivariate KDE</option>
+                <option value="fgm">FGM - Finite Gaussian Mixtures</option>
+                <option value="vonmises">vonmises</option>
+            </param>
+            <when value="fgm">
+                <param name="MixtureComponents_CEDA" type="integer" optional="false" label="Number of mixture components" value="2" min="1" help=""/>
+                <param name="Threshold_CEDA" type="float" optional="false" label="Threshold" value="1.5" help="Convergence criteria of EM"/>
+                <param name="Lambda_CEDA" type="float" optional="false" label="Lambda" value="0.9" min="0.0" max="1.0" help="Exchange information with Sigmas"/>
+                <param name="CutTree" type="integer" optional="false" label="Cut Tree" value="2" min="1" max="3" help="Used in hierarchical clustering "/>
+            </when>
+            <when value="univariate">
+                <param name="Noise" type="text" optional="false" label="Mutation" value="2" help="Perturbation criteria used in univariate "/>
+            </when>
+        </conditional>
+        <param name="SelSize" type="integer" optional="false" label="Size of selected" value="5000" help=""/>
+        <param name="TouSize" type="integer" optional="false" label="Tournament size" value="2" min="2" help=""/>
+        <param name="SelMethod" type="select" label="Selection Method" help="">
+            <option value="tournament">Tournament</option>
+            <option value="rank">Rank</option>
+        </param>
+
+        <param name="MaxEval" type="text" label="Evaluations" optional="false" size="30" help="Convergence criteria 2: convergence occurs when a maximum number of evoluation is reached." value="1000000" />
+        <param name="Threshold" type="text" label="Threshold" optional="false" size="30" help="Convergence criteria 1: convergence occurs when the standard-deviation of fitness of population is below the specified value." value="0.0001" />
+
+        <param name="VanderWaals" type="text" label="Van der Waals energy weight" optional="false" size="30" help="" value="1.0" />
+        <param name="Coulomb" type="text" label="Electrostatic energy weight" optional="false" size="30" help="" value="0.0" />
+        <param name="Solvatation" type="text" label="Solvation energy weight" optional="false" size="30" help="" value="0.0" />
+        <param name="HydrogenBond" type="text" label="Hydrogen Bond energy weight" optional="false" size="30" help="" value="0.0" />
+        <param name="Torsion" type="text" label="Torsion energy weight" optional="false" size="30" help="" value="0.0" />
+
+        <param name="UseAngleDB" type="boolean" label="Use Amino Acid Database (ADB)" truevalue="yes" falsevalue="no" checked="no" help="" />
+        <param name="AminoAcidL" type="boolean" label="Use L amino acids" truevalue="yes" falsevalue="no" checked="yes" help="L is common in nature " />
+
+        <param name="email" type="text" label="User's Email Adress" optional="false" size="30" help="Email address to which the notice will be sent when the run ends"/>
+        <param type="hidden" name="toolname" value="ProtPred_EDA"/>
+    </inputs>
+    <outputs>
+        <data format="zip" name="output" label="ProtPredEDA_out.zip"/>
+    </outputs>
+    <help>
+Execute ProtPred-EDA algorithm
+    </help>
+    <citations>
+        <citation type="bibtex">@Conference{Bonetti2014a,
+                Title = {Bivariate Estimation of Distribution Algorithms for Protein Structure Prediction},
+                Author = {D. R. F. Bonetti and A. Delbem and J. Einbeck},
+                Booktitle = {29th International Workshop on Statistical Modelling},
+                Year = {2014},
+                Pages = {1-5},
+                Volume = {2},
+                Owner  = {Daniel},
+                Timestamp = {2014.12.07}}
+        </citation>
+    </citations>
+</tool>

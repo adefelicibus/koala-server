@@ -1,0 +1,166 @@
+<tool id="2pg_nsga2" name="2PG_NSGA2" version="1.0.0" force_history_refresh="True">
+    <description>Execution of 2PG Framework</description>
+    <command interpreter="python">
+
+        #if $source_fasta.source_select == "input_ref"
+            #set $SequenceAminoAcidsPathFileName = $source_fasta.input_target
+            #set $from_fasta = 1
+        #else
+            #set $SequenceAminoAcidsPathFileName = $source_fasta.input_text
+            #set $from_fasta = 0
+        #end if
+
+        #if $create_compressed.chk_compress == True
+            #set $output_zip = $pdbs
+        #else
+            #set $output_zip = "None"
+        #end if
+
+        nsgaii2pg.py
+        -g "$NumberGeration"
+        -i "$SequenceAminoAcidsPathFileName"
+        -p "$IniPopFileName"
+        -m "$How_Many_Rotation"
+        -l "$rotamer_library"
+        -f "$Fitness_Energy"
+        -w "$from_fasta"
+        -z $html_file
+        -k "$html_file.files_path"
+        -e "$email"
+        -t "$toolname"
+        -r "$__root_dir__"
+        -a "$create_compressed.chk_compress"
+        -b "$output_zip"
+        -c $__app__.security.encode_id( '%s' % $html_file.id )
+        -x $active_jmol
+
+  </command>
+  <inputs>
+        <conditional name="source_fasta">
+            <param name="source_select" type="select" label="Source of the aminoacids sequence" help="You can use a file in your history as an input or you can insert your own aminoacid sequence.">
+                <option value="input_ref">An upload file</option>
+                <option value="database">Own Sequence</option>
+            </param>
+            <when value="database">
+                <param name="input_text" type="text" optional="false"  area="true" size="5x35" label="Your own aminoacids sequence" help="Copy and paste your amino acid sequence into the box."/>
+            </when>
+            <when value="input_ref">
+                <param name="input_target" type="data" format="fasta" label="Sequence File" />
+            </when>
+        </conditional>
+        <param name="IniPopFileName" type="data" format="pdb" label="Population File" />
+        <param name="NumberGeration" label="Number of Generation" type="integer" optional="false" value="1" min="1"/>
+        <param name="rotamer_library" type="select" label="Rotamer Library" help="">
+            <option value="none">None</option>
+            <option value="cad_tuffery">Cad Tuffery</option>
+        </param>
+        <param name="How_Many_Rotation" label="How many rotation" type="integer" optional="false" value="1" min="1"/>
+        <param name="Fitness_Energy" type="select" display="checkboxes" multiple="true" optional="false" label="Objectives">
+            <option value="Potential">Potential</option>
+            <option value="Gyrate">Gyrate</option>
+            <option value="Hydrophobic">Hydrophobic</option>
+            <option value="Hydrophilic">Hydrophilic</option>
+            <option value="Area_Total">Total Area</option>
+            <option value="H_Bond_Main">H Bond Main</option>
+            <option value="Electrostatic">Electrostatic</option>
+            <option value="GBSA_Solvatation">GBSA_Solvatation</option>
+            <option value="Van_der_Waals">Van der Waals</option>
+        </param>
+        <param name="email" type="text" label="User's Email Adress" optional="false" size="30" help="Email address to which the notice will be sent when the run ends"/>
+        <conditional name="create_compressed">
+            <param name="chk_compress" type="boolean" label="Create a compressed file with all the PDB files?" help="" checked="False"/>
+        </conditional>
+        <param type="boolean" name="active_jmol" value="false" label="Use Jmol visualization?" help="Jmol offers a 3D visualization of the molecule. You must have JavaScript enabled on your browser."/>
+        <param type="hidden" name="toolname" value="2PG_NSGA2_Tool"/>
+    </inputs>
+    <outputs>
+        <data format="html" name="html_file" label="${toolname}.html"/>
+        <data name="pdbs" format="zip" label="${toolname}.zip">
+            <filter>create_compressed['chk_compress'] == True</filter>
+        </data>
+        <!--<data name="output" format="data" label="${time.strftime('%Y_%m_%d_%H:%M')}_last_generation_pdbs.zip"/>-->
+        <!--<data name="output_pop" format="data" label="${time.strftime('%Y_%m_%d_%H:%M')}_analysis.zip"/>-->
+    </outputs>
+    <help>
+
+.. class:: warningmark
+
+This tool requires *fasta* and *pdb* format.
+
+-----
+
+**What it does**
+
+This tool executes the 2PG Framework, an evolutionary framework for protein structure prediction.
+It runs the 2PG_NSGAII *ab initio* algorithm to predict the tertiary structure of a input amino acid sequence.
+
+**Parameters:**
+
+::
+
+    Source of the amino acids sequence:
+    This parameter recievies either a FASTA file or a amino acids sequence.
+    The FASTA file must have a header and the sequence.
+
+        Exemple:
+        >1VII:A|PDBID|CHAIN|SEQUENCE
+        MLSDEDFKAVFGMTRSAFANLPLWKQQNLKKEKGLF
+
+    If you insert only the sequence, it must have valid amino acids letters.
+
+        Exemple:
+        MLSDEDFKAVFGMTRSAFANLPLWKQQNLKKEKGLF
+
+    Population File:
+    It corresponds to a PDB file within protein conformations (models).
+    Each model is a individuo on the initial population to the evolutionary algorithm.
+
+    Number of Generation:
+    To each generation, a new population is created and evaluated in order to find the best solution.
+    This parameters defines the number of times that the algorithm will create a new population and recalculated.
+
+    Rotamer Library:
+    A "rotamer library" is a collection of a set of possible / allowable rotameric conformations for a given set of
+    amino acids or analogs.
+    There are two general types of rotamer libraries: "backbone dependent" and "backbone independent."
+    A backbone dependent rotamer library allows different rotamers depending on the position of the
+    residue in the backbone.
+    A backbone independent rotamer library utilizes all rotamers of an amino acid at every position.
+    In general, a backbone independent library is preferred in the consideration of core residues,
+    since flexibility in the core is important.
+    Either type of library can be used at any position.
+
+        The option available is:
+        - Cad Tuffery
+
+    How many rotation:
+    It defines the number of times that the algorithm will rotate the torsion angles of a protein conformation,
+    (called Phi, φ) and Cα-C (called Psi, ψ).
+    Torsion angles are among the most important local structural parameters that control protein folding.
+
+    Objectives:
+    In the protein structure prediction, many aspects must be considered to find the best solution,
+    since them can be conflicting.
+    The NSGAII algorithm, as a multiobjective evolutionary algorithm, evaluates two or more objectives
+    at the same time. This objectives corresponds to physical properties of a protein conformation.
+    You must select at list two objectives.
+
+**Results**
+
+::
+
+    The output of this tool will be a HTML file that contains the generated files from the NSGAII algorithm.
+
+-----
+
+.. class:: warningmark
+
+You can set to have another output file, which contains just the 10 better conformation predicted,
+selecting "Yes" on "Create a compressed file with all the PDB files?".
+
+    </help>
+    <citations>
+        <citation type="doi">10.4018/ijncr.2014010104</citation>
+    </citations>
+
+</tool>

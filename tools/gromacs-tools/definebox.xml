@@ -1,0 +1,47 @@
+<tool id="tool_definebox" name="Define Box" version="1.0.0">
+    <description>
+        generates the box of simulation to use PBC
+        <!--gera a caixa de simulação para uso de PBC-->
+    </description>
+
+    <command interpreter="bash">
+
+        definebox.sh $input $source_group $source_box $source_distance $output_gro
+
+    </command>
+
+    <inputs>
+        <param format="gro" name="input" type="data" label="Source file GRO"/>
+        <param name="source_group" type="select" optional="false" label="Group">
+            <option value="0">System</option>
+            <option value="1">Protein</option>
+            <option value="2">Protein-H</option>
+            <option value="3">C-alpha</option>
+            <option value="4">Backbone</option>
+            <option value="5">MainChain</option>
+            <option value="6">MainChain+Cb</option>
+            <option value="7">MainChain+H</option>
+            <option value="8">SideChain</option>
+            <option value="9">SideChain-H</option>
+        </param>
+        <param name="source_box" type="select" optional="false" label="Box Type">
+            <option value="triclinic">Triclinic</option>
+            <option value="cubic">Cubic</option>
+            <option value="dodecahedron">Dodecahedron</option>
+            <option value="octahedron">Octahedron</option>
+        </param>
+
+        <param name="source_distance" type="float" min="0" value="1.5" max="2.0" label="Box Size"/>
+
+    </inputs>
+
+    <outputs>
+        <data format="gro" name="output_gro" label="Gromacs File by Define Box"/>
+    </outputs>
+
+    <help>
+        This tool generates the simulation box for use PBC from an gromacs input file (gro).
+        <!--Esta tool gera a caixa de simulação para uso de PBC a partir de um arquivo de entrada do gromacs (formato gro).-->
+    </help>
+
+</tool>

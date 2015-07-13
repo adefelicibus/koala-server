@@ -1,0 +1,46 @@
+<tool id="sort_method_by_front" name="Sort Method by Front Dominance" version="1.0.0" force_history_refresh="True">
+    <description>withoud evaluate the objectives.</description>
+    <command interpreter="python">
+
+        sort_method_by_front_dominance.py -i $input_txt -z $html_file -k "$html_file.files_path" -t $toolname -g $__root_dir__
+
+    </command>
+    <inputs>        
+        <param name="input_txt" type="data" multiple="false" format="txt" label="Text file with the calculated objectives" />
+        <param type="hidden" name="toolname" value="2PG_SortMethodByFront_Tool"/>
+    </inputs>
+    <outputs>
+        <data format="html" name="html_file" label="${toolname}.html"/>
+    </outputs>
+    <help>
+
+**What it does**
+
+Use a file like that:
+
+obj1    obj2    method
+
+-1781.9320  6.5130  haddock_14_cluster3_2
+
+-1719.0424  6.2615  haddock_25_cluster11_1
+
+-1546.4244  6.2979  haddock_27_cluster11_3
+
+-1581.5558  7.7450  haddock_3_cluster1_3
+
+-1513.7157  7.6266  haddock_13_cluster3_1
+
+-1465.1089  5.9720  haddock_15_cluster3_3
+
+-1409.6580  6.0539  haddock_16_cluster3_4
+
+-1222.5330  6.5899  cluspro_elec_04
+
+-1252.5579  7.0269  hex_shape+elec_89
+
+-1207.9237  7.0797  cluspro_hydrophobic_11
+
+-1241.9150  8.2068  hex_shape+elec_8
+
+    </help>
+</tool>

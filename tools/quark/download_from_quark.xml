@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<tool name="Download from Quark" id="download_from_quark" version="1.0.0" force_history_refresh="True">
+    <description>the Job result</description>
+    <command interpreter="python">
+
+        #if $create_compressed.chk_compress == True
+            #set $output_zip = $pdbs
+        #else
+            #set $output_zip = "None"
+        #end if
+
+        download_from_quark.py
+          -i "$joburl"
+          -o "$job_files"
+          -d "$job_files.files_path"
+          -e "$create_compressed.chk_compress"
+          -z "$output_zip"
+          -t "$toolname"
+          -r "$__root_dir__"
+
+  </command>
+  <inputs>
+
+    <param name="joburl" type="text" optional="false" area="true" size="2x70" label="Job URL"/>
+    <conditional name="create_compressed">
+        <param name="chk_compress" type="boolean" label="Create a compressed file with all the PDB files?" help="" checked="False"/>
+    </conditional>
+    <param type="hidden" name="toolname" value="Download_From_Quark"/>
+
+  </inputs>
+  <outputs>
+    <data name="job_files" format="zip" label="${joburl.value.split('/')[-2]}_results.zip"/>
+    <data name="pdbs" format="zip" label="QuarkResults.zip">
+        <filter>create_compressed['chk_compress'] == True</filter>
+    </data>
+  </outputs>
+  <help>
+
+**What it does**
+
+This tool downloads the Quark output and uploads to your history.
+
+You must provide a valid URL to the Quark result, example:
+    http://zhanglab.ccmb.med.umich.edu/QUARK/Q24927/
+
+The output is a compressed file with all the Quark result file and the data will be available in your history.
+
+  </help>
+</tool>

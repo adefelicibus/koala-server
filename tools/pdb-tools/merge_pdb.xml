@@ -1,0 +1,84 @@
+<tool id="merge_pdb" name="Merge PDB" version="1.0.0" >
+    <description>files into a single PDB file</description>
+    <command interpreter="python">
+
+        #if $source.source_select == "pdbs"
+            #set $compressed = 0
+            #set $inputFiles = $source.input_pdbs
+        #else
+            #set $compressed = 1
+            #set $inputFiles = $source.input_compressed
+        #end if
+
+        merge_pdb.py
+        -i "$inputFiles"
+        -a "$__app__.security.encode_id( '%s' % $newpdb.id )"
+        -z "$newpdb"
+        -k "$newpdb.files_path"
+        -t "$toolname"
+        -g "$__root_dir__"
+        -n
+        #if $source.source_select == "pdbs"
+            #set $names = "'"
+                #for $name in $source.input_pdbs:
+                    $names$name.name
+                    #set $names = ","
+                #end for
+                $names'
+        #else
+            #set $names = "'None'"
+        #end if
+        "$names"
+        -s $compressed
+
+    </command>
+    <inputs>
+        <conditional name="source">
+            <param name="source_select" type="select" label="Source of the PDB Files" help="">
+                <option value="pdbs">PDB Files</option>
+                <option value="compressed">Compressed File</option>
+            </param>
+            <when value="compressed">
+                <param name="input_compressed" type="data" format="zip, gz" label="Compressed file" help="A compressed file with PDB files. This tools does not accept a file with subfolders."/>
+            </when>
+            <when value="pdbs">
+                <param name="input_pdbs" type="data" multiple="true" format="pdb" label="PDB Files" />
+            </when>
+        </conditional>
+
+        <param type="hidden" name="toolname" value="MergePDBTool"/>
+    </inputs>
+    <outputs>
+        <data format="pdb" name="newpdb" label="MergedPDB.pdb"/>
+    </outputs>
+    <help>
+
+.. class:: warningmark
+
+If you will use a compressed file, the input file must be with the Zip or Gz format.
+
+-----
+
+**What it does**
+
+::
+
+    This tool merges several PDB files into only one PDB file.
+    Each PDB file will be a model on the new PDB file.
+
+::
+
+    You can use as input either PDB files or a compressed file available on your history .
+
+::
+
+    The output file will be a PDB file that contains all the input PDB files.
+
+-----
+
+.. class:: warningmark
+
+Care to have PDB files with the same header. The tool will only copy the header of the fist file.
+
+    </help>
+</tool>

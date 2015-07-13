@@ -1,0 +1,28 @@
+<tool id="tool_grompp" name="Grompp" version="1.0.0">
+    <description>
+        <!--lê um arquivo de topologia molecular, verifica a validade do arquivo, expande topologia de uma descrição molecular para uma descrição atômica.-->
+        reading a molecular topology file, verifies the validity of the file, expands topology of a molecular description of an atomic description.
+    </description>
+
+    <command interpreter="bash">
+
+        grompp.sh $input_mdp $input_gro $input_top $output_tpr
+
+    </command>
+
+    <inputs>
+        <param format="mdp" name="input_mdp" type="data" label="Source file MDP"/>
+        <param format="gro" name="input_gro" type="data" label="Source file GRO"/>
+        <param format="top" name="input_top" type="data" label="Source file TOP"/>
+    </inputs>
+
+    <outputs>
+        <data format="tpr" name="output_tpr" label="TPR File by Grompp"/>
+    </outputs>
+
+    <help>
+        <!--Grompp lê os parâmetros para o mdrun (por ex. o número de passos, MD TimeStep, de corte), e outros parâmetros, tais como o ficheiro de topologia que contém informações sobre os tipos de moléculas e o número de moléculas, as cópias de cada molécula de pré-processamento conforme necessário. Eventualmente um arquivo binário .tpr é produzido que pode servir como o arquivo de entrada único para o programa MD.-->
+        Grompp reads the parameters for the mdrun (eg. The number of steps, MD TimeStep, cutting), and other parameters, such as the topology file containing information about the types of molecules and the number of molecules, copies of each molecule of preprocessing as necessary. Eventually .tpr a binary file is produced that can serve as the only input file to the MD program.
+    </help>
+
+</tool>

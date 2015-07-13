@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<tool name="Robetta On Line" id="robetta" tool_type="data_source" version="1.0.1" workflow_compatible="false">
+    <description>Robetta Server</description>
+    <!-- This python script imports the file into Galaxy -->
+    <command interpreter="python">data_source/data_source.py $output $__app__.config.output_size_limit</command>
+    <!-- The URL where Galaxy will forwards the user when this tool is accessed from the menu -->
+    <inputs action="http://robetta.bakerlab.org/" check_values="false" method="get">
+        <display>go to Robetta server $GALAXY_URL</display>
+    </inputs>
+    <uihints minwidth="800"/>
+    <outputs>
+        <data name="output" format="auto"/>
+    </outputs>
+    <options sanitize="False" refresh="True"/>
+</tool>

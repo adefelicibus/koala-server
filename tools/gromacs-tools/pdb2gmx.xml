@@ -1,0 +1,197 @@
+<tool id="tool_pdb2gmx" name="PDB2GMX" version="1.0.0">
+
+    <description>
+        converts PDB file for gro and generates topology files Gromacs
+        <!--converte arquivo pdb para gro e gera arquivos de topologia do Gromacs-->
+    </description>
+
+    <command interpreter="bash">
+
+        ##if $source_ff_water.source_ff == "amber03"
+            ##set $ff =  $source_ff_water.source_ff
+            ##set $water = $source_ff_water.source_water
+        ##else if $source_water.source_ff == "amber94"
+            ##set $ff = $source_ff_water.source_ff
+            ##set $water = $source_ff_water.source_water
+        ##else
+            ##set $ff = $source_ff_water.source_ff
+            ##set $water = $source_ff_water.source_water
+        ##end if
+
+        pdb2gmx.sh $input $input.name $source_ff_water.source_ff $source_ff_water.source_water $source_ignh $output_gro $output_top $output_itp
+
+    </command>
+
+    <inputs>
+        <param format="pdb" name="input" type="data" label="Source file PDB"/>
+
+        <conditional name="source_ff_water">
+            <param name="source_ff" type="select" optional="false" label="Force Field">
+                    <option value="amber03">AMBER03</option>
+                    <option value="amber94">AMBER94</option>
+                    <option value="amber96">AMBER96</option>
+                    <option value="amber99">AMBER99</option>
+                    <option value="amber99sb">AMBER99SB</option>
+                    <option value="amber99sb-ildn">AMBER99SB-ILDN</option>
+                    <option value="amberGS">AMBERGS</option>
+                    <option value="charmm27">CHARMM27</option>
+                    <option value="gromos43a1">GROMOS96 43a1</option>
+                    <option value="gromos43a2">GROMOS96 43a2</option>
+                    <option value="gromos45a3">GROMOS96 45a3</option>
+                    <option value="gromos53a5">GROMOS96 53a5</option>
+                    <option value="gromos53a6">GROMOS96 53a6</option>
+                    <option value="gromos54a7">GROMOS96 54a7</option>
+                    <option value="oplsaa">OPLS-AA/L</option>
+            </param>
+            <when value="amber03">
+                    <param name="source_water" type="select" optional="false" label="Water Model">
+                        <option value="tip3p">TIP 3-point</option>
+                        <option value="tip4p">TIP 4-point</option>
+                        <!--<option value="tip4pew">TIP 4-point optimized with Ewald</option>-->
+                        <option value="tip5p">TIP 5-point</option>
+                        <option value="spc">Simple point charge</option>
+                        <option value="spce">Extended simple point charge</option>
+                        <option value="none">None</option>
+                    </param>
+            </when>
+            <when value="amber94">
+                    <param name="source_water" type="select" optional="false" label="Water Model">
+                        <option value="tip3p">TIP 3-point</option>
+                        <option value="tip4p">TIP 4-point</option>
+                        <option value="tip5p">TIP 5-point</option>
+                        <option value="spc">Simple point charge</option>
+                        <option value="spce">Extended simple point charge</option>
+                        <option value="none">None</option>
+                    </param>
+            </when>
+            <when value="amber96">
+                    <param name="source_water" type="select" optional="false" label="Water Model">
+                        <option value="tip3p">TIP 3-point</option>
+                        <option value="tip4p">TIP 4-point</option>
+                        <option value="tip5p">TIP 5-point</option>
+                        <option value="spc">Simple point charge</option>
+                        <option value="spce">Extended simple point charge</option>
+                        <option value="none">None</option>
+                    </param>
+            </when>
+            <when value="amber99">
+                    <param name="source_water" type="select" optional="false" label="Water Model">
+                        <option value="tip3p">TIP 3-point</option>
+                        <option value="tip4p">TIP 4-point</option>
+                        <option value="tip5p">TIP 5-point</option>
+                        <option value="spc">Simple point charge</option>
+                        <option value="spce">Extended simple point charge</option>
+                        <option value="none">None</option>
+                    </param>
+            </when>
+            <when value="amber99sb">
+                    <param name="source_water" type="select" optional="false" label="Water Model">
+                        <option value="tip3p">TIP 3-point</option>
+                        <option value="tip4p">TIP 4-point</option>
+                        <option value="tip5p">TIP 5-point</option>
+                        <option value="spc">Simple point charge</option>
+                        <option value="spce">Extended simple point charge</option>
+                        <option value="none">None</option>
+                    </param>
+            </when>
+             <when value="amber99sb-ildn">
+                    <param name="source_water" type="select" optional="false" label="Water Model">
+                        <option value="tip3p">TIP 3-point</option>
+                        <option value="tip4p">TIP 4-point</option>
+                        <option value="tip5p">TIP 5-point</option>
+                        <option value="spc">Simple point charge</option>
+                        <option value="spce">Extended simple point charge</option>
+                        <option value="none">None</option>
+                    </param>
+            </when>
+            <when value="amberGS">
+                    <param name="source_water" type="select" optional="false" label="Water Model">
+                        <option value="tip3p">TIP 3-point</option>
+                        <option value="tip4p">TIP 4-point</option>
+                        <option value="tip5p">TIP 5-point</option>
+                        <option value="spc">Simple point charge</option>
+                        <option value="spce">Extended simple point charge</option>
+                        <option value="none">None</option>
+                    </param>
+            </when>
+            <when value="charmm27">
+                    <param name="source_water" type="select" optional="false" label="Water Model">
+                        <option value="tip3p">TIP 3-point</option>
+                        <option value="tip4p">TIP 4-point</option>
+                        <!--<option value="tips3p">CHARMM TIP 3-point with LJ on H's</option>-->
+                        <option value="tip5p">TIP 5-point</option>
+                        <option value="spc">Simple point charge</option>
+                        <option value="spce">Extended simple point charge</option>
+                        <option value="none">None</option>
+                    </param>
+            </when>
+            <when value="gromos43a1">
+                    <param name="source_water" type="select" optional="false" label="Water Model">
+                        <option value="spc">Simple point charge</option>
+                        <option value="spce">Extended simple point charge</option>
+                        <option value="none">None</option>
+                    </param>
+            </when>
+            <when value="gromos43a2">
+                    <param name="source_water" type="select" optional="false" label="Water Model">
+                        <option value="spc">Simple point charge</option>
+                        <option value="spce">Extended simple point charge</option>
+                        <option value="none">None</option>
+                    </param>
+            </when>
+            <when value="gromos45a3">
+                    <param name="source_water" type="select" optional="false" label="Water Model">
+                        <option value="spc">Simple point charge</option>
+                        <option value="spce">Extended simple point charge</option>
+                        <option value="none">None</option>
+                    </param>
+            </when>
+            <when value="gromos53a5">
+                    <param name="source_water" type="select" optional="false" label="Water Model">
+                        <option value="spc">Simple point charge</option>
+                        <option value="spce">Extended simple point charge</option>
+                        <option value="none">None</option>
+                    </param>
+            </when>
+            <when value="gromos53a6">
+                    <param name="source_water" type="select" optional="false" label="Water Model">
+                        <option value="spc">Simple point charge</option>
+                        <option value="spce">Extended simple point charge</option>
+                        <option value="none">None</option>
+                    </param>
+            </when>
+            <when value="gromos54a7">
+                    <param name="source_water" type="select" optional="false" label="Water Model">
+                        <option value="spc">Simple point charge</option>
+                        <option value="spce">Extended simple point charge</option>
+                        <option value="none">None</option>
+                    </param>
+            </when>
+            <when value="oplsaa">
+                    <param name="source_water" type="select" optional="false" label="Water Model">
+                        <option value="tip4p">TIP 4-point</option>
+                        <option value="tip3p">TIP 3-point</option>
+                        <option value="tip5p">TIP 5-point</option>
+                        <!--<option value="tip5pe">TIP 5-point improved for Ewald sums</option>-->
+                        <option value="spc">Simple point charge</option>
+                        <option value="spce">Extended simple point charge</option>
+                        <option value="none">None</option>
+                    </param>
+            </when>
+        </conditional>
+
+        <param name="source_ignh" type="boolean" label="Ignore all hydrogens" checked="yes"/>
+    </inputs>
+
+    <outputs>
+        <data format="gro" name="output_gro" label="Gromacs File by PDB2GMX"/>
+        <data format="top" name="output_top" label="Topology File by PDB2GMX"/>
+        <data format="itp" name="output_itp" label="ITP File by PDB2GMX"/>
+    </outputs>
+
+    <help>
+        This tool converts a PDB input file to an output file in Gromacs format (gro), too generating a top file and other itp that represent the protein topology.
+        <!--Esta tool converte um arquivo de entrada pdb para um arquivo de saída no formato do Gromacs (gro), gerando também um arquivo top e outro itp que representam a topologia da proteína.-->
+    </help>
+
+</tool>

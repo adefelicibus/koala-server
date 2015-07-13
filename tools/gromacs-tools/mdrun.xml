@@ -1,0 +1,31 @@
+<tool id="tool_mdrun" name="Mdrun" version="1.0.0">
+
+    <description>
+        performs molecular dynamics simulations, but may also perform other computational operations such as energy minimization.
+        <!--realiza simulações de dinâmica molecular, mas também pode executar outras operações computacionais como minimização de energia.-->
+    </description>
+
+    <command interpreter="bash">
+
+        mdrun.sh $input_tpr $source_name $output_gro $output_edr $output_trr $output_log
+
+    </command>
+
+    <inputs>
+        <param format="tpr" name="input_tpr" type="data" label="Source file TPR"/>
+        <param name="source_name" type="text" size="30" label="Default File Name"/>
+    </inputs>
+
+    <outputs>
+        <data format="gro" name="output_gro" label="Gromacs File by Mdrun"/>
+        <data format="edr" name="output_edr" label="EDR File by Mdrun"/>
+        <data format="trr" name="output_trr" label="TRR File by Mdrun"/>
+        <data format="log" name="output_log" label="Log File by Mdrun"/>
+    </outputs>
+
+    <help>
+        This tool receives as input a .tpr input file, performs simulations, and returns a gromacs file (.gro) end.
+        <!--Esta tool recebe como entrada um arquivo de entrada .tpr, realiza simulações, e retorna um arquivo do gromacs (.gro) final.-->
+    </help>
+
+</tool>

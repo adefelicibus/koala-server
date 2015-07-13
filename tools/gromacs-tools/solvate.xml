@@ -1,0 +1,29 @@
+<tool id="tool_solvate" name="Solvate" version="1.0.0">
+
+    <description>
+        insert water on the box
+        <!--coloca água na caixa-->
+    </description>
+
+    <command interpreter="bash">
+
+        solvate.sh $input_top $input_gro $output_gro $output_top
+
+    </command>
+
+    <inputs>
+        <param format="top" name="input_top" type="data" label="Source file TOP"/>
+        <param format="gro" name="input_gro" type="data" label="Source file GRO"/>
+    </inputs>
+
+    <outputs>
+        <data format="gro" name="output_gro" label="Gromacs File by Solvate"/>
+        <data format="top" name="output_top" label="Topology File by Solvate"/>
+    </outputs>
+
+    <help>
+        This tool inserts water in the simulation box from a protein topology input file (top shape), and the gromacs file (gro shape) which represents the box.
+        <!--Esta tool coloca água na caixa de simulação a partir de um arquivo de entrada da topologia da proteina (formato top), além do arquivo gromacs (formato gro) que representa a caixa.-->
+    </help>
+
+</tool>

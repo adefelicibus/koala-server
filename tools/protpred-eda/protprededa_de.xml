@@ -1,0 +1,98 @@
+<tool id="protprededa_de" name="ProtPred-EDA DE " version="1.0.0">
+    <description>an evolutionary algorithm applied to PSP</description>
+    <command interpreter="python">
+
+        #if $source_fasta.source_select == "input_ref"
+            #set $SequenceFile = $source_fasta.input_target
+            #set $from_fasta = 1
+        #else
+            #set $SequenceFile = $source_fasta.input_text
+            #set $from_fasta = 0
+        #end if
+
+        protprededa_de.py
+        "$Threshold"
+        "$MaxEval"
+        "$VanderWaals"
+        "$Coulomb"
+        "$Solvatation"
+        "$HydrogenBond"
+        "$Torsion"
+        "$from_fasta"
+        "$SequenceFile"
+        "$UseAngleDB"
+        "$AminoAcidL"
+        "$PopSize"
+        "$OffSize"
+        "$SelSize"
+        "$TouSize"
+        "$SelMethod"
+        "$CrossoverRate"
+        "$FRate"
+        "$output"
+        "$output.files_path"
+        "$email"
+        "$toolname"
+        "$__root_dir__"
+
+    </command>
+    <inputs>
+
+        <conditional name="source_fasta">
+            <param name="source_select" type="select" label="Source of amino acid sequence" help="You can use a file in your history as an input or you can insert your own aminoacid sequence.">
+                <option value="input_ref">An upload file</option>
+                <option value="database">Own Sequence</option>
+            </param>
+            <when value="database">
+                <param name="input_text" type="text" optional="false"  area="true" size="5x35" label="Your own amino acids sequence" help="Copy and paste your amino acid sequence into the box."/>
+            </when>
+            <when value="input_ref">
+                <param name="input_target" type="data" format="fasta" label="Sequence File" />
+            </when>
+        </conditional>
+
+        <param name="PopSize" type="text" optional="false" label="Population size" value="3000" help=""/>
+        <param name="OffSize" type="text" optional="false" label="Offspring size" value="3000" help=""/>
+        <param name="SelSize" type="integer" optional="false" label="Size of selected" value="5000" help=""/>
+        <param name="TouSize" type="integer" optional="false" label="Tournament size" value="2" min="2" help=""/>
+        <param name="CrossoverRate" type="text" optional="false" label="Crossover Rate" value="0.4" help=""/>
+        <param name="FRate" type="text" optional="false" label="Mutation Factor" value="0.2" help=""/>
+        <param name="SelMethod" type="select" label="Selection Method" help="">
+            <option value="tournament">Tournament</option>
+            <option value="rank">Rank</option>
+        </param>
+
+        <param name="MaxEval" type="text" label="Evaluations" optional="false" size="30" help="Convergence criteria 2: convergence occurs when a maximum number of evoluation is reached." value="1000000" />
+        <param name="Threshold" type="text" label="Threshold" optional="false" size="30" help="Convergence criteria 1: convergence occurs when the standard-deviation of fitness of population is below the specified value." value="0.0001" />
+
+        <param name="VanderWaals" type="text" label="Van der Waals energy weight" optional="false" size="30" help="" value="1.0" />
+        <param name="Coulomb" type="text" label="Electrostatic energy weight" optional="false" size="30" help="" value="0.0" />
+        <param name="Solvatation" type="text" label="Solvation energy weight" optional="false" size="30" help="" value="0.0" />
+        <param name="HydrogenBond" type="text" label="Hydrogen Bond energy weight" optional="false" size="30" help="" value="0.0" />
+        <param name="Torsion" type="text" label="Torsion energy weight" optional="false" size="30" help="" value="0.0" />
+
+        <param name="UseAngleDB" type="boolean" label="Use Amino Acid Database (ADB)" truevalue="yes" falsevalue="no" checked="no" help="" />
+        <param name="AminoAcidL" type="boolean" label="Use L amino acids" truevalue="yes" falsevalue="no" checked="yes" help="L is common in nature " />
+
+        <param name="email" type="text" label="User's Email Adress" optional="false" size="30" help="Email address to which the notice will be sent when the run ends"/>
+        <param type="hidden" name="toolname" value="ProtPred_EDA"/>
+    </inputs>
+    <outputs>
+        <data format="zip" name="output" label="ProtPredEDA_out.zip"/>
+    </outputs>
+    <help>
+Execute ProtPred-EDA algorithm
+    </help>
+    <citations>
+        <citation type="bibtex">@Conference{Bonetti2014a,
+                Title = {Bivariate Estimation of Distribution Algorithms for Protein Structure Prediction},
+                Author = {D. R. F. Bonetti and A. Delbem and J. Einbeck},
+                Booktitle = {29th International Workshop on Statistical Modelling},
+                Year = {2014},
+                Pages = {1-5},
+                Volume = {2},
+                Owner  = {Daniel},
+                Timestamp = {2014.12.07}}
+        </citation>
+    </citations>
+</tool>

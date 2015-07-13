@@ -1,0 +1,193 @@
+<tool id="2pg_build_conformation" name="2PG Build Population" version="1.0.0">
+    <description> as random conformation</description>
+    <command interpreter="python">
+
+        #if $source_fasta.source_select == "input_ref"
+            #set $SequenceAminoAcidsPathFileName = $source_fasta.input_target
+            #set $from_fasta = 1
+        #else
+            #set $SequenceAminoAcidsPathFileName = $source_fasta.input_text
+            #set $from_fasta = 0
+        #end if
+
+        #if $name_output.chk_name == True
+            #set $output = $NamedPopFile
+        #else
+            #set $output = $PopFile
+        #end if
+
+        #if $forcefield.force_field == "amber99sb-ildn"
+
+            buildconformation2pg.py
+            -g "$gromacs_energy_min"
+            -i "$SequenceAminoAcidsPathFileName"
+            -s "$SizePopulation"
+            -f "$forcefield.force_field"
+            -l "$rotamer_library"
+            -c "$forcefield.c_terminal_charge"
+            -n "$forcefield.n_terminal_charge"
+            -w "$from_fasta"
+            -o "$output"
+            -d "$output.files_path"
+            -t "$toolname"
+            -r "$__root_dir__"
+
+        #else
+
+            buildconformation2pg.py
+            -g "$gromacs_energy_min "
+            -i "$SequenceAminoAcidsPathFileName"
+            -s "$SizePopulation"
+            -f "$forcefield.force_field"
+            -l "$rotamer_library"
+            -c ""
+            -n ""
+            -w "$from_fasta"
+            -o "$output"
+            -d "$output.files_path"
+            -t "$toolname"
+            -r "$__root_dir__"
+
+        #end if
+
+    </command>
+    <inputs>
+        <conditional name="source_fasta">
+            <param name="source_select" type="select" label="Source of the amino acids sequence" help="You can use a file in your history as an input or you can insert your own amino acid sequence.">
+                <option value="input_ref">An upload file</option>
+                <option value="database">Own Sequence</option>
+            </param>
+            <when value="database">
+                <param name="input_text" type="text" optional="false"  area="true" size="5x35" label="Your own aminoacids sequence" help="Copy and paste your amino acid sequence into the box." />
+            </when>
+            <when value="input_ref">
+                <param name="input_target" type="data" format="fasta" label="Sequence File" />
+            </when>
+        </conditional>
+        <param name="SizePopulation" label="Size of Population" type="integer" optional="false" value="20" min="1"/>
+        <param name="gromacs_energy_min" type="select" label="Gromacs Energy Minimization" help="">
+            <option value="none">None</option>
+            <option value="ener_implicit">Energy Implicit</option>
+        </param>
+        <param name="rotamer_library" type="select" label="Rotamer Library" help="">
+            <option value="none">None</option>
+            <option value="cad_tuffery">Cad Tuffery</option>
+        </param>
+        <conditional name="forcefield">
+            <param name="force_field" type="select" label="Force Field" help="">
+                <option value="charmm27">Charmm27</option>
+                <option value="amber99sb-ildn">AMBER 99</option>
+            </param>
+            <when value="amber99sb-ildn">
+                <param name="c_terminal_charge" type="select" label="C-Terminal with charge" help="">
+                    <option value="none">None</option>
+                    <option value="ACE" selected="#if $force_field.value == 'charmm27' #end if">ACE</option>
+                </param>
+                <param name="n_terminal_charge" type="select" label="N-Terminal with charge" help="">
+                    <option value="none">None</option>
+                    <option value="NME" selected="#if $force_field.value == 'amber99sb-ildn' #end if">NME</option>
+                </param>
+            </when>
+        </conditional>
+        <param type="hidden" name="toolname" value="2PG_BuildConformation_Tool"/>
+        <conditional name="name_output">
+            <param name="chk_name" type="boolean" label="Define a name to the output file?" help="" checked="False"/>
+            <when value="true">
+                <param name="output_name" type="text" optional="false" size="50" label="New output file name" />
+            </when>
+        </conditional>
+    </inputs>
+    <outputs>
+        <data name="PopFile" format="pdb" label="pop_${SizePopulation.value}.pdb">
+            <filter>name_output['chk_name'] == False</filter>
+        </data>
+        <data name="NamedPopFile" format="pdb" label="#if $name_output.chk_name == True: $name_output.output_name.value ">
+            <filter>name_output['chk_name'] == True</filter>
+        </data>
+    </outputs>
+    <help>
+
+.. class:: warningmark
+
+This tool requires *fasta* format.
+
+-----
+
+**What it does**
+
+This tool creates a PDB file with many protein conformations (models).
+
+**Parameters:**
+
+::
+
+    Source of the amino acids sequence:
+    This parameter recievies either a FASTA file or a amino acids sequence.
+    The FASTA file must have a header and the sequence.
+
+        Exemple:
+        >1VII:A|PDBID|CHAIN|SEQUENCE
+        MLSDEDFKAVFGMTRSAFANLPLWKQQNLKKEKGLF
+
+    If you insert only the sequence, it must have valid amino acids letters.
+
+        Exemple:
+        MLSDEDFKAVFGMTRSAFANLPLWKQQNLKKEKGLF
+
+    Size Population:
+    This corresponds to the number of conformations.
+    The tool will create random protein conformations to be used on the evolutionary algorithms applied to
+    protein structure prediction.
+    The value must be greater than one.
+
+    Gromacs Energy Minimization:
+    This is a non-dynamical calculation used to find a local potential energy minimum near the starting structure.
+    It uses a force field and mdrun, even though molecular dynamics are not being performed.
+    It is usually needed to do one of these calculations before attempting MD,
+    because the process of solvating your initial solute structure usually introduces some bad
+    contacts that need to be relaxed before you attempt to heat the system, ie. give it kinetic energy.
+
+        The option available is:
+        - Energy Implicit
+
+    Rotamer Library:
+    A "rotamer library" is a collection of a set of possible / allowable rotameric conformations for a given set of
+    amino acids or analogs.
+    There are two general types of rotamer libraries: "backbone dependent" and "backbone independent."
+    A backbone dependent rotamer library allows different rotamers depending on the position of the
+    residue in the backbone.
+    A backbone independent rotamer library utilizes all rotamers of an amino acid at every position.
+    In general, a backbone independent library is preferred in the consideration of core residues,
+    since flexibility in the core is important.
+    Either type of library can be used at any position.
+
+        The option available is:
+        - Cad Tuffery
+
+    Force Field:
+    Refers to the functional form and parameter sets used to calculate the potential energy of a system of atoms
+    or coarse-grained particles in molecular mechanics and molecular dynamics simulations.
+    The parameters of the energy functions can be derived from experimental work and quantum mechanical calculations.
+
+        The options available are:
+        - CHARMM27
+        - AMBER99
+
+**Results:**
+
+::
+
+    The result of the tool will be a PDB file with a set of protein conformations (models)
+    defined on the parameter Size of Population.
+
+-----
+
+.. class:: warningmark
+
+You can set a name to the output PDB file, selecting "Yes" on the parameter "Define a name to the output file?".
+Thus, the output dataset will be renamed with the informed value.
+
+.. _Gromacs: http://www.gromacs.org/Documentation/Terminology/Energy_Minimisation
+
+    </help>
+</tool>

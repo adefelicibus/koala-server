@@ -1,0 +1,93 @@
+<tool id="dominance_ranking" name="Dominance Ranking" version="1.0.0">
+    <description>of PSP methods</description>
+    <command interpreter="python">
+
+        #if $source.source_select == "pdbs"
+            #set $compressed = 0
+            #set $inputFiles = $source.input_pdbs
+        #else
+            #set $compressed = 1
+            #set $inputFiles = $source.input_compressed
+        #end if
+
+        dominance_ranking.py
+        -i $inputFiles
+        -a $__app__.security.encode_id( '%s' % $html_file.id )
+        -z $html_file
+        -k "$html_file.files_path"
+        -t $toolname
+        -g $__root_dir__
+        -n
+        #if $source.source_select == "pdbs"
+            #set $names = "'"
+                #for $name in $source.input_pdbs:
+                    $names$name.name
+                    #set $names = ","
+                #end for
+                $names'
+        #else
+            #set $names = "'"
+                #for $name in $source.input_compressed:
+                    $names$name.name
+                    #set $names = ","
+                #end for
+                $names'
+        #end if
+        $names
+         -f
+        #set $fitness = "'#"
+        #for $i, $s in enumerate( $fitness_energies )
+            ##rank=$i
+            $fitness$i${s.Fitness_Energy}
+            #set $fitness = "#"
+        #end for
+        $fitness'
+        -s $compressed
+        -x $active_jmol
+        -y $check_structures
+        -b $rename_atoms
+
+    </command>
+    <inputs>
+        <conditional name="source">
+            <param name="source_select" type="select" label="Source of the PDB Files" help="">
+                <option value="pdbs">PDB Files</option>
+                <option value="compressed">Compressed File</option>
+            </param>
+            <when value="compressed">
+                <param name="input_compressed" type="data" multiple="true" format="zip, gz" label="Compressed file" help="A compressed file with PDB files. This tools does not accept a file with subfolders."/>
+            </when>
+            <when value="pdbs">
+                <param name="input_pdbs" type="data" multiple="true" format="pdb" label="PDB Files" />
+            </when>
+        </conditional>
+
+        <repeat name="fitness_energies" title="Objective Combination" default="1" min="1">
+            <param name="Fitness_Energy" type="select" display="checkboxes" multiple="true" optional="false" label="Objectives">
+                <option value="Potential">Potential</option>
+                <option value="Gyrate">Gyrate</option>
+                <option value="Hydrophobic">Hydrophobic</option>
+                <option value="Hydrophilic">Hydrophilic</option>
+                <option value="Area_Total">Total Area</option>
+                <option value="H_Bond_Main">H Bond Main</option>
+                <option value="Electrostatic">Electrostatic</option>
+                <option value="GBSA_Solvatation">GBSA_Solvatation</option>
+                <option value="Van_der_Waals">Van der Waals</option>
+            </param> <!--Validar somente para duas seleções-->
+        </repeat>
+        <param type="boolean" name="check_structures" value="false" label="Check the PDB structure with Gromacs?" help="Check if the Gromacs program PDB2GMX accepts the PDB file."/>
+        <param type="boolean" name="rename_atoms" value="false" label="Rename the missing atoms on the PDB file according to Gromacs?" help="Check if the PDB file has missing atoms according Gromacs."/>
+        <param type="boolean" name="active_jmol" value="false" label="Use Jmol visualization?" help="Jmol offers a 3D visualization of the molecule. You must have JavaScript enabled on your browser."/>
+        <param type="hidden" name="toolname" value="Dominance_Ranking"/>
+    </inputs>
+    <outputs>
+        <data format="html" name="html_file" label="${toolname}.html"/>
+    </outputs>
+    <help>
+
+**What it does**
+
+Calculate Dominance Ranking
+
+    </help>
+</tool>

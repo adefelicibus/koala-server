@@ -1,0 +1,86 @@
+<tool id="meamt_pop" name="MEAMT Build Population" version="1.0.0">
+    <description> as random conformation</description>
+    <command interpreter="python">
+
+        #if $source_fasta.source_select == "input_ref"
+            #set $SequenceAminoAcids = $source_fasta.input_target
+            #set $from_fasta = 1
+        #else
+            #set $SequenceAminoAcids = $source_fasta.input_text
+            #set $from_fasta = 0
+        #end if
+
+        #if $name_output.chk_name == True
+            #set $output = $NamedPopFile
+        #else
+            #set $output = $PopFile
+        #end if
+
+        meamt_pop.py
+        -i "$SequenceAminoAcids"
+        -s "$SizePopulation"
+        -l "$Fitness_Energy"
+        -a "$vdw_w"
+        -b "$hbond_w"
+        -c "$solv_w"
+        -d "$charge_w"
+        -w "$from_fasta"
+        -o "$output"
+        <!-- -e "$email" -->
+        -g "$output.files_path"
+        -t "$toolname"
+        -r "$__root_dir__"
+
+
+    </command>
+    <inputs>
+        <conditional name="source_fasta">
+            <param name="source_select" type="select" label="Source of the amino acids sequence" help="You can use a file in your history as an input or you can insert your own amino acid sequence.">
+                <option value="input_ref">An upload file</option>
+                <option value="database">Own Sequence</option>
+            </param>
+            <when value="database">
+                <param name="input_text" type="text" optional="false"  area="true" size="5x35" label="Your own aminoacids sequence" help="Copy and paste your amino acid sequence into the box." />
+            </when>
+            <when value="input_ref">
+                <param name="input_target" type="data" format="fasta" label="Sequence File" />
+            </when>
+        </conditional>
+        <param name="SizePopulation" label="Size of Population" type="integer" optional="false" value="400" min="400"/>
+        <param name="Fitness_Energy" type="select" display="checkboxes" multiple="true" optional="false" label="Objectives" help="">
+            <option value="hbond" selected="True">Hydrogen Bond</option>
+            <option value="charge" selected="True">Electrostatic</option>
+            <option value="solv" selected="True">Solvatation</option>
+            <option value="vdw" selected="True">Van der Waals</option>
+        </param>
+        <param name="vdw_w" label="Van der Waals Weight" type="float" optional="false" value="1" min="1"/>
+        <param name="hbond_w" label="Hydrogen Bond Weight" type="float" optional="false" value="0.5" min="0"/>
+        <param name="solv_w" label="Solvatation Weight" type="float" optional="false" value="0.5" min="0"/>
+        <param name="charge_w" label="Electrostatic Weight" type="float" optional="false" value="0.5" min="0"/>
+        <!-- <param name="email" type="text" label="User's Email Adress" optional="false" size="30" help="Email address to which the notice will be sent when the run ends"/> -->
+        <conditional name="name_output">
+            <param name="chk_name" type="boolean" label="Define a name to the output file?" help="" checked="False"/>
+            <when value="true">
+                <param name="output_name" type="text" optional="false" size="50" label="New output file name" />
+            </when>
+        </conditional>
+        <param type="hidden" name="toolname" value="MEAMT_BuildConformation_Tool"/>
+    </inputs>
+    <outputs>
+        <data name="PopFile" format="txt" label="meamt_pop_${SizePopulation.value}.txt">
+            <filter>name_output['chk_name'] == False</filter>
+        </data>
+        <data name="NamedPopFile" format="txt" label="#if $name_output.chk_name == True: $name_output.output_name.value ">
+            <filter>name_output['chk_name'] == True</filter>
+        </data>
+    </outputs>
+    <help>
+
+**What it does**
+
+    </help>
+
+    <citations>
+        <citation type="doi">10.1002/jcc.23315</citation>
+    </citations>
+</tool>

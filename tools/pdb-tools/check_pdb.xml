@@ -1,0 +1,113 @@
+<tool id="check_pdb" name="Check PDB" version="1.0.0">
+    <description>file structure according to GROMACS.</description>
+    <command interpreter="python">
+
+          #if $source.source_select == "pdbs"
+            #set $compressed = 0
+            #set $inputFiles = $source.input_pdbs
+        #else
+            #set $compressed = 1
+            #set $inputFiles = $source.input_compressed
+        #end if
+
+        check_pdb.py
+        -i "$inputFiles"
+        -f "$force_field"
+        -o "$checked"
+        -d "$checked.files_path"
+        -c "$checked.id"
+        -t "$toolname"
+        -r "$__root_dir__"
+        -g "$__new_file_path__"
+        -n
+        #if $source.source_select == "pdbs"
+            #set $names = "'"
+                #for $name in $source.input_pdbs:
+                    $names$name.name
+                    #set $names = ","
+                #end for
+                $names'
+        #else
+            #set $names = "'"
+                #for $name in $source.input_compressed:
+                    $names$name.name
+                    #set $names = ","
+                #end for
+                $names'
+        #end if
+        "$names"
+        -s $compressed
+
+    </command>
+    <inputs>
+        <conditional name="source">
+            <param name="source_select" type="select" label="Source of the PDB Files" help="">
+                <option value="pdbs">PDB Files</option>
+                <option value="compressed">Compressed File</option>
+            </param>
+            <when value="compressed">
+                <param name="input_compressed" type="data" multiple="true" format="zip, gz" label="Compressed file" help="A compressed file with PDB files. This tools does not accept a file with subfolders."/>
+            </when>
+            <when value="pdbs">
+                <param name="input_pdbs" type="data" multiple="true" format="pdb" label="PDB Files" />
+            </when>
+        </conditional>
+        <param name="force_field" type="select" label="Force field" help="">
+            <option value="amber99sb-ildn">AMBER99</option>
+            <option value="charmm27">CHARMM27</option>
+        </param>
+        <param type="hidden" name="toolname" value="CheckPDBTool"/>
+    </inputs>
+    <outputs>
+        <!-- <data name="log" format="txt" label="${toolname}.log.txt"/> -->
+        <data name="checked" format="zip" label="${toolname}.zip"/>
+    </outputs>
+    <help>
+
+.. class:: warningmark
+
+This tool requires *PDB* format or a compressed *(zip, gz)* file.
+
+-----
+
+::
+
+    This tool checks if the PDB file has no residue nomenclature probem to
+    create a topology file .top.
+
+::
+
+    The top file extension stands for topology.
+    It is an ASCII file which is read by grompp program which processes it and creates a binary topology .tpb.
+
+::
+
+    The availables force fields in this tool are:
+
+        - CHARMM27
+        - AMBER99
+
+        The residue nomenclature of the PDB file will be checked using these force field's .rtp files.
+
+::
+
+    If the input PDB file has a problem with atom nomenclature, the GROMACS program will output:
+
+        Exemple:
+        WARNING: atom NH1 is missing in residue ARG 31 in the pdb file.
+
+        And then:
+        Fatal error:
+        There was 1 missing atom in molecule Protein.
+
+        The topology file can not be created if the PDB file has missing residues.
+
+::
+
+    The tool output will be a log file with the GROMACS output.
+
+    </help>
+    <citations>
+        <citation type="doi">10.1002/jcc.20291</citation>
+    </citations>
+</tool>

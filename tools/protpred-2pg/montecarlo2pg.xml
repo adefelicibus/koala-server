@@ -1,0 +1,81 @@
+<tool id="2pg_monte_carlo" name="2PG Monte Carlo Metropolis" version="1.0.0" force_history_refresh="True">
+    <description>Run 2PG Monte Carlo Metrolopis Algorithm</description>
+    <command interpreter="python">
+
+        #if $source_fasta.source_select == "input_ref"
+            #set $SequenceAminoAcidsPathFileName = $source_fasta.input_target
+            #set $from_fasta = 1
+        #else
+            #set $SequenceAminoAcidsPathFileName = $source_fasta.input_text
+            #set $from_fasta = 0
+        #end if
+
+        #if $create_compressed.chk_compress == True
+            #set $output_zip = $pdbs
+        #else
+            #set $output_zip = "None"
+        #end if
+
+        montecarlo2pg.py
+        -i "$SequenceAminoAcidsPathFileName"
+        -s "$MonteCarloSteps"
+        -p "$IniPopFileName"
+        -f "$force_field"
+        -a "$FrequencyMC"
+        -b "$TemperatureMC"
+        -m "$How_Many_Rotation"
+        -w "$from_fasta"
+        -e "$email"
+        -t "$toolname"
+        -r "$__root_dir__"
+        -z $html_file
+        -k "$html_file.files_path"
+        -c "$create_compressed.chk_compress"
+        -d "$output_zip"
+        -x $active_jmol
+        -g $__app__.security.encode_id( '%s' % $html_file.id )
+
+    </command>
+    <inputs>
+        <conditional name="source_fasta">
+            <param name="source_select" type="select" label="Source of the amino acids sequence" help="You can use a file in your history as an input or you can insert your own amino acid sequence.">
+                <option value="input_ref">An upload file</option>
+                <option value="database">Own Sequence</option>
+            </param>
+            <when value="database">
+                <param name="input_text" type="text" optional="false"  area="true" size="5x35" label="Your own aminoacids sequence" />
+            </when>
+            <when value="input_ref">
+                <param name="input_target" type="data" format="fasta" label="Sequence File" />
+            </when>
+        </conditional>
+        <param name="IniPopFileName" type="data" format="pdb" label="PDB File" />
+        <param name="MonteCarloSteps" label="Monte Carlo Steps" type="integer" optional="false" value="3000" min="1"/>
+        <param name="FrequencyMC" label="Frequency MC" type="integer" optional="false" value="10" min="1"/>
+        <param name="TemperatureMC" label="Temperature MC" type="integer" optional="false" value="370" min="1"/>
+        <param name="How_Many_Rotation" label="How many rotation" type="integer" optional="false" value="1" min="1"/>
+        <param name="force_field" type="select" label="Force Field" help="">
+            <option value="charmm27">Charmm27</option>
+            <option value="amber99sb-ildn">AMBER 99</option>
+        </param>
+        <param name="email" type="text" label="User's Email Adress" optional="false" size="30" help="Email address to which the notice will be sent when the run ends"/>
+        <conditional name="create_compressed">
+            <param name="chk_compress" type="boolean" label="Create a compressed file with all the splited files?" help="" checked="False"/>
+        </conditional>
+        <param type="boolean" name="active_jmol" value="false" label="Use Jmol visualization?" help="Jmol offers a 3D visualization of the molecule. You must have JavaScript enabled on your browser."/>
+        <param type="hidden" name="toolname" value="2PG_MC_Metropolis"/>
+    </inputs>
+    <outputs>
+        <data format="html" name="html_file" label="${toolname}.html"/>
+        <data name="pdbs" format="zip" label="${toolname}.zip">
+            <filter>create_compressed['chk_compress'] == True</filter>
+        </data>
+    </outputs>
+    <help>
+
+**What it does**
+
+Run Monte Carlo 2PG algorithm
+
+    </help>
+</tool>

@@ -1,0 +1,51 @@
+<tool id="pdb_download" name="Download PDB" version="1.0.0">
+  <description>file from pdb.org (RCSB)</description>
+  <command interpreter="python">
+
+    pdb_download.py
+      -i
+      #set $pdbid = "'#"
+      #for $i, $s in enumerate( $pdbids )
+          $pdbid${s.pdbid}
+          #set $pdbid = "#"
+      #end for
+      $pdbid'
+      -o "$retrieved_pdb"
+      -d "$retrieved_pdb.files_path"
+      -c "$retrieved_pdb.id"
+      -g "$__new_file_path__"
+      -r "$__root_dir__"
+
+  </command>
+  <inputs>
+
+    <repeat name="pdbids" title="PDBID to be downloaded" default="1" min="1">
+      <param name="pdbid" label="PDBID" type="text" optional="false"/>
+      <!-- file formats: pdb, cif, xml
+         opções: compressed ou uncompressed e only header-->
+    </repeat>
+
+  </inputs>
+  <outputs>
+    <data name="retrieved_pdb" format="data" label="PDBDownload" hidden="True"/>
+  </outputs>
+  <help>
+
+**What it does**
+
+This tool downloads a PDB file from PDB_ according to the PDBID.
+
+You can insert one or several valid PDBIDs.
+
+.. _PDB: http://www.pdb.org
+
+To each PDBID inserted, the output will be a PDB file named with the used PDBID.
+
+-----
+
+.. class:: warningmark
+
+You may have to refresh your history to see the output file.
+
+  </help>
+</tool>

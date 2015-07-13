@@ -1,0 +1,34 @@
+<tool id="build_graph" name="Build graphs" version="1.0.0">
+    <description>from xvg files</description>
+    <command interpreter="python">
+
+        build_graph.py
+          -i "$input_xvg"
+          -n "${input_pdb.name}"
+          -f "$force_field"
+          -o "$new_pdb"
+          -d "$new_pdb.files_path"
+          -r "$__root_dir__"
+
+    </command>
+    <inputs>
+        <param name="xvgfile" type="data" multiple="true" format="xvg" label="XVG Files" />
+        <param name="title" type="text"  label="Graph Title" />
+        <param name="subtitle" type="text"   label="Graph subtitle" />
+        <param name="xaxis" type="text"   label="X Axis title" />
+        <param name="yaxis" type="text"   label="Y Axis title" />
+        <param name="type" type="select" label="Serie type" help="">
+            <option value="line">Line</option>
+            <option value="scatter">Scatter</option>
+        </param>
+        <param type="hidden" name="toolname" value="BuildGraph"/>
+    </inputs>
+    <outputs>
+        <data name="output" format="html" label="%{title}.html"/>
+    </outputs>
+    <help>
+
+Build a graph using Highchart
+
+    </help>
+</tool>

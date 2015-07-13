@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<job_conf>
+    <plugins workers="4">
+        <plugin id="pulsar" type="runner" load="galaxy.jobs.runners.pulsar:PulsarRESTJobRunner">
+            <param id="transport">curl</param>
+        </plugin>
+        <plugin id="local" type="runner" load="galaxy.jobs.runners.local:LocalJobRunner"/>
+    </plugins>
+    <handlers default="handler0">
+        <handler id="handler0" tags="handlers"/>
+    </handlers>
+    <destinations default="local">
+        <destination id="local" runner="local"/>
+        <destination id="lcrcloud2" runner="pulsar">
+            <param id="url">http://lcrcloud2.icmc.usp.br/managers/queue</param>
+            <!-- <param id="url">http://200.144.255.42:8005/managers/queue</param> -->
+            <param id="docker_enabled">true</param>
+            <param id="docker_volumes">$default_file_path:rw</param>
+            <param id="docker_auto_rm">true</param>
+        </destination>
+        <destination id="lcrcloud3" runner="pulsar">
+            <param id="url">http://lcrcloud3.icmc.usp.br/managers/queue</param>
+            <!-- <param id="url">http://200.144.255.42:8006/managers/queue</param> -->
+            <param id="docker_enabled">true</param>
+            <param id="docker_volumes">$default_file_path:rw</param>
+            <param id="docker_auto_rm">true</param>
+        </destination>
+        <destination id="lcrcloud4" runner="pulsar">
+            <param id="url">http://lcrcloud4.icmc.usp.br/managers/queue</param>
+            <!-- <param id="url">http://200.144.255.42:8007/managers/queue</param> -->
+            <param id="docker_enabled">true</param>
+            <param id="docker_volumes">$default_file_path:rw</param>
+            <param id="docker_auto_rm">true</param>
+        </destination>
+        <destination id="lcrcloud5" runner="pulsar">
+            <param id="url">http://lcrcloud5.icmc.usp.br/managers/queue</param>
+            <!-- <param id="url">http://200.144.255.42:8011/managers/queue</param> -->
+            <param id="docker_enabled">true</param>
+            <param id="docker_volumes">$default_file_path:rw</param>
+            <param id="docker_auto_rm">true</param>
+        </destination>
+    </destinations>
+    <tools>
+        <tool id="upload1" destination="local"/>
+        <tool id="2pg_mono" destination="lcrcloud2"/>
+        <tool id="2pg_monte_carlo" destination="lcrcloud3"/>
+        <tool id="2pg_nsga2" destination="lcrcloud4"/>
+        <tool id="2pg_random" destination="lcrcloud5"/>
+    </tools>
+    <limits>
+        <limit type="registered_user_concurrent_jobs">10</limit>
+        <limit type="unregistered_user_concurrent_jobs">5</limit>
+        <limit type="job_walltime">24:00:00</limit>
+        <limit type="concurrent_jobs" id="local">10 </limit>
+    </limits>
+</job_conf>
