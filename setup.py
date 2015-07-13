@@ -118,8 +118,10 @@ def build_local():
     local('sudo apt-get -y install postgresql postgresql-contrib')
     local('sudo pip install virtualenvwrapper')
     local('sudo apt-get -y install openmpi-bin openmpi-doc libopenmpi-dev')
+    local('sudo apt-get -y install automake')
+    local('sudo apt-get -y install nginx supervisor')
+    local('sudo apt-get -y install mercurial')
 
-    local('sudo apt-get -y install build-essential automake')
     local('sudo apt-get -y install libpcre3-dev')
     local('sudo apt-get -y install openssl')
     local('sudo apt-get -y install libffi-dev')
@@ -148,7 +150,7 @@ def setPostgres(user_senha):
     local('sudo -u postgres psql')
     local('CREATE USER %s SUPERUSER INHERIT CREATEDB CREATEROLE;' % user)
     local("ALTER USER %s PASSWORD ''%s'';" % (user, user_senha))
-    local('create database %sdb --owner %s;' % (user, user))
+    local('CREATE DATABASE %sdb OWNER %s;' % (user, user))
     local('\q')
     local('sudo /etc/init.d/postgresql restart')
 
@@ -207,6 +209,68 @@ def installPyHighcharts():
     local('sudo ln -s /home/%s/programs/PyHighcharts/ PyHighcharts' % user)
 
 
+# clone Galaxy
+def cloneGalaxy():
+    """ Criar novo projeto local """
+    log('Criando novo projeto')
+
+    local('echo "clonando projeto %s"' % galaxy_project)
+    local('git clone %s %s%s' % (galaxy_repository, folder_local, galaxy_project))
+    local('cd %s%s' % (folder_local, galaxy_project))
+    local('mkvirtualenv %s' % galaxyproject)
+    local('setvirtualenvproject')
+    local('pip install -r requirements.txt')
+
+
+# clone Koala
+def cloneKoala():
+    """ Criar novo projeto local """
+    log('Criando novo projeto')
+
+    local('echo "clonando projeto %s"' % koala_project)
+    local('git clone %s %s%s' % (koala_repository, folder_local, koala_project))
+    local('cd %s%s' % (folder_local, koala_project))
+    local('mkvirtualenv %s' % koala_project)
+    local('setvirtualenvproject')
+    local('pip install -r requirements.txt')
+
+
+def buildEnvKoala():
+    local('pip install -U distribute')
+    local('pip install pycrypto')
+    local('pip install natsort')
+    local('pip install beautifulsoup4')
+
+def function():
+ln -s /home/koala/koala-server/config/datatypes_conf.xml /home/koala/galaxy/config/datatypes_conf.xml
+ln -s /home/koala/koala-server/config/job_conf.xml /home/koala/galaxy/config/job_conf.xml
+ln -s /home/koala/koala-server/config/reports_wsgi.ini /home/koala/galaxy/config/reports_wsgi.ini
+ln -s /home/koala/koala-server/config/tool_conf.xml /home/koala/galaxy/config/tool_conf.xml
+rm /home/koala/galaxy/config/integrated_tool_panel.xml
+ln -s /home/koala/koala-server/config/integrated_tool_panel.xml /home/koala/galaxy/config/integrated_tool_panel.xml
+
+ln -s /home/koala/koala-server/datatypes/confFiles.py /home/koala/galaxy/lib/galaxy/datatypes/confFiles.py
+ln -s /home/koala/koala-server/datatypes/gromacs_datatype.py /home/koala/galaxy/lib/galaxy/datatypes/gromacs_datatype.py
+ln -s /home/koala/koala-server/datatypes/molFiles.py /home/koala/galaxy/lib/galaxy/datatypes/molFiles.py
+
+ln -s /home/koala/koala-server/static/Bio-200.png /home/koala/galaxy/static/Bio-200.png
+ln -s /home/koala/koala-server/static/koala.css /home/koala/galaxy/static/koala.css
+ln -s /home/koala/koala-server/static/LOGO-ICMC-RGB-300.png /home/koala/galaxy/static/LOGO-ICMC-RGB-300.png
+ln -s /home/koala/koala-server/static/usp-logo-300px.png /home/koala/galaxy/static/usp-logo-300px.png
+rm /home/koala/galaxy/static/welcome.html
+ln -s /home/koala/koala-server/static/welcome.html /home/koala/galaxy/static/welcome.html
+
+ln -s /home/koala/koala-server/tools/analysis/ /home/koala/galaxy/tools/analysis
+ln -s /home/koala/koala-server/tools/gromacs-tools/ /home/koala/galaxy/tools/gromacs-tools
+ln -s /home/koala/koala-server/tools/meamt/ /home/koala/galaxy/tools/meamt
+ln -s /home/koala/koala-server/tools/pdb-tools/ /home/koala/galaxy/tools/pdb-tools
+ln -s /home/koala/koala-server/tools/protpred-2pg/ /home/koala/galaxy/tools/protpred-2pg
+ln -s /home/koala/koala-server/tools/protpred-eda/ /home/koala/galaxy/tools/protpred-eda
+ln -s /home/koala/koala-server/tools/quark/ /home/koala/galaxy/tools/quark
+ln -s /home/koala/koala-server/tools/robetta/ /home/koala/galaxy/tools/robetta
+
+
+
 # configura uma maquina local ubuntu
 def setupLocal():
     """Configura uma maquina local Ubuntu para trabalhar python/django"""
@@ -228,30 +292,7 @@ def setupLocal():
     # cloneKoala()
 
 
-# clone Galaxy
-def cloneGalaxy():
-    """ Criar novo projeto local """
-    log('Criando novo projeto')
 
-    local('echo "clonando projeto %s"' % galaxy_project)
-    local('git clone %s %s%s' % (galaxy_repository, folder_local, galaxy_project))
-    local('cd %s%s' % (folder_local, galaxy_project))
-    local('mkvirtualenv %s' % folder_local)
-    local('setvirtualenvproject')
-    local('pip install -r requirements.txt')
-
-
-# clone Koala
-def cloneKoala():
-    """ Criar novo projeto local """
-    log('Criando novo projeto')
-
-    local('echo "clonando projeto %s"' % koala_project)
-    local('git clone %s %s%s' % (koala_repository, folder_local, koala_project))
-    local('cd %s%s' % (folder_local, koala_project))
-    local('mkvirtualenv %s' % folder_local)
-    local('setvirtualenvproject')
-    local('pip install -r requirements.txt')
 
 # --------------------------------------------------------
 # SERVIDOR
