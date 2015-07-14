@@ -5,7 +5,7 @@ import __main__
 __main__.pymol_argv = ['pymol', '-qc']  # Quiet and no GUI
 
 import os
-import classe
+from koala import classe
 import optparse
 import subprocess
 import datetime

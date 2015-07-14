@@ -269,6 +269,8 @@ ln -s /home/koala/koala-server/tools/protpred-eda/ /home/koala/galaxy/tools/prot
 ln -s /home/koala/koala-server/tools/quark/ /home/koala/galaxy/tools/quark
 ln -s /home/koala/koala-server/tools/robetta/ /home/koala/galaxy/tools/robetta
 
+ln -s /home/koala/koala-server/scripts/check_structures_gromacs.py /home/koala/galaxy/scripts/check_structures_gromacs.py
+ln -s /home/koala/koala-server/scripts/rename_atoms.py /home/koala/galaxy/scripts/rename_atoms.py
 
 
 # configura uma maquina local ubuntu

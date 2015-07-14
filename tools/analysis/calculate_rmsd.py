@@ -7,7 +7,7 @@ __main__.pymol_argv = ['pymol', '-qc']  # Quiet and no GUI
 import pymol
 from time import sleep
 import os
-import classe
+from koala import classe
 import optparse
 import subprocess
 import time
@@ -87,7 +87,7 @@ class CalculateRMSD(object):
 
         try:
             cl = [
-                '%s/tools/analysis/rename_atoms.py' %
+                '%s/scripts/rename_atoms.py' %
                 self.opts.galaxyroot, path, path_gromacs, '&']
 
             retProcess = subprocess.Popen(cl, 0, None, None, None, False)
@@ -110,7 +110,7 @@ class CalculateRMSD(object):
 
         try:
             cl = [
-                '%s/tools/analysis/check_structures_gromacs.py' %
+                '%s/scripts/check_structures_gromacs.py' %
                 self.opts.galaxyroot, path, path_gromacs, '&']
 
             retProcess = subprocess.Popen(cl, 0, None, None, None, False)

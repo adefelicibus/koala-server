@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
-import classe
+from koala import classe
 import optparse
 import subprocess
 import cProfile

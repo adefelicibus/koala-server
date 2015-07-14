@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
-import classe
+from koala import classe
 import optparse
 from subprocess import Popen, PIPE
 import zipfile

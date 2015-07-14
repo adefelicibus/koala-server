@@ -564,7 +564,8 @@ class IcmcGalaxy(object):
         return self.pathExecution
 
     def getPathExecute(self):  # the folder where all the execution folders run
-        return "/home/%s/execute/" % self.getLoggedUser()
+        # return "/home/%s/execute/" % self.getLoggedUser()
+        return "/dados/%s/execute/" % self.getLoggedUser()
 
     def getPathAlgorithms(self, framework):
         return "/home/%s/programs/%s/" % (self.getLoggedUser(), framework)

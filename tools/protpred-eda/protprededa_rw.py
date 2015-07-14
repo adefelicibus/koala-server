@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import classe
+from koala import classe
 import argparse
 import cProfile
 import subprocess
