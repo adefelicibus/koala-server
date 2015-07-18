@@ -51,8 +51,8 @@ class NSGAII2PG(object):
             <head> <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
             <meta name="generator" content="Galaxy %s tool output - see http://g2.trac.bx.psu.edu/" />
             <title></title>
-            <link rel="stylesheet" href="../../../static/galaxy_icmc.css" type="text/css" />
-            <link rel="stylesheet" href="../../../static/style/base.css" type="text/css" />
+            <link rel="stylesheet" href="/static/koala.css" type="text/css" />
+            <link rel="stylesheet" href="/static/style/base.css" type="text/css" />
             <script type="text/javascript"
             src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
             <script src="http://code.highcharts.com/highcharts.js"></script>
@@ -330,15 +330,15 @@ class NSGAII2PG(object):
             <head> <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
             <meta name="generator" content="Galaxy %s tool output - see http://g2.trac.bx.psu.edu/" />
             <title></title>
-            <link rel="stylesheet" href="../../../static/galaxy_icmc.css" type="text/css" />
-            <link rel="stylesheet" href="../../../static/style/base.css" type="text/css" />
+            <link rel="stylesheet" href="/static/koala.css" type="text/css" />
+            <link rel="stylesheet" href="/static/style/base.css" type="text/css" />
             <script type="text/javascript"
             src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
             <script src="http://code.highcharts.com/highcharts.js"></script>
             <script src="http://code.highcharts.com/highcharts-more.js"></script>
             <script src="http://code.highcharts.com/modules/exporting.js"></script>
 
-            <script type="text/javascript" src="../../../static/js/JSmol.min.js"></script>
+            <script type="text/javascript" src="/static/js/JSmol.min.js"></script>
 
             <script type="text/javascript">
 

@@ -242,6 +242,8 @@ def buildEnvKoala():
     local('pip install beautifulsoup4')
 
 def function():
+rm /home/koala/galaxy/config/galaxy.ini
+ln -s /home/koala/koala-server/config/galaxy.ini /home/koala/galaxy/config/galaxy.ini
 ln -s /home/koala/koala-server/config/datatypes_conf.xml /home/koala/galaxy/config/datatypes_conf.xml
 ln -s /home/koala/koala-server/config/job_conf.xml /home/koala/galaxy/config/job_conf.xml
 ln -s /home/koala/koala-server/config/reports_wsgi.ini /home/koala/galaxy/config/reports_wsgi.ini
