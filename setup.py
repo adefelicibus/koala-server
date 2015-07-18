@@ -273,6 +273,11 @@ ln -s /home/koala/koala-server/scripts/check_structures_gromacs.py /home/koala/g
 ln -s /home/koala/koala-server/scripts/rename_atoms.py /home/koala/galaxy/scripts/rename_atoms.py
 
 
+PYTHONPATH="${PYTHONPATH}:/usr/lib/python2.7/dist-packages/pymol"
+PYTHONPATH="${PYTHONPATH}:/usr/lib/python2.7/dist-packages/"
+PYTHONPATH="${PYTHONPATH}:/usr/local/lib/python2.7/dist-packages/"
+export PYTHONPATH
+
 # configura uma maquina local ubuntu
 def setupLocal():
     """Configura uma maquina local Ubuntu para trabalhar python/django"""
