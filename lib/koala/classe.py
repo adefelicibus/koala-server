@@ -494,7 +494,8 @@ class IcmcGalaxy(object):
             else:
                 raise Exception("There is no defined framework.\n")
         except Exception, e:
-            raise Exception("Error while setting parameter: \n%s" % e)
+            self.ShowErrorMessage("Error when setParameter\n%s" % e)
+            # raise Exception("Error while setting parameter: \n%s" % e)
 
     def getParameterValue(self, key, optMethod=None):
         try:
@@ -530,24 +531,31 @@ class IcmcGalaxy(object):
             else:
                 raise Exception("There is no defined framework.\n")
         except Exception, e:
-            raise Exception("Error while getting parameter value: %s" % e)
+            self.ShowErrorMessage("Error when getParameterValue\n%s" % e)
+            # raise Exception("Error while getting parameter value: %s" % e)
 
     def getLoggedUser(self):
-        return getpass.getuser()
+        try:
+            return getpass.getuser()
+        except Exception, e:
+            self.ShowErrorMessage("Error when setCommand\n%s" % e)
 
     def getConfigurationFile(self, filename):
         # return '%s%s' % (self.getPathExecution(), filename)
         return '%s' % filename
 
     def setCommand(self, framework, algorithm):
-        global command
-        if(self.framework == '2PG'):
-            self.command = '%ssrc/%s' % (
-                self.getPathAlgorithms(framework), algorithm)
-        elif(self.framework == 'MEAMT'):
-            self.command = '%s%s' % (self.getPathAlgorithms(framework), algorithm)
-        else:
-            self.command = '%s%s' % (self.getPathExecute(), algorithm)
+        try:
+            global command
+            if(self.framework == '2PG'):
+                self.command = '%ssrc/%s' % (
+                    self.getPathAlgorithms(framework), algorithm)
+            elif(self.framework == 'MEAMT'):
+                self.command = '%s%s' % (self.getPathAlgorithms(framework), algorithm)
+            else:
+                self.command = '%s%s' % (self.getPathExecute(), algorithm)
+        except Exception, e:
+            self.ShowErrorMessage("Error when setCommand\n%s" % e)
 
     def getCommand(self):
         return self.command
@@ -564,38 +572,53 @@ class IcmcGalaxy(object):
         return self.pathExecution
 
     def getPathExecute(self):  # the folder where all the execution folders run
-        # return "/home/%s/execute/" % self.getLoggedUser()
-        return "/dados/%s/execute/" % self.getLoggedUser()
+        try:
+            return "/dados/%s/execute/" % self.getLoggedUser()
+        except Exception, e:
+            self.ShowErrorMessage("Error when getPathExecute\n%s" % e)
 
     def getPathAlgorithms(self, framework):
-        return "/home/%s/programs/%s/" % (self.getLoggedUser(), framework)
+        try:
+            return "/home/%s/programs/%s/" % (self.getLoggedUser(), framework)
+        except Exception, e:
+            self.ShowErrorMessage("Error when getPathAlgorithms\n%s" % e)
 
     def ValidateEmail(self, email):
-        email = email.replace('__at__', '@')
+        try:
+            email = email.replace('__at__', '@')
 
-        if not(re.match('(.+)@(.+)\.(.+)', email, re.IGNORECASE)):
-            raise Exception("Invalid email address. Please, insert a valid email adress.")
+            if not(re.match('(.+)@(.+)\.(.+)', email, re.IGNORECASE)):
+                raise Exception("Invalid email address. Please, insert a valid email adress.")
 
-        return email
+            return email
+
+        except Exception, e:
+            self.ShowErrorMessage("Error when ValidateEmail\n%s" % e)
 
     def CreateExecutionDirectory(self, email=None):
-        now = datetime.datetime.now()
-        tupla = now.timetuple()
-        rand = random.randint(0, 1000)
-        try:   # dia        #mes        #ano            #hora       #min        #seg
-            if email is None:
-                nome_diretorio = str(tupla[2]) + str(tupla[1]) + str(tupla[0]) \
-                    + "_" + str(tupla[3]) + str(tupla[4]) + str(tupla[5]) + "_" + str(rand) + "/"
-            else:
-                nome_diretorio = email + str(tupla[2]) + str(tupla[1]) + str(tupla[0]) \
-                    + "_" + str(tupla[3]) + str(tupla[4]) + str(tupla[5]) + "_" + str(rand) + "/"
-            os.mkdir(os.path.join(self.getPathExecute(), nome_diretorio))
-            os.chmod(os.path.join(self.getPathExecute(), nome_diretorio), stat.S_IRWXU)
-        except Exception, e:
-            raise Exception("Error while creating the execution directory!\n%s" % e)
+        try:
+            now = datetime.datetime.now()
+            tupla = now.timetuple()
+            rand = random.randint(0, 1000)
 
-        self.pathExecution = nome_diretorio
-        return nome_diretorio
+            try:   # dia        #mes        #ano            #hora       #min        #seg
+                if email is None:
+                    nome_diretorio = str(tupla[2]) + str(tupla[1]) + str(tupla[0]) \
+                        + "_" + str(tupla[3]) + str(tupla[4]) + str(tupla[5]) + "_" + str(rand) + "/"
+                else:
+                    nome_diretorio = email + str(tupla[2]) + str(tupla[1]) + str(tupla[0]) \
+                        + "_" + str(tupla[3]) + str(tupla[4]) + str(tupla[5]) + "_" + str(rand) + "/"
+                os.mkdir(os.path.join(self.getPathExecute(), nome_diretorio))
+                os.chmod(os.path.join(self.getPathExecute(), nome_diretorio), stat.S_IRWXU)
+            except Exception, e:
+                self.ShowErrorMessage("Error when CreateExecutionDirectory\n%s" % e)
+                # raise Exception("Error while creating the execution directory!\n%s" % e)
+
+            self.pathExecution = nome_diretorio
+            return nome_diretorio
+
+        except Exception, e:
+            self.ShowErrorMessage("Error when CreateExecutionDirectory\n%s" % e)
 
     def CreateLocalPopFile(self, path, pop_file):
         try:
@@ -625,7 +648,8 @@ class IcmcGalaxy(object):
                 return ind
 
         except Exception, e:
-            raise Exception("Error while creating the population file!\n%s" % e)
+            self.ShowErrorMessage("Error when CreateLocalPopFile\n%s" % e)
+            # raise Exception("Error while creating the population file!\n%s" % e)
 
     def CreateLocalFastaFile(self, path, type_input, fasta_file, tool):
         try:
@@ -718,7 +742,8 @@ class IcmcGalaxy(object):
             return sequence
 
         except Exception, e:
-            raise Exception("Error while creating the local fasta file!\n%s" % e)
+            self.ShowErrorMessage("Error when CreateLocalFastaFile\n%s" % e)
+            # raise Exception("Error while creating the local fasta file!\n%s" % e)
 
     def CreateConfigurationFile(self, path):
         try:
@@ -810,7 +835,8 @@ class IcmcGalaxy(object):
                 arq.close()
 
         except Exception, e:
-            raise Exception("Error while creating the configuration file!\n%s" % e)
+            self.ShowErrorMessage("Error when CreateConfigurationFile\n%s" % e)
+            # raise Exception("Error while creating the configuration file!\n%s" % e)
 
     def getMessageEmail(self, tool_name):
         try:
@@ -874,7 +900,8 @@ class IcmcGalaxy(object):
                 # Desconecta do servidor
                 smtp.close()
         except Exception, e:
-            raise Exception("Error while sending email!\n%s" % e)
+            self.ShowErrorMessage("Error when SendEmail:\n%s" % e)
+            # raise Exception("Error while sending email!\n%s" % e)
 
     def ShowErrorMessage(self, msg):
         error = sys.__stderr__
@@ -912,30 +939,35 @@ class IcmcGalaxy(object):
                     if not(re.search(r'\w+@\w+', arquivo)) and not(re.search(r'\d+_', arquivo)):
                         shutil.copytree(arquivo, os.path.join(new_path, arquivo.split('/')[-1]))
         except Exception, e:
-            raise Exception("Error while copying the necessary files!\n%s" % e)
+            self.ShowErrorMessage("Error when CopyNecessaryFiles:\n%s" % e)
+            # raise Exception("Error while copying the necessary files!\n%s" % e)
 
     def ExecuteProgram(
             self, program, config, path_execution, path_output,
             tool, email, framework='2PG', galaxydir="None", outputID="None"):
-        stdout_file = open("%sstdout.txt" % self.getPathExecution(), "wr")
-        retProcess = None
-        retProcess = subprocess.Popen([
-            'nohup',
-            program,
-            self.getCommand(),
-            config,
-            path_execution,
-            galaxydir,
-            path_output,
-            outputID,
-            tool,
-            framework,
-            email,
-            '&'],
-            stdout=stdout_file, stderr=subprocess.STDOUT, shell=False)
+        try:
+            stdout_file = open("%sstdout.txt" % self.getPathExecution(), "wr")
+            retProcess = None
+            retProcess = subprocess.Popen([
+                'nohup',
+                program,
+                self.getCommand(),
+                config,
+                path_execution,
+                galaxydir,
+                path_output,
+                outputID,
+                tool,
+                framework,
+                email,
+                '&'],
+                stdout=stdout_file, stderr=subprocess.STDOUT, shell=False)
 
-        if retProcess is not None:
-            pass
+            if retProcess is not None:
+                pass
+
+        except Exception, e:
+            self.ShowErrorMessage("Error when ExecuteProgram:\n%s" % e)
 
     def getResultFiles(self, path, tool):
         try:
@@ -1102,7 +1134,8 @@ class IcmcGalaxy(object):
                     filesToHtml.append(os.path.join(path, arq))
             return resultFile, filesToHtml
         except Exception, e:
-            raise Exception("Error while getting result files: \n%s" % e)
+            self.ShowErrorMessage("Error when getResultFiles:\n%s" % e)
+            # raise Exception("Error while getting result files: \n%s" % e)
 
     def copyFilesToExecuteFolder(self, path):
         try:
@@ -1118,7 +1151,7 @@ class IcmcGalaxy(object):
                         dst = os.path.join(path, file_name)
                         shutil.copy(src, dst)
         except Exception, e:
-            self.ShowErrorMessage(str(e))
+            self.ShowErrorMessage("Error when copyFilesToExecuteFolder:\n%s" % e)
 
     def zip_folder(self, folder_path, output_path):
         """Zip the contents of an entire folder (with that folder included
@@ -1142,7 +1175,8 @@ class IcmcGalaxy(object):
                     zip_file.write(absolute_path, relative_path)
             zip_file.close()
         except Exception, e:
-            raise Exception("Error while zipping folder: \n%s" % e)
+            self.ShowErrorMessage("Error when zipFolder:\n%s" % e)
+            # raise Exception("Error while zipping folder: \n%s" % e)
 
     def listDirectory(self, directory, ereg=None):
         from natsort import natsorted
@@ -1161,7 +1195,8 @@ class IcmcGalaxy(object):
             #                 if os.path.isdir(f) and (re.search(r'out', f))]
             return natsorted(fileList)
         except Exception, e:
-            raise Exception("Error while listing the directory.\n%s" % e)
+            self.ShowErrorMessage("Error when listDirectory:\n%s" % e)
+            # raise Exception("Error while listing the directory.\n%s" % e)
 
     def sendOutputResults(self, path_output, file_output, file_result):
         try:
@@ -1170,14 +1205,16 @@ class IcmcGalaxy(object):
             os.system(copia)
             # shutil.copy(arquivo, new_path)
         except Exception, e:
-            raise Exception("Error while sending output files: \n%s" % e)
+            self.ShowErrorMessage("Error when sendOutputResults:\n%s" % e)
+            # raise Exception("Error while sending output files: \n%s" % e)
 
     def sendOutputFilesHtml(self, path, files):  # copia os arquivos listados em files para o path
         try:
             for f in files:
                 shutil.copy(f, path)
         except Exception, e:
-            raise Exception("Error: %s" % e)
+            self.ShowErrorMessage("Error when sendOutputFilesHtml:\n%s" % e)
+            # raise Exception("Error: %s" % e)
 
     def format_fitness(self, fitness, tool=None):
         try:
@@ -1209,8 +1246,8 @@ class IcmcGalaxy(object):
 
                 return comb
         except Exception, e:
-            raise Exception("Error: %s" % e)
-
+            self.ShowErrorMessage("Error when FormatFitness:\n%s" % e)
+            # raise Exception("Error: %s" % e)
 
 # metodo para separar os modelos dentro de um PDB
     def parse_PDB(self, path, pdb_file, maxNumber=None, newName=None):
@@ -1250,7 +1287,8 @@ class IcmcGalaxy(object):
             return new_pdbs
 
         except Exception, e:
-            raise Exception("Error: %s" % e)
+            self.ShowErrorMessage("Error when parsePDB:\n%s" % e)
+            # raise Exception("Error: %s" % e)
 
     def mergePDB(self, path, pdbs):
         try:
@@ -1294,7 +1332,8 @@ class IcmcGalaxy(object):
             return pdbf
 
         except Exception, e:
-            raise Exception("Error: %s" % e)
+            self.ShowErrorMessage("Error when mergePDB:\n%s" % e)
+            # raise Exception("Error: %s" % e)
 
     def sendMultipleOutputs(self, path, files, path_output, outputID):
         try:
@@ -1309,16 +1348,21 @@ class IcmcGalaxy(object):
                 copia = "cp " + f + " " + dest
                 os.system(copia)
         except Exception, e:
-            raise Exception("Error sendMultipleOutputs: %s" % e)
+            self.ShowErrorMessage("Error when sendMultipleOutputs:\n%s" % e)
+            # raise Exception("Error sendMultipleOutputs: %s" % e)
 
     def openURL(self, url, path_output, file_name):
-
-        # Download the file from `url` and save it locally under `file_name`:
-        response = urllib2.urlopen(url)
-        file_result = os.path.join(path_output, file_name)
-        out_file = open(file_result, 'wb')
-        out_file.write(response.read())
-        out_file.close()
+        """
+        Download the file from `url` and save it locally under `file_name`
+        """
+        try:
+            response = urllib2.urlopen(url)
+            file_result = os.path.join(path_output, file_name)
+            out_file = open(file_result, 'wb')
+            out_file.write(response.read())
+            out_file.close()
+        except Exception, e:
+            self.ShowErrorMessage("Error when openURL:\n%s" % e)
 
     def extractZipFile(self, zipFile, path):
         try:
@@ -1336,7 +1380,8 @@ class IcmcGalaxy(object):
                     with source, target:
                         shutil.copyfileobj(source, target)
         except Exception, e:
-            raise Exception("Error on extractZipFile: %s" % e)
+            self.ShowErrorMessage("Error when extractZipFile:\n%s" % e)
+            # raise Exception("Error on extractZipFile: %s" % e)
 
     def extractGzFile(self, gzfile, path):
         try:
@@ -1348,7 +1393,8 @@ class IcmcGalaxy(object):
             # TODO: Verificar se o arquivo tem folder e tratar
 
         except Exception, e:
-            raise Exception("Error on extractGzFile: %s" % e)
+            self.ShowErrorMessage("Error when extractGzFile:\n%s" % e)
+            # raise Exception("Error on extractGzFile: %s" % e)
 
     def copyPDBsFromInput(
             self,
@@ -1356,32 +1402,35 @@ class IcmcGalaxy(object):
             path_to,
             inputnames,
             inputPDBs):
+        try:
+            nomes_arquivos = []
+            for n in inputnames.split(','):
+                if len(n) > 0:
+                    name, ext = os.path.splitext(n)
+                    name = name.replace(' ', '-').replace('(', '').replace(')', '')
+                    if ext.find('.pdb') < 0:
+                        raise Exception('%s is not a PDB file' % name)
+                    else:
+                        if not ext.endswith('.pdb'):
+                            extname = ext.replace(
+                                '.pdb', '').strip().replace('(', '-').replace(')', '')
+                            new_name = name + extname + '.pdb'
+                            nomes_arquivos.append(new_name)
 
-        nomes_arquivos = []
-        for n in inputnames.split(','):
-            if len(n) > 0:
-                name, ext = os.path.splitext(n)
-                name = name.replace(' ', '-').replace('(', '').replace(')', '')
-                if ext.find('.pdb') < 0:
-                    raise Exception('%s is not a PDB file' % name)
-                else:
-                    if not ext.endswith('.pdb'):
-                        extname = ext.replace('.pdb', '').strip().replace('(', '-').replace(')', '')
-                        new_name = name + extname + '.pdb'
-                        nomes_arquivos.append(new_name)
-
-        arquivos = []
-        arqs = inputPDBs.partition(',')
-        arquivos.append(arqs[0])
-        while(len(arqs[2]) > 0):
-            arqs = arqs[2].partition(',')
+            arquivos = []
+            arqs = inputPDBs.partition(',')
             arquivos.append(arqs[0])
+            while(len(arqs[2]) > 0):
+                arqs = arqs[2].partition(',')
+                arquivos.append(arqs[0])
 
-        for i, n in enumerate(nomes_arquivos):
-            link_name = os.path.join(path_to, os.path.basename(n))
-            if not os.path.exists(link_name):
-                os.symlink(arquivos[i], link_name)
-                os.system("cp %s %s" % (link_name, path_execute))
+            for i, n in enumerate(nomes_arquivos):
+                link_name = os.path.join(path_to, os.path.basename(n))
+                if not os.path.exists(link_name):
+                    os.symlink(arquivos[i], link_name)
+                    os.system("cp %s %s" % (link_name, path_execute))
+        except Exception, e:
+            self.ShowErrorMessage("Error when copyPDBsFromInput:\n%s" % e)
 
     def clearPathExecute(self, path):
         try:
@@ -1399,18 +1448,22 @@ class IcmcGalaxy(object):
         """
         format a nice file size string
         """
-        size = ''
-        fp = os.path.join(outpath, fpath)
-        if os.path.isfile(fp):
-            size = '0 B'
-            n = float(os.path.getsize(fp))
-            if n > 2**20:
-                size = '%1.1f MB' % (n/2**20)
-            elif n > 2**10:
-                size = '%1.1f KB' % (n/2**10)
-            elif n > 0:
-                size = '%d B' % (int(n))
-        return size
+        try:
+            size = ''
+            fp = os.path.join(outpath, fpath)
+            if os.path.isfile(fp):
+                size = '0 B'
+                n = float(os.path.getsize(fp))
+                if n > 2**20:
+                    size = '%1.1f MB' % (n/2**20)
+                elif n > 2**10:
+                    size = '%1.1f KB' % (n/2**10)
+                elif n > 0:
+                    size = '%d B' % (int(n))
+            return size
+        except Exception, e:
+            self.ClassColection.ShowErrorMessage(
+                "Error on getFileSize\n%s" % e)
 
     def compressFiles(self, files, path, toolname):
         # TODO: validar se files is a list
