@@ -121,19 +121,20 @@ def build_local():
     local('sudo apt-get -y install automake')
     local('sudo apt-get -y install nginx supervisor')
     local('sudo apt-get -y install mercurial')
-
-    local('sudo apt-get -y install libpcre3-dev')
-    local('sudo apt-get -y install openssl')
-    local('sudo apt-get -y install libffi-dev')
-    local('sudo apt-get -y install fort77')
-    local('sudo apt-get -y install cmake')
     local('sudo apt-get -y install libcurl4-gnutls-dev')
-    local('sudo apt-get -y install libc6-dev libssl-dev libexpat1-dev libgl1-mesa-dev libqt4-dev')
-    local('sudo apt-get -y install libglew-dev freeglut3-dev libpng-dev')
-    local('sudo apt-get -y install libfreetype6-dev')
-    local('sudo apt-get -y install terminator')
-    local('sudo apt-get -y install gsl-bin libgsl0-dev')
-    local('sudo pip install numpy')
+    local('sudo apt-get -y install libffi-dev')
+    local('sudo apt-get -y install python-numpy')
+
+    # local('sudo apt-get -y install libpcre3-dev')
+    # local('sudo apt-get -y install openssl')
+    # local('sudo apt-get -y install fort77')
+    # local('sudo apt-get -y install cmake')
+    # local('sudo apt-get -y install libc6-dev libssl-dev libexpat1-dev libgl1-mesa-dev libqt4-dev')
+    # local('sudo apt-get -y install libglew-dev freeglut3-dev libpng-dev')
+    # local('sudo apt-get -y install libfreetype6-dev')
+    # local('sudo apt-get -y install terminator')
+    # local('sudo apt-get -y install gsl-bin libgsl0-dev')
+    # local('sudo pip install numpy')
 
 
 def installzlib():
@@ -235,11 +236,14 @@ def cloneKoala():
     local('pip install -r requirements.txt')
 
 
-def buildEnvKoala():
+def buildEnvKoala():  # tem que instalar na env do galaxy tbm
     local('pip install -U distribute')
     local('pip install pycrypto')
     local('pip install natsort')
     local('pip install beautifulsoup4')
+    local('pip install certifi')
+    local('pip install pyopenssl ndg-httpsclient pyasn1')
+    local('pip install pycurl')
 
 def function():
 rm /home/koala/galaxy/config/galaxy.ini
@@ -275,9 +279,10 @@ ln -s /home/koala/koala-server/scripts/check_structures_gromacs.py /home/koala/g
 ln -s /home/koala/koala-server/scripts/rename_atoms.py /home/koala/galaxy/scripts/rename_atoms.py
 
 
-PYTHONPATH="${PYTHONPATH}:/usr/lib/python2.7/dist-packages/pymol"
 PYTHONPATH="${PYTHONPATH}:/usr/lib/python2.7/dist-packages/"
+PYTHONPATH="${PYTHONPATH}:/usr/lib/python2.7/dist-packages/pymol/"
 PYTHONPATH="${PYTHONPATH}:/usr/local/lib/python2.7/dist-packages/"
+PYTHONPATH="${PYTHONPATH}:/usr/local/bin/pymol/modules/"
 export PYTHONPATH
 
 # configura uma maquina local ubuntu
@@ -319,6 +324,15 @@ def clonePulsar():
     local('mkvirtualenv %s' % folder_local)
     local('setvirtualenvproject')
     local('pip install -r requirements.txt')
+
+def buildEnvPulsar():  # tem que instalar na env do galaxy tbm
+    local('pip install -U distribute')
+    local('pip install pycrypto')
+    local('pip install natsort')
+    local('pip install beautifulsoup4')
+    local('pip install certifi')
+    local('pip install pyopenssl ndg-httpsclient pyasn1')
+    local('pip install pycurl')
 
 
 # update no servidor
