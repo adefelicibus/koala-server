@@ -17,6 +17,7 @@ from decimal import *
 import zipfile
 import gzip
 import cProfile
+import math
 
 pymol.finish_launching()
 
