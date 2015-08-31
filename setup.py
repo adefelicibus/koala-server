@@ -2,7 +2,7 @@
 
 import os
 from fabric.api import *
-from fabric.contrib.files import upload_template
+from fabric.contrib.files import upload_template, append
 
 CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
 
@@ -13,7 +13,7 @@ CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
 # SERVIDOR
 user = 'koala'
 host = '200.144.255.35'
-# chave = '' # caminho da chave nome_arquivo.pem
+# chave = '/home/adefelicibus/.ssh/id_rsa'  # caminho da chave nome_arquivo (id_rsa)
 
 #  LOCAL
 folder_local = '~/koala/'
@@ -33,31 +33,11 @@ koala_user = 'adefelicibus'
 koala_project = 'koala-server'
 koala_repository = 'git@github.com:%s/%s.git' % (koala_user, koala_project)
 
-# diretório do conf.d do supervisor
-env.supervisor_conf_d_path = '/etc/supervisor/conf.d'
-
-# nome da conta
-env.conta = ''
-
-# dominio da conta
-env.dominio = ''
-
-# linguagem 1-python 2-php
-env.linguagem = ''
-
-# senha do root do mysql
-env.mysql_password = ''
-
-# porta para rodar o projeto
-env.porta = ''
-
 # diretório do sites-enable do nginx
 env.nginx_sites_enable_path = '/etc/nginx/sites-enabled'
 
 # --------------------------------------------------------
 
-prod_server = '{0}@{1}'.format(user, host)
-project_path = '/home/'
 
 env.hosts = [prod_server]
 
@@ -77,10 +57,10 @@ def adduser(user_senha):
         user_senha = raw_input('Digite a senha do usuário: ')
 
     log('Criando usuário {0}'.format(user))
-    sudo('useradd -m -p pass=$(perl -e \'print crypt($ARGV[0], "password")\' \'{0}\') {1}'.format(
+    local('sudo useradd -m -p pass=$(perl -e \'print crypt($ARGV[0], "password")\' \'{0}\') {1}'.format(
             user_senha, user))
     print '\nSenha usuário: {0}'.format(user_senha)
-    sudo('gpasswd -a %s sudo' % user)
+    local('sudo gpasswd -a %s sudo' % user)
     print '\n============================================================='
 
 
@@ -96,7 +76,7 @@ def login():
 def update_local():
     """Updating packages"""
     log('Updating packages')
-    local('sudo apt-get update')
+    local('sudo apt-get -y update')
 
 
 # upgrade no local
@@ -120,7 +100,7 @@ def build_local():
     local('sudo apt-get -y install openmpi-bin openmpi-doc libopenmpi-dev')
     local('sudo apt-get -y install automake')
     local('sudo apt-get -y install nginx supervisor')
-    local('sudo apt-get -y install mercurial')
+    # local('sudo apt-get -y install mercurial')
     local('sudo apt-get -y install libcurl4-gnutls-dev')
     local('sudo apt-get -y install libffi-dev')
     local('sudo apt-get -y install python-numpy')
@@ -137,6 +117,11 @@ def build_local():
     # local('sudo pip install numpy')
 
 
+def createDirectories():
+    local('mkdir programs')
+    local('mkdir envs')
+
+
 def installzlib():
     local('cd ~/programs')
     local('wget http://zlib.net/zlib-1.2.8.tar.gz')
@@ -145,19 +130,13 @@ def installzlib():
     local('./configure')
     local('make')
     local('sudo make install')
-
-
-def setPostgres(user_senha):
-    local('sudo -u postgres psql')
-    local('CREATE USER %s SUPERUSER INHERIT CREATEDB CREATEROLE;' % user)
-    local("ALTER USER %s PASSWORD ''%s'';" % (user, user_senha))
-    local('CREATE DATABASE %sdb OWNER %s;' % (user, user))
-    local('\q')
-    local('sudo /etc/init.d/postgresql restart')
+    local('cd ..')
+    local('rm zlib-1.2.8.tar.gz')
+    local('sudo rm -r zlib-1.2.8')
 
 
 def installFFTW():
-    local('cd programs')
+    local('cd ~/programs')
     local('wget http://www.fftw.org/fftw-3.3.4.tar.gz')
     local('tar xzf fftw-3.3.4.tar.gz')
     local('cd fftw-3.3.4')
@@ -168,8 +147,18 @@ def installFFTW():
     local('rm fftw-3.3.4.tar.gz')
 
 
+# somente para servidor koala
+def setPostgres(user_senha):
+    local('sudo -u postgres psql')
+    local('CREATE USER %s SUPERUSER INHERIT CREATEDB CREATEROLE;' % user)
+    local("ALTER USER %s PASSWORD ''%s'';" % (user, user_senha))
+    local('CREATE DATABASE %sdb OWNER %s;' % (user, user))
+    local('\q')
+    local('sudo /etc/init.d/postgresql restart')
+
+
 def installGROMACS():
-    local('cd programs')
+    local('cd ~/programs')
     local('wget ftp://ftp.gromacs.org/pub/gromacs/gromacs-4.6.5.tar.gz')
     local('tar xzf gromacs-4.6.5.tar.gz')
     local('cd gromacs-4.6.5')
@@ -186,31 +175,38 @@ def installGROMACS():
     local('sudo make install')
     local('cd ../../')
     local('sudo rm -r gromacs-4.6.5')
-    local('sudo gromacs-4.6.5.tar.gz')
+    local('sudo rm gromacs-4.6.5.tar.gz')
 
 
-#  verificar isso
-def setVirtualenv():
-    local('vi ~/.bashrc')
-    local('export WORKON_HOME=~/envs')
-    local('source /usr/local/bin/virtualenvwrapper.sh')
-    local('vi ~/.profile')
-    local('export WORKON_HOME=~/envs')
-    local('source /usr/local/bin/virtualenvwrapper.sh')
-    local('source ~/.bashrc')
-    local('source ~/.profile')
+# http://docs.fabfile.org/en/latest/api/contrib/files.html
+def setVirtualenv_server():
+    append(
+        '~/.bashrc',
+        ['export WORKON_HOME=~/envs',
+            'source /usr/local/bin/virtualenvwrapper.sh'],
+        use_sudo=True,
+        )
+
+    append(
+        '~/.profile',
+        ['export WORKON_HOME=~/envs',
+            'source /usr/local/bin/virtualenvwrapper.sh'],
+        use_sudo=True,
+        )
+
+    sudo('source ~/.bashrc')
+    sudo('source ~/.profile')
 
 
 # tem que criar uma ssh-key e colocar no git do usuario pra fazer o clone
-
 def installPyHighcharts():
-    local('cd programs')
+    local('cd ~/programs')
     local('git clone git@github.com:%s/PyHighcharts.git' % koala_user)
     local('cd /usr/lib/python2.7/dist-packages')
     local('sudo ln -s /home/%s/programs/PyHighcharts/ PyHighcharts' % user)
 
 
-# clone Galaxy
+# clone Galaxy, somente servidor koala
 def cloneGalaxy():
     """ Criar novo projeto local """
     log('Criando novo projeto')
@@ -237,6 +233,7 @@ def cloneKoala():
 
 
 def buildEnvKoala():  # tem que instalar na env do galaxy tbm
+    local('workon %s' % koala_project)
     local('pip install -U distribute')
     local('pip install pycrypto')
     local('pip install natsort')
@@ -244,46 +241,51 @@ def buildEnvKoala():  # tem que instalar na env do galaxy tbm
     local('pip install certifi')
     local('pip install pyopenssl ndg-httpsclient pyasn1')
     local('pip install pycurl')
-
-def function():
-rm /home/koala/galaxy/config/galaxy.ini
-ln -s /home/koala/koala-server/config/galaxy.ini /home/koala/galaxy/config/galaxy.ini
-ln -s /home/koala/koala-server/config/datatypes_conf.xml /home/koala/galaxy/config/datatypes_conf.xml
-ln -s /home/koala/koala-server/config/job_conf.xml /home/koala/galaxy/config/job_conf.xml
-ln -s /home/koala/koala-server/config/reports_wsgi.ini /home/koala/galaxy/config/reports_wsgi.ini
-ln -s /home/koala/koala-server/config/tool_conf.xml /home/koala/galaxy/config/tool_conf.xml
-rm /home/koala/galaxy/config/integrated_tool_panel.xml
-ln -s /home/koala/koala-server/config/integrated_tool_panel.xml /home/koala/galaxy/config/integrated_tool_panel.xml
-
-ln -s /home/koala/koala-server/datatypes/confFiles.py /home/koala/galaxy/lib/galaxy/datatypes/confFiles.py
-ln -s /home/koala/koala-server/datatypes/gromacs_datatype.py /home/koala/galaxy/lib/galaxy/datatypes/gromacs_datatype.py
-ln -s /home/koala/koala-server/datatypes/molFiles.py /home/koala/galaxy/lib/galaxy/datatypes/molFiles.py
-
-ln -s /home/koala/koala-server/static/Bio-200.png /home/koala/galaxy/static/Bio-200.png
-ln -s /home/koala/koala-server/static/koala.css /home/koala/galaxy/static/koala.css
-ln -s /home/koala/koala-server/static/LOGO-ICMC-RGB-300.png /home/koala/galaxy/static/LOGO-ICMC-RGB-300.png
-ln -s /home/koala/koala-server/static/usp-logo-300px.png /home/koala/galaxy/static/usp-logo-300px.png
-rm /home/koala/galaxy/static/welcome.html
-ln -s /home/koala/koala-server/static/welcome.html /home/koala/galaxy/static/welcome.html
-
-ln -s /home/koala/koala-server/tools/analysis/ /home/koala/galaxy/tools/analysis
-ln -s /home/koala/koala-server/tools/gromacs-tools/ /home/koala/galaxy/tools/gromacs-tools
-ln -s /home/koala/koala-server/tools/meamt/ /home/koala/galaxy/tools/meamt
-ln -s /home/koala/koala-server/tools/pdb-tools/ /home/koala/galaxy/tools/pdb-tools
-ln -s /home/koala/koala-server/tools/protpred-2pg/ /home/koala/galaxy/tools/protpred-2pg
-ln -s /home/koala/koala-server/tools/protpred-eda/ /home/koala/galaxy/tools/protpred-eda
-ln -s /home/koala/koala-server/tools/quark/ /home/koala/galaxy/tools/quark
-ln -s /home/koala/koala-server/tools/robetta/ /home/koala/galaxy/tools/robetta
-
-ln -s /home/koala/koala-server/scripts/check_structures_gromacs.py /home/koala/galaxy/scripts/check_structures_gromacs.py
-ln -s /home/koala/koala-server/scripts/rename_atoms.py /home/koala/galaxy/scripts/rename_atoms.py
+    local('pip install fabric')
 
 
-PYTHONPATH="${PYTHONPATH}:/usr/lib/python2.7/dist-packages/"
-PYTHONPATH="${PYTHONPATH}:/usr/lib/python2.7/dist-packages/pymol/"
-PYTHONPATH="${PYTHONPATH}:/usr/local/lib/python2.7/dist-packages/"
-PYTHONPATH="${PYTHONPATH}:/usr/local/bin/pymol/modules/"
-export PYTHONPATH
+# a maioria dos links vai ser somente para o servidor koala, nao pulsar
+def createLinks():
+    local('rm /home/koala/galaxy/config/galaxy.ini')
+    local('ln -s /home/koala/koala-server/config/galaxy.ini /home/koala/galaxy/config/galaxy.ini')
+    local('ln -s /home/koala/koala-server/config/datatypes_conf.xml /home/koala/galaxy/config/datatypes_conf.xml')
+    local('ln -s /home/koala/koala-server/config/job_conf.xml /home/koala/galaxy/config/job_conf.xml')
+    local('ln -s /home/koala/koala-server/config/reports_wsgi.ini /home/koala/galaxy/config/reports_wsgi.ini')
+    local('ln -s /home/koala/koala-server/config/tool_conf.xml /home/koala/galaxy/config/tool_conf.xml')
+    local('rm /home/koala/galaxy/config/integrated_tool_panel.xml')
+    local('ln -s /home/koala/koala-server/config/integrated_tool_panel.xml /home/koala/galaxy/config/integrated_tool_panel.xml')
+
+    local('ln -s /home/koala/koala-server/datatypes/confFiles.py /home/koala/galaxy/lib/galaxy/datatypes/confFiles.py')
+    local('ln -s /home/koala/koala-server/datatypes/gromacs_datatype.py /home/koala/galaxy/lib/galaxy/datatypes/gromacs_datatype.py')
+    local('ln -s /home/koala/koala-server/datatypes/molFiles.py /home/koala/galaxy/lib/galaxy/datatypes/molFiles.py')
+
+    local('ln -s /home/koala/koala-server/static/Bio-200.png /home/koala/galaxy/static/Bio-200.png')
+    local('ln -s /home/koala/koala-server/static/koala.css /home/koala/galaxy/static/koala.css')
+    local('ln -s /home/koala/koala-server/static/LOGO-ICMC-RGB-300.png /home/koala/galaxy/static/LOGO-ICMC-RGB-300.png')
+    local('ln -s /home/koala/koala-server/static/usp-logo-300px.png /home/koala/galaxy/static/usp-logo-300px.png')
+    local('rm /home/koala/galaxy/static/welcome.html')
+    local('ln -s /home/koala/koala-server/static/welcome.html /home/koala/galaxy/static/welcome.html')
+
+    local('ln -s /home/koala/koala-server/tools/analysis/ /home/koala/galaxy/tools/analysis')
+    local('ln -s /home/koala/koala-server/tools/gromacs-tools/ /home/koala/galaxy/tools/gromacs-tools')
+    local('ln -s /home/koala/koala-server/tools/meamt/ /home/koala/galaxy/tools/meamt')
+    local('ln -s /home/koala/koala-server/tools/pdb-tools/ /home/koala/galaxy/tools/pdb-tools')
+    local('ln -s /home/koala/koala-server/tools/protpred-2pg/ /home/koala/galaxy/tools/protpred-2pg')
+    local('ln -s /home/koala/koala-server/tools/protpred-eda/ /home/koala/galaxy/tools/protpred-eda')
+    local('ln -s /home/koala/koala-server/tools/quark/ /home/koala/galaxy/tools/quark')
+    local('ln -s /home/koala/koala-server/tools/robetta/ /home/koala/galaxy/tools/robetta')
+
+    local('ln -s /home/koala/koala-server/scripts/check_structures_gromacs.py /home/koala/galaxy/scripts/check_structures_gromacs.py')
+    local('ln -s /home/koala/koala-server/scripts/rename_atoms.py /home/koala/galaxy/scripts/rename_atoms.py')
+
+
+def changePythonPath():
+    local('PYTHONPATH="${PYTHONPATH}:/usr/lib/python2.7/dist-packages/"')
+    local('PYTHONPATH="${PYTHONPATH}:/usr/lib/python2.7/dist-packages/pymol/"')
+    local('PYTHONPATH="${PYTHONPATH}:/usr/local/lib/python2.7/dist-packages/"')
+    local('PYTHONPATH="${PYTHONPATH}:/usr/local/bin/pymol/modules/"')
+    local('export PYTHONPATH')
+
 
 # configura uma maquina local ubuntu
 def setupLocal():
@@ -305,34 +307,27 @@ def setupLocal():
 
     # cloneKoala()
 
-
-
-
 # --------------------------------------------------------
 # SERVIDOR
 # --------------------------------------------------------
 
 
-# clone Pulsar
-def clonePulsar():
-    """ Criar novo projeto local """
-    log('Criando novo projeto')
+def locale_server():
+    sudo('locale-gen --no-purge --lang pt_BR')
 
-    local('echo "clonando projeto %s"' % pulsar_project)
-    local('git clone %s %s%s' % (pulsar_repository, folder_local, pulsar_project))
-    local('cd %s%s' % (folder_local, pulsar_project))
-    local('mkvirtualenv %s' % folder_local)
-    local('setvirtualenvproject')
-    local('pip install -r requirements.txt')
 
-def buildEnvPulsar():  # tem que instalar na env do galaxy tbm
-    local('pip install -U distribute')
-    local('pip install pycrypto')
-    local('pip install natsort')
-    local('pip install beautifulsoup4')
-    local('pip install certifi')
-    local('pip install pyopenssl ndg-httpsclient pyasn1')
-    local('pip install pycurl')
+def adduser_server(user_senha):
+    """Criar um usuário no servidor"""
+
+    if not user_senha:
+        user_senha = raw_input('Digite a senha do usuário: ')
+
+    log('Criando usuário {0}'.format(user))
+    sudo('useradd -m -p pass=$(perl -e \'print crypt($ARGV[0], "password")\' \'{0}\') {1}'.format(
+            user_senha, user))
+    print '\nSenha usuário: {0}'.format(user_senha)
+    sudo('gpasswd -a %s sudo' % user)
+    print '\n============================================================='
 
 
 # update no servidor
@@ -342,53 +337,222 @@ def update_server():
     sudo('apt-get -y update')
 
 
+# upgrade no local
+def upgrade_server():
+    """Updating programs"""
+    log('Updating programs')
+    sudo('apt-get -y upgrade')
+
+
+def build_server():
+    """Install all necessary packages"""
+    log('Installing all necessary packages')
+    sudo('apt-get -y install git')
+    sudo('apt-get -y install python-dev')
+    sudo('apt-get -y install python-pip')
+    sudo('apt-get -y install zip')
+    sudo('apt-get -y install python-virtualenv')
+    sudo('apt-get -y install pymol')
+    sudo('apt-get -y install postgresql postgresql-contrib')
+    sudo('pip install virtualenvwrapper')
+    sudo('apt-get -y install openmpi-bin openmpi-doc libopenmpi-dev')
+    sudo('apt-get -y install automake')
+    sudo('apt-get -y install nginx supervisor')
+    sudo('apt-get -y install libcurl4-gnutls-dev')
+    sudo('apt-get -y install libffi-dev')
+    sudo('apt-get -y install python-numpy')
+
+
+def createDirectories_server():
+    sudo('mkdir ~/programs')
+    sudo('mkdir ~/envs')
+
+
+def installzlib_server():
+    with cd('~/programs'):
+        sudo('wget http://zlib.net/zlib-1.2.8.tar.gz')
+        sudo('tar xzf zlib-1.2.8.tar.gz')
+        with cd('zlib-1.2.8'):
+            sudo('./configure')
+            sudo('make')
+            sudo('make install')
+    with cd('~/programs'):
+        sudo('rm zlib-1.2.8.tar.gz')
+
+
+def installFFTW_server():
+    with cd('~/programs'):
+        sudo('wget http://www.fftw.org/fftw-3.3.4.tar.gz')
+        sudo('tar xzf fftw-3.3.4.tar.gz')
+        with cd('fftw-3.3.4'):
+            sudo('./configure --enable-float')
+            sudo('make')
+            sudo('make install')
+    with cd('~/programs'):
+        sudo('rm fftw-3.3.4.tar.gz')
+
+
+def installGROMACS_server():
+    sudo('cd ~/programs')
+    sudo('wget ftp://ftp.gromacs.org/pub/gromacs/gromacs-4.6.5.tar.gz')
+    sudo('tar xzf gromacs-4.6.5.tar.gz')
+    sudo('cd gromacs-4.6.5')
+    sudo('mkdir build')
+    sudo('cd build/')
+    sudo(
+        'cmake .. -DSHARED_LIBS_DEFAULT=OFF -DBUILD_SHARED_LIBS=OFF -DGMX_PREFER_STATIC_LIBS=YES'
+        '-DGMX_BUILD_OWN_FFTW=OFF -DFFTW_LIBRARY=/usr/local/lib/libfftw3f.a'
+        '-DFFTW_INCLUDE_DIR=/usr/local/include/'
+        '-DGMX_GSL=OFF -DGMX_DEFAULT_SUFFIX=ON -DGMX_GPU=OFF -DGMX_MPI=OFF -DGMX_DOUBLE=OFF'
+        '-DGMX_INSTALL_PREFIX=/home/%s/programs/gmx-4.6.5/no_mpi/'
+        '-DCMAKE_INSTALL_PREFIX=/home/%s/programs/gmx-4.6.5/no_mpi/' % (user, user))
+    sudo('make -j 8')
+    sudo('make install')
+    sudo('cd ../../')
+    sudo('rm -r gromacs-4.6.5')
+    sudo('rm gromacs-4.6.5.tar.gz')
+
+
+#  verificar isso, como escreve em um arquivo com o fab
+# http://docs.fabfile.org/en/latest/api/contrib/files.html
+# ler a aprender
+def setVirtualenv_server():
+    sudo('vi ~/.bashrc')
+    sudo('export WORKON_HOME=~/envs')
+    sudo('source /usr/local/bin/virtualenvwrapper.sh')
+    sudo('vi ~/.profile')
+    sudo('export WORKON_HOME=~/envs')
+    sudo('source /usr/local/bin/virtualenvwrapper.sh')
+    sudo('source ~/.bashrc')
+    sudo('source ~/.profile')
+
+
+def installPyHighcharts_server():
+    sudo('cd ~/programs')
+    sudo('git clone git@github.com:%s/PyHighcharts.git' % koala_user)
+    sudo('cd /usr/lib/python2.7/dist-packages')
+    sudo('sudo ln -s /home/%s/programs/PyHighcharts/ PyHighcharts' % user)
+
+
+# clone Koala
+def cloneKoala_server():
+    """ Criar novo projeto local """
+    log('Criando novo projeto')
+
+    sudo('git clone %s' % koala_repository)
+    with cd('%s%s' % (folder_local, koala_project)):
+        sudo('mkvirtualenv %s' % koala_project)
+        sudo('setvirtualenvproject')
+        sudo('pip install -r requirements.txt')
+
+
+def buildEnvKoala_server():  # tem que instalar na env do galaxy tbm
+    sudo('workon %s' % koala_project)
+    sudo('pip install -U distribute')
+    sudo('pip install pycrypto')
+    sudo('pip install natsort')
+    sudo('pip install beautifulsoup4')
+    sudo('pip install certifi')
+    sudo('pip install pyopenssl ndg-httpsclient pyasn1')
+    sudo('pip install pycurl')
+    sudo('pip install fabric')
+
+
+# clone Pulsar
+def clonePulsar_server():
+    """ Criar novo projeto local """
+    log('Criando novo projeto')
+
+    sudo('git clone %s' % pulsar_repository)
+    with cd('%s%s' % (folder_local, pulsar_project)):
+        sudo('mkvirtualenv %s' % pulsar_project)
+        sudo('setvirtualenvproject')
+        sudo('pip install -r requirements.txt')
+
+
+def buildEnvPulsar():  # tem que instalar na env do galaxy tbm
+    sudo('workon %s' % pulsar_project)
+    sudo('pip install -U distribute')
+    sudo('pip install pycrypto')
+    sudo('pip install natsort')
+    sudo('pip install beautifulsoup4')
+    sudo('pip install certifi')
+    sudo('pip install pyopenssl ndg-httpsclient pyasn1')
+    sudo('pip install pycurl')
+
+
+def setKoalaLibLink_server():
+    sudo('ln -s /home/koala/koala-server/lib/koala/ /home/koala/envs/%s/lib/python2.7/site-packages/koala' % pulsar_project)
+
+
+# precisa configurar o nginx e iniciar
+# precisa configurar o pulsar e iniciar
+# precisa clonar/instalar/baixar/compilar o 2pg_cartesian
+
+
 def newserver():
     """Configurar e instalar todos pacotes necessários para servidor"""
     log('Configurar e instalar todos pacotes necessários para servidor')
 
-    # gera uma chave no servidor para utilizar o comando upload_public_key
-    run('ssh-keygen')
+    locale_server()
+
+    adduser_server('koala')
 
     update_server()
 
-    update_server()
     upgrade_server()
 
-    # pacotes
     build_server()
-    python_server()
-    mysql_server()
-    git_server()
-    others_server()
 
-    # atualizando
-    update_server()
-    upgrade_server()
+    createDirectories_server()
 
-    # mysql
-    mysql_restart
+    installzlib_server()
 
-    # nginx
-    write_file('nginx_server.conf', '/etc/nginx/nginx.conf')
-    nginx_restart()
 
-    # proftpd
-    write_file('proftpd.conf', '/etc/proftpd/proftpd.conf')
-    proftpd_restart()
 
-    # supervisor
-    write_file('supervisord_server.conf', '/etc/supervisor/supervisord.conf')
-    supervisor_restart()
+    # gera uma chave no servidor para utilizar o comando upload_public_key
+    # run('ssh-keygen')
 
-    # funcionar thumbnail no ubuntu 64bits
-    sudo("ln -s /usr/lib/'uname -i'-linux-gnu/libfreetype.so /usr/lib/")
-    sudo("ln -s /usr/lib/'uname -i'-linux-gnu/libjpeg.so /usr/lib/")
-    sudo("ln -s /usr/lib/'uname -i'-linux-gnu/libz.so /usr/lib/")
+    # update_server()
 
-    log('Anote a senha do banco de dados: {0}'.format(db_password))
+    # update_server()
+    # upgrade_server()
 
-    log('Reiniciando a máquina')
-    reboot()
+    # # pacotes
+    # build_server()
+    # python_server()
+    # mysql_server()
+    # git_server()
+    # others_server()
+
+    # # atualizando
+    # update_server()
+    # upgrade_server()
+
+    # # mysql
+    # mysql_restart
+
+    # # nginx
+    # write_file('nginx_server.conf', '/etc/nginx/nginx.conf')
+    # nginx_restart()
+
+    # # proftpd
+    # write_file('proftpd.conf', '/etc/proftpd/proftpd.conf')
+    # proftpd_restart()
+
+    # # supervisor
+    # write_file('supervisord_server.conf', '/etc/supervisor/supervisord.conf')
+    # supervisor_restart()
+
+    # # funcionar thumbnail no ubuntu 64bits
+    # sudo("ln -s /usr/lib/'uname -i'-linux-gnu/libfreetype.so /usr/lib/")
+    # sudo("ln -s /usr/lib/'uname -i'-linux-gnu/libjpeg.so /usr/lib/")
+    # sudo("ln -s /usr/lib/'uname -i'-linux-gnu/libz.so /usr/lib/")
+
+    # log('Anote a senha do banco de dados: {0}'.format(db_password))
+
+    # log('Reiniciando a máquina')
+    # reboot()
 
 def listaccount():
     """Lista usuários do servidor"""
@@ -454,7 +618,7 @@ def newaccount():
     log('Anotar dados da conta')
     print 'conta: {0} \n\n-- ssh\nuser: {0}\npw: {1} \n\n-- db\nuser: {0}\npw: {2}'.format(env.conta, user_senha, banco_senha)
 
-def write_file(filename, destination):
+def wri te_file(filename, destination):
 
     upload_template(
             filename=filename,

@@ -548,8 +548,8 @@ class IcmcGalaxy(object):
         try:
             global command
             if(self.framework == '2PG'):
-                self.command = '%ssrc/%s' % (
-                    self.getPathAlgorithms(framework), algorithm)
+                # self.command = '%ssrc/%s' % (
+                self.command = '/usr/local/bin/%s' % (algorithm)
             elif(self.framework == 'MEAMT'):
                 self.command = '%s%s' % (self.getPathAlgorithms(framework), algorithm)
             else:
