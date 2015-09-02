@@ -55,24 +55,55 @@ port_http = 8084
 koala_server = '%s@%s -p %s' % (username, ip_server, port)
 env_path = '/home/%s/env/bin/activate' % username
 
-# pulsar server 1, docking03
-username = 'koala'
-port = 2228
-port_http = 8086
-pulsar_server_1 = '%s@%s -p %s' % (username, ip_server, port)
-env_path = '/home/%s/env/bin/activate' % username
+# # pulsar server 1, docking03
+# username = 'koala'
+# port_http = 8086
+# pulsar_server_1 = '%s@%s' % (username, ip_server)
 
-# pulsar server 2, docking04
-username = 'koala'
-# port = 2229
-port_http = 8087
-pulsar_server_2 = '%s@%s' % (username, ip_server)
-env_path = '/home/%s/env/bin/activate' % username
+# # pulsar server 2, docking04
+# username = 'koala'
+# port_http = 8087
+# pulsar_server_2 = '%s@%s' % (username, ip_server)
 
-# pulsar server 2, docking05
+# # pulsar server 3, docking05
+# username = 'koala'
+# port_http = 8088
+# pulsar_server_3 = '%s@%s' % (username, ip_server)
+
+# # pulsar server 4, docking06
+# username = 'koala'
+# port_http = 8089
+# pulsar_server_4 = '%s@%s' % (username, ip_server)
+
+# pulsar server 5, docking07
+# username = 'koala'
+# port_http = 8090
+# pulsar_server_5 = '%s@%s' % (username, ip_server)
+
+# # pulsar server 6, docking08
+# username = 'koala'
+# port_http = 8091
+# pulsar_server_6 = '%s@%s' % (username, ip_server)
+
+# # pulsar server 7, docking09
+# username = 'koala'
+# port_http = 8092
+# pulsar_server_7 = '%s@%s' % (username, ip_server)
+
+# # pulsar server 8, docking10
 username = 'koala'
-port_http = 8088
-pulsar_server_3 = '%s@%s' % (username, ip_server)
+port_http = 8093
+pulsar_server_8 = '%s@%s' % (username, ip_server)
+
+# # pulsar server 9, docking11
+# username = 'koala'
+# port_http = 8094
+# pulsar_server_9 = '%s@%s' % (username, ip_server)
+
+# # pulsar server 10, docking12
+# username = 'koala'
+# port_http = 8095
+# pulsar_server_10 = '%s@%s' % (username, ip_server)
 
 # Configurações Locais
 # tool_path = 'galaxy-dist/tools/protpred'
@@ -83,8 +114,8 @@ pulsar_server_3 = '%s@%s' % (username, ip_server)
 # env.user = "koala"
 env.key_filename = "/home/alexandre/.ssh/id_rsa"
 env.password = "koala"
-env.port = 2230
-env.hosts = [pulsar_server_3]
+env.port = 2235
+env.hosts = [pulsar_server_8]
 env.forward_agent = True
 
 # -------------------------------
