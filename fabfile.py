@@ -2,7 +2,7 @@
 
 import os
 from fabric.api import *
-from fabric.contrib.files import upload_template, append, sed
+from fabric.contrib.files import upload_template, append, sed, exists, comment
 
 CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
 
@@ -84,7 +84,7 @@ pulsar_server_3 = '%s@%s' % (username, ip_server)
 env.key_filename = "/home/alexandre/.ssh/id_rsa"
 env.password = "koala"
 env.port = 2230
-env.hosts = [pulsar_server_2]
+env.hosts = [pulsar_server_3]
 env.forward_agent = True
 
 # -------------------------------
@@ -145,11 +145,16 @@ def build_server():
 
 
 def createDirectories_server(path=None):
-    sudo('mkdir ~/programs')
-    sudo('mkdir ~/envs')
-    sudo('mkdir /dados/%s/execute' % user)
+    if(not exists('~/programs', use_sudo=True)):
+        sudo('mkdir ~/programs')
+    if(not exists('~/envs', use_sudo=True)):
+        sudo('mkdir ~/envs')
+    if(not exists('/dados/%s/execute' % user, use_sudo=True)):
+        sudo('mkdir -p /dados/%s/execute' % user)
+
     sudo('chown %s:%s ~/envs' % (user, user))
     sudo('chown %s:%s ~/programs' % (user, user))
+    sudo('chown -R %s:%s /dados/%s' % (user, user, user))
 
 
 def installzlib_server():
@@ -221,10 +226,10 @@ def setVirtualenv_server():
 def setPythonPath():
     append(
         '~/.bashrc',
-        ['PYTHONPATH=${PYTHONPATH}:/usr/lib/python2.7/dist-packages/',
-            'PYTHONPATH=${PYTHONPATH}:/usr/lib/python2.7/dist-packages/pymol/',
-            'PYTHONPATH=${PYTHONPATH}:/usr/local/lib/python2.7/dist-packages/',
-            'PYTHONPATH=${PYTHONPATH}:/usr/local/bin/pymol/modules/'],
+        ['export PYTHONPATH=/usr/lib/python2.7/dist-packages:$PYTHONPATH',
+            'export PYTHONPATH=/usr/lib/python2.7/dist-packages/pymol:$PYTHONPATH',
+            'export PYTHONPATH=/usr/local/lib/python2.7/dist-packages:$PYTHONPATH',
+            'export PYTHONPATH=/usr/local/bin/pymol/modules:$PYTHONPATH'],
         use_sudo=True,
         )
     sudo('source ~/.bashrc')
@@ -243,9 +248,10 @@ def install2PGCartesian():
         run('git clone git@github.com:rodrigofaccioli/2pg_cartesian.git %s' % path)
         with cd('~/programs/%s' % path):
             run('mkdir build')
-            run('cmake ..')
-            run('make')
-            sudo('make install')
+            with cd('build'):
+                run('cmake ..')
+                run('make')
+                sudo('make install')
 
 
 # clone Koala
@@ -279,11 +285,11 @@ def clonePulsar_server():
     run('git clone %s' % pulsar_repository)
     with cd('%s' % pulsar_project):
         run('mkvirtualenv %s' % pulsar_project)
-        run('pip install -r requirements.txt')
+        sudo('pip install -r requirements.txt')
 
 
 def buildEnvPulsar():
-    sudo('workon %s' % pulsar_project)
+    run('workon %s' % pulsar_project)
     sudo('pip install -U distribute')
     sudo('pip install pycrypto')
     sudo('pip install natsort')
@@ -294,17 +300,20 @@ def buildEnvPulsar():
 
 
 def setKoalaLibLink_server():
-    sudo('ln -s /home/koala/koala-server/lib/koala/ /home/koala/envs/%s/lib/python2.7/site-packages/koala' % pulsar_project)
+    sudo(
+        'ln -s %s/lib/koala/ /home/koala/envs/%s/lib/python2.7/site-packages/koala' % (
+            CURRENT_PATH, pulsar_project))
 
 
 def setConfigNginx():
-    write_file('~/koala-server/config/nginx_server.conf', '/etc/nginx/nginx.conf')
+    write_file('%s/config/nginx_server.conf' % CURRENT_PATH, '/etc/nginx/nginx.conf', 'config')
 
 
 def setSitePulsarNginx():
     # fabric.contrib.files.sed(filename, before, after, limit='', use_sudo=False, backup='.bak', flags='', shell=False)
     # sed('/etc/selinux/config',before='SELINUX=enforcing',after='SELINUX=permissive',use_sudo=True,backup='')
-    write_file('~/koala-server/config/site-koala', '/etc/nginx/sites-available/site-koala')
+    write_file(
+        '%s/config/site-koala' % CURRENT_PATH, '/etc/nginx/sites-available/site-koala', 'config')
     sed(
         '/etc/nginx/sites-available/site-koala',
         before='8000',
@@ -315,21 +324,27 @@ def setSitePulsarNginx():
 
 
 def setPulsarConfig():
-    write_file('~/koala-server/config/pulsar_server.ini', '/home/koala/pulsar/server.ini')
+    with cd('/home/%s/%s/' % (user, pulsar_project)):
+        run('cp server.ini.sample server.ini')
     sed(
         '/home/koala/pulsar/server.ini',
-        before='8000',
+        before='8913',
+        # before='8000',
         after='%s' % port_http,
+        use_sudo=True)
+    comment(
+        '/home/koala/pulsar/server.ini',
+        regex='host = localhost',
         use_sudo=True)
 
 
 def setPulsarApp():
-    write_file('~/koala-server/config/app.yml', '/home/koala/pulsar/')
+    write_file('%s/config/app.yml' % CURRENT_PATH, '/home/koala/pulsar/', 'config')
 
 
 def startPulsar():
-    cd('~/pulsar/')
-    run('paster serve server.ini --daemon')
+    with cd('~/pulsar/'):
+        run('paster serve server.ini --daemon')
 
 
 def copyExecuteFiles():
@@ -367,7 +382,7 @@ def newServerPulsar():
 
     cloneKoala_server()
 
-    buildEnvKoala_server()
+    # buildEnvKoala_server()
 
     clonePulsar_server()
 
@@ -401,12 +416,13 @@ def nginx_restart():
     sudo('/etc/init.d/nginx restart')
 
 
-def write_file(filename, destination):
+def write_file(filename, destination, path_template):
 
     upload_template(
             filename=filename,
             destination=destination,
-            template_dir=os.path.join(CURRENT_PATH, 'inc'),
+            # template_dir=os.path.join(CURRENT_PATH, 'inc'),
+            template_dir=os.path.join(CURRENT_PATH, path_template),
             context=env,
             # use_jinja=True,
             use_sudo=True,
