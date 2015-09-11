@@ -1,12 +1,10 @@
 <?xml version='1.0' encoding='utf-8'?>
 <toolbox>
   <label id="pre_processing" text="Pre-processing" />
-  <section id="getext" name="Get Data">
+  <section id="getext" name="Get/Edit Data">
     <label id="pre_get" text="Upload Data" />
     <tool file="data_source/upload.xml"/>
     <tool file="pdb-tools/pdb_download.xml"/>
-  </section>
-  <section id="editex" name="Edit Data">
     <label id="pre_edit" text="Modif Data" />
     <tool file="pdb-tools/rename_atoms_pdb.xml"/>
     <tool file="pdb-tools/check_pdb.xml"/>
