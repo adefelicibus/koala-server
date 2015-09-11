@@ -86,21 +86,6 @@
     </outputs>
     <help>
 
-**What it does**
-
-<!--  This tool execute the 2PG Framework, an evolutionary framework for protein structure prediction. At the end of the galaxy's job, the process of 2PG will be started on the server, and it will execute in background. When the process finish, the user's email adress will receive a message that the process has finished and the result of the framework will be available to user download it.
- The result of this tool is a .zip file with all the .PDB files. However, there is a .PDB file called "Final_PDB.pdb" that represents the best solution founded.
-
------
-
-**Parameters**
-
-Aminoacids Sequence: The framework uses this sequence to predict the protein structure. This sequence can be in a .FASTA file that represents the first protein structure, or can be just the letters that represent the aminoacids of the protein. You must upload the .FASTA file to your history to use it.
-
-Initial Population: The 2PG framework uses an evolutionary algorithm to predict the pretein structure. There are two options to set this parameter, Randon and a user's initial population.
-Randon: With this option, the framework will create a randon initial population.
-User's population: You can upload a .txt file with the initial population that will be used by the framework. You must upload the file to your history to use it.
- -->
     </help>
 
     <citations>

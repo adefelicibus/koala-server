@@ -726,9 +726,12 @@ class Random2PG(object):
         """
 
         try:
-            email = self.ClassColection.ValidateEmail(self.opts.inputEmail)
+            if(self.opts.inputEmail):
+                email = self.ClassColection.ValidateEmail(self.opts.inputEmail)
+                dir_execucao = self.ClassColection.CreateExecutionDirectory(email)
+            else:
+                dir_execucao = self.ClassColection.CreateExecutionDirectory()
 
-            dir_execucao = self.ClassColection.CreateExecutionDirectory(email)
             self.path_execute = self.ClassColection.getPathExecute() + dir_execucao
 
             self.sequence = self.ClassColection.CreateLocalFastaFile(
@@ -772,7 +775,7 @@ class Random2PG(object):
 
             config = self.ClassColection.getConfigurationFile('configuration.conf')
 
-            cl = ['nohup', self.ClassColection.getCommand(), config, '&']
+            cl = [self.ClassColection.getCommand(), config, '&']
 
             retProcess = subprocess.Popen(
                 cl, 0, stdout=None,  stderr=subprocess.STDOUT, shell=False)
@@ -819,16 +822,17 @@ class Random2PG(object):
 
             self.makeHtml()
 
-            if(self.opts.useJmol == 'true'):
+            if(self.opts.useJmol == 'True'):
                 self.makeHtmlWithJMol(pdbs[0])
 
-            self.ClassColection.SendEmail(
-                    'adefelicibus@gmail.com',
-                    email,
-                    '%s Execution on Galaxy - Cloud USP' % self.opts.toolname,
-                    self.ClassColection.getMessageEmail(self.opts.toolname),
-                    [],
-                    'smtp.gmail.com')
+            if(self.opts.inputEmail):
+                self.ClassColection.SendEmail(
+                        'adefelicibus@gmail.com',
+                        email,
+                        '%s Execution on Galaxy - Cloud USP' % self.opts.toolname,
+                        self.ClassColection.getMessageEmail(self.opts.toolname),
+                        [],
+                        'smtp.gmail.com')
 
         except Exception, e:
             self.ClassColection.ShowErrorMessage(str(e))

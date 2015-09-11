@@ -42,10 +42,10 @@
     </destinations>
     <tools>
         <tool id="upload1" destination="local"/>
-        <tool id="2pg_mono" destination="lcrcloud2"/>
+        <!-- <tool id="2pg_mono" destination="lcrcloud2"/>
         <tool id="2pg_monte_carlo" destination="lcrcloud3"/>
         <tool id="2pg_nsga2" destination="lcrcloud4"/>
-        <tool id="2pg_random" destination="lcrcloud5"/>
+        <tool id="2pg_random" destination="lcrcloud5"/> -->
     </tools>
     <limits>
         <limit type="registered_user_concurrent_jobs">10</limit>
