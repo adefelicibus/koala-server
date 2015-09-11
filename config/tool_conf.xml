@@ -1,6 +1,60 @@
 <?xml version='1.0' encoding='utf-8'?>
 <toolbox>
-  <section id="protpred-2pg" name="ProtPred Tools">
+  <label id="pre_processing" text="Pre-processing" />
+  <section id="getext" name="Get/Edit Data">
+    <label id="pre_get" text="Upload Data" />
+    <tool file="data_source/upload.xml"/>
+    <tool file="pdb-tools/pdb_download.xml"/>
+  </section>
+  <section id="editex" name="Edit Data">
+    <label id="pre_edit" text="Modif Data" />
+    <tool file="pdb-tools/rename_atoms_pdb.xml"/>
+    <tool file="pdb-tools/check_pdb.xml"/>
+    <tool file="pdb-tools/split_pdb.xml"/>
+    <tool file="pdb-tools/merge_pdb.xml"/>
+  </section>
+  <label id="predictors" text="Ab initio Predictors" />
+  <section id="build_pop" name="Build Conformations">
+    <tool file="protpred-2pg/buildconformation2pg.xml" />
+    <tool file="meamt/meamt_pop.xml" />
+  </section>
+  <section id="predicts" name="Predictors" />
+    <label id="predict_2pg" text="2PG Framework" />
+    <tool file="protpred-2pg/mono2pg.xml" />
+    <tool file="protpred-2pg/nsgaii2pg.xml" />
+    <tool file="protpred-2pg/random2pg.xml" />
+    <tool file="protpred-2pg/montecarlo2pg.xml" />
+    <label id="predict_eda" text="ProtPreEDA Framework" />
+    <tool file="protpred-eda/protprededa_rw.xml" />
+    <tool file="protpred-eda/protprededa_mcm.xml" />
+    <tool file="protpred-eda/protprededa_eda.xml" />
+    <tool file="protpred-eda/protprededa_rboa.xml" />
+    <tool file="protpred-eda/protprededa_ga.xml" />
+    <tool file="protpred-eda/protprededa_de.xml" />
+    <tool file="protpred-eda/protprededa_ceda.xml" />
+    <label id="predict_meamt" text="MEAMT Framework" />
+    <tool file="meamt/meamt.xml" />
+  </section>
+  <section id="analysis" name="Analysis Tools">
+    <label id="analysis_rank" text="Solutions Ranking" />
+    <tool file="analysis/dominance_ranking.xml" />
+    <tool file="analysis/sort_by_front_dominance.xml" />
+    <tool file="analysis/sort_method_by_front_dominance.xml" />
+    <label id="analysis_compare" text="Solutions Comparing" />
+    <tool file="analysis/calculate_rmsd.xml" />
+    <tool file="analysis/calculate_tmscore.xml" />
+    <tool file="analysis/calculate_gdtts.xml" />
+  </section>
+  <section id="gromacstools" name="GROMACS Tools">
+    <tool file="gromacs-tools/definebox.xml"/>
+    <tool file="gromacs-tools/genion.xml"/>
+    <tool file="gromacs-tools/grompp.xml"/>
+    <tool file="gromacs-tools/mdrun.xml"/>
+    <tool file="gromacs-tools/pdb2gmx.xml"/>
+    <tool file="gromacs-tools/remover_agua.xml"/>
+    <tool file="gromacs-tools/solvate.xml"/>
+  </section>
+  <!-- <section id="protpred-2pg" name="ProtPred Tools">
     <tool file="protpred-2pg/buildconformation2pg.xml" />
     <tool file="protpred-2pg/mono2pg.xml" />
     <tool file="protpred-2pg/nsgaii2pg.xml" />
@@ -8,7 +62,6 @@
     <tool file="protpred-2pg/montecarlo2pg.xml" />
   </section>
   <section id="protpred-eda" name="ProtPred-EDA Tools">
-    <!-- <tool file="protpred_eda/protprededa.xml" /> -->
     <tool file="protpred-eda/protprededa_rw.xml" />
     <tool file="protpred-eda/protprededa_mcm.xml" />
     <tool file="protpred-eda/protprededa_eda.xml" />
@@ -52,7 +105,7 @@
     <tool file="gromacs-tools/pdb2gmx.xml"/>
     <tool file="gromacs-tools/remover_agua.xml"/>
     <tool file="gromacs-tools/solvate.xml"/>
-  </section>
+  </section> -->
     <!-- <tool file="data_source/ucsc_tablebrowser.xml" />
     <tool file="data_source/ucsc_tablebrowser_test.xml" />
     <tool file="data_source/ucsc_tablebrowser_archaea.xml" />
