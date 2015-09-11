@@ -38,9 +38,12 @@ class ProtPredEDACEDA(object):
         @type self: koala.ProtPredEDA.ProtPredEDA
         """
         try:
-            email = self.ClassColection.ValidateEmail(self.opts.inputEmail)
+            if(self.opts.inputEmail):
+                email = self.ClassColection.ValidateEmail(self.opts.inputEmail)
+                dir_execucao = self.ClassColection.CreateExecutionDirectory(email)
+            else:
+                dir_execucao = self.ClassColection.CreateExecutionDirectory()
 
-            dir_execucao = self.ClassColection.CreateExecutionDirectory(email)
             self.path_execute = self.ClassColection.getPathExecute() + dir_execucao
 
             self.ClassColection.CreateLocalFastaFile(

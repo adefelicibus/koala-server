@@ -106,7 +106,7 @@
         <param name="UseAngleDB" type="boolean" label="Use Amino Acid Database (ADB)" truevalue="yes" falsevalue="no" checked="no" help="" />
         <param name="AminoAcidL" type="boolean" label="Use L amino acids" truevalue="yes" falsevalue="no" checked="yes" help="L is common in nature " />
 
-        <param name="email" type="text" label="User's Email Adress" optional="false" size="30" help="Email address to which the notice will be sent when the run ends"/>
+        <param name="email" type="text" label="User's Email Adress (optional)" optional="True" size="30" help="Email address to which the notice will be sent when the run ends"/>
         <param type="hidden" name="toolname" value="ProtPred_EDA"/>
     </inputs>
     <outputs>

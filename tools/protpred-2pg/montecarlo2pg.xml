@@ -58,7 +58,7 @@
             <option value="charmm27">Charmm27</option>
             <option value="amber99sb-ildn">AMBER 99</option>
         </param>
-        <param name="email" type="text" label="User's Email Adress" optional="false" size="30" help="Email address to which the notice will be sent when the run ends"/>
+        <param name="email" type="text" label="User's Email Adress (optional)" optional="True" size="30" help="Email address to which the notice will be sent when the run ends"/>
         <conditional name="create_compressed">
             <param name="chk_compress" type="boolean" label="Create a compressed file with all the splited files?" help="" checked="False"/>
         </conditional>

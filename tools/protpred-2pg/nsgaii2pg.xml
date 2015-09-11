@@ -66,7 +66,7 @@
             <option value="GBSA_Solvatation">GBSA_Solvatation</option>
             <option value="Van_der_Waals">Van der Waals</option>
         </param>
-        <param name="email" type="text" label="User's Email Adress" optional="false" size="30" help="Email address to which the notice will be sent when the run ends"/>
+        <param name="email" type="text" label="User's Email Adress (optional)" optional="True" size="30" help="Email address to which the notice will be sent when the run ends"/>
         <conditional name="create_compressed">
             <param name="chk_compress" type="boolean" label="Create a compressed file with all the PDB files?" help="" checked="False"/>
         </conditional>
