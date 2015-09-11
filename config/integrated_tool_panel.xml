@@ -14,9 +14,10 @@
     its section) modify that file and restart Galaxy.
     -->
     <label id="pre_processing" text="Pre-processing" version="" />
-    <section id="protpred-2pg" name="ProtPred Tools" version="">
-    </section>
-    <section id="editex" name="Edit Data" version="">
+    <section id="getext" name="Get/Edit Data" version="">
+        <label id="pre_get" text="Upload Data" version="" />
+        <tool id="upload1" />
+        <tool id="pdb_download" />
         <label id="pre_edit" text="Modif Data" version="" />
         <tool id="rename_atoms" />
         <tool id="check_pdb" />
@@ -45,34 +46,7 @@
         <label id="predict_meamt" text="MEAMT Framework" version="" />
         <tool id="meamt" />
     </section>
-    <section id="protpred-eda" name="ProtPred-EDA Tools" version="">
-    </section>
-    <section id="getext" name="Get/Edit Data" version="">
-        <label id="pre_get" text="Upload Data" version="" />
-        <tool id="upload1" />
-        <tool id="pdb_download" />
-    </section>
-    <section id="protpred" name="ProtPred Tools" version="">
-    </section>
-    <section id="meamt" name="MEAMT Tools" version="">
-    </section>
-    <section id="protpred_eda" name="ProtPred-EDA Tools" version="">
-    </section>
-    <section id="robetta" name="Robetta Tools" version="">
-    </section>
-    <section id="quark" name="Quark Tools" version="">
-    </section>
-    <section id="NGS_QC" name="NGS: QC and manipulation" version="">
-    </section>
-    <section id="gromacstools" name="GROMACS Tools" version="">
-        <tool id="tool_definebox" />
-        <tool id="tool_genion" />
-        <tool id="tool_grompp" />
-        <tool id="tool_mdrun" />
-        <tool id="tool_pdb2gmx" />
-        <tool id="tool_remove_water" />
-        <tool id="tool_solvate" />
-    </section>
+    <label id="analysistxt" text="Analysis of the solutions" version="" />
     <section id="analysis" name="Analysis Tools" version="">
         <label id="analysis_rank" text="Solutions Ranking" version="" />
         <tool id="dominance_ranking" />
@@ -82,6 +56,16 @@
         <tool id="calculate_rmsd" />
         <tool id="calculate_tmscore" />
         <tool id="calculate_gdtts" />
+    </section>
+    <label id="gromacs" text="Gromacs" version="" />
+    <section id="gromacstools" name="GROMACS Tools" version="">
+        <tool id="tool_definebox" />
+        <tool id="tool_genion" />
+        <tool id="tool_grompp" />
+        <tool id="tool_mdrun" />
+        <tool id="tool_pdb2gmx" />
+        <tool id="tool_remove_water" />
+        <tool id="tool_solvate" />
     </section>
     <!-- <section id="getext" name="Get/Edit Data" version="">
         <tool id="upload1" />

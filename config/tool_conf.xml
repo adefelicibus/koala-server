@@ -1,12 +1,10 @@
 <?xml version='1.0' encoding='utf-8'?>
 <toolbox>
   <label id="pre_processing" text="Pre-processing" />
-  <section id="getext" name="Get Data">
+  <section id="getext" name="Get/Edit Data">
     <label id="pre_get" text="Upload Data" />
     <tool file="data_source/upload.xml"/>
     <tool file="pdb-tools/pdb_download.xml"/>
-  </section>
-  <section id="editex" name="Edit Data">
     <label id="pre_edit" text="Modif Data" />
     <tool file="pdb-tools/rename_atoms_pdb.xml"/>
     <tool file="pdb-tools/check_pdb.xml"/>
@@ -35,6 +33,7 @@
     <label id="predict_meamt" text="MEAMT Framework" />
     <tool file="meamt/meamt.xml" />
   </section>
+  <label id="analysistxt" text="Analysis of the solutions" />
   <section id="analysis" name="Analysis Tools">
     <label id="analysis_rank" text="Solutions Ranking" />
     <tool file="analysis/dominance_ranking.xml" />
@@ -45,6 +44,7 @@
     <tool file="analysis/calculate_tmscore.xml" />
     <tool file="analysis/calculate_gdtts.xml" />
   </section>
+  <label id="gromacs" text="Gromacs" />
   <section id="gromacstools" name="GROMACS Tools">
     <tool file="gromacs-tools/definebox.xml"/>
     <tool file="gromacs-tools/genion.xml"/>
