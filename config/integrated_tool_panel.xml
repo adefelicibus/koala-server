@@ -13,7 +13,77 @@
     via its API - but if changes are necessary (such as to hide a tool or re-assign
     its section) modify that file and restart Galaxy.
     -->
+    <label id="pre_processing" text="Pre-processing" version="" />
+    <section id="protpred-2pg" name="ProtPred Tools" version="">
+    </section>
+    <section id="editex" name="Edit Data" version="">
+        <label id="pre_edit" text="Modif Data" version="" />
+        <tool id="rename_atoms" />
+        <tool id="check_pdb" />
+        <tool id="split_pdb" />
+        <tool id="merge_pdb" />
+    </section>
+    <label id="predictors" text="Ab initio Predictors" version="" />
+    <section id="build_pop" name="Build Conformations" version="">
+        <tool id="2pg_build_conformation" />
+        <tool id="meamt_pop" />
+    </section>
+    <section id="predicts" name="Predictors" version="">
+        <label id="predict_2pg" text="2PG Framework" version="" />
+        <tool id="2pg_mono" />
+        <tool id="2pg_nsga2" />
+        <tool id="2pg_random" />
+        <tool id="2pg_monte_carlo" />
+        <label id="predict_eda" text="ProtPreEDA Framework" version="" />
+        <tool id="protprededa_rw" />
+        <tool id="protprededa_mcm" />
+        <tool id="protprededa_eda" />
+        <tool id="protprededa_rboa" />
+        <tool id="protprededa_ga" />
+        <tool id="protprededa_de" />
+        <tool id="protprededa_ceda" />
+        <label id="predict_meamt" text="MEAMT Framework" version="" />
+        <tool id="meamt" />
+    </section>
+    <section id="protpred-eda" name="ProtPred-EDA Tools" version="">
+    </section>
     <section id="getext" name="Get/Edit Data" version="">
+        <label id="pre_get" text="Upload Data" version="" />
+        <tool id="upload1" />
+        <tool id="pdb_download" />
+    </section>
+    <section id="protpred" name="ProtPred Tools" version="">
+    </section>
+    <section id="meamt" name="MEAMT Tools" version="">
+    </section>
+    <section id="protpred_eda" name="ProtPred-EDA Tools" version="">
+    </section>
+    <section id="robetta" name="Robetta Tools" version="">
+    </section>
+    <section id="quark" name="Quark Tools" version="">
+    </section>
+    <section id="NGS_QC" name="NGS: QC and manipulation" version="">
+    </section>
+    <section id="gromacstools" name="GROMACS Tools" version="">
+        <tool id="tool_definebox" />
+        <tool id="tool_genion" />
+        <tool id="tool_grompp" />
+        <tool id="tool_mdrun" />
+        <tool id="tool_pdb2gmx" />
+        <tool id="tool_remove_water" />
+        <tool id="tool_solvate" />
+    </section>
+    <section id="analysis" name="Analysis Tools" version="">
+        <label id="analysis_rank" text="Solutions Ranking" version="" />
+        <tool id="dominance_ranking" />
+        <tool id="sort_by_front" />
+        <tool id="sort_method_by_front" />
+        <label id="analysis_compare" text="Solutions Comparing" version="" />
+        <tool id="calculate_rmsd" />
+        <tool id="calculate_tmscore" />
+        <tool id="calculate_gdtts" />
+    </section>
+    <!-- <section id="getext" name="Get/Edit Data" version="">
         <tool id="upload1" />
         <tool id="pdb_download" />
         <tool id="rename_atoms" />
@@ -64,5 +134,5 @@
         <tool id="calculate_rmsd" />
         <tool id="calculate_tmscore" />
         <tool id="calculate_gdtts" />
-    </section>
+    </section> -->
 </toolbox>
