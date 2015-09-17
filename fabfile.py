@@ -91,9 +91,9 @@ env_path = '/home/%s/env/bin/activate' % username
 # pulsar_server_7 = '%s@%s' % (username, ip_server)
 
 # # pulsar server 8, docking10
-username = 'koala'
-port_http = 8093
-pulsar_server_8 = '%s@%s' % (username, ip_server)
+# username = 'koala'
+# port_http = 8093
+# pulsar_server_8 = '%s@%s' % (username, ip_server)
 
 # # pulsar server 9, docking11
 # username = 'koala'
@@ -105,6 +105,11 @@ pulsar_server_8 = '%s@%s' % (username, ip_server)
 # port_http = 8095
 # pulsar_server_10 = '%s@%s' % (username, ip_server)
 
+# # pulsar server 11, docking2
+username = 'koala'
+port_http = 8085
+pulsar_server_11 = '%s@%s' % (username, ip_server)
+
 # Configurações Locais
 # tool_path = 'galaxy-dist/tools/protpred'
 # static_path = 'galaxy-dist/static/'
@@ -113,9 +118,9 @@ pulsar_server_8 = '%s@%s' % (username, ip_server)
 # env.hosts = ["myserver.net"]
 # env.user = "koala"
 env.key_filename = "/home/alexandre/.ssh/id_rsa"
-env.password = "koala"
-env.port = 2235
-env.hosts = [pulsar_server_8]
+# env.password = ""
+env.port = 2227
+env.hosts = [pulsar_server_11]
 env.forward_agent = True
 
 # -------------------------------
@@ -125,6 +130,7 @@ env.forward_agent = True
 # ANTES DE QUALQUER COISA, CRIAR O USUARIO KOALA, COLOCAR COMO ROOT,
 # LOGAR, CRIAR O SSH-KEYGEN, COPIAR
 # SSH KEY DO COMPUTADOR LOCAL PARA O AUTHORIZED_KEYS NO SERVIDOR
+# ssh-copy-id -i ~/.ssh/id_rsa.pub remote-host
 
 
 def testserver():

@@ -51,11 +51,11 @@
         </conditional>
         <param name="rotamer_library" type="select" label="Rotamer Library" help="">
             <option value="none">None</option>
-            <option value="cad_tuffery">Cad Tuffery</option>
+            <option value="cad_tuffery" selected="True">Cad Tuffery</option>
         </param>
         <param name="force_field" type="select" label="Force Field" help="">
             <option value="charmm27">Charmm27</option>
-            <option value="amber99sb-ildn">AMBER 99</option>
+            <option value="amber99sb-ildn" selected="True">AMBER 99</option>
         </param>
         <param name="IniPopFileName" type="data" format="pdb" label="Population File" />
         <param name="NumberGeration" label="Number of Generation" type="integer" optional="false" value="1" min="1"/>

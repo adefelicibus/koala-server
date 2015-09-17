@@ -877,7 +877,7 @@ class CalculateTMScore(object):
                         dict_tmscore[only_pdb_file_name] = tmscore_value
                 temp_tmscore.close()
 
-        return OrderedDict(sorted(dict_tmscore.items(), key=lambda x: x[1]))
+        return OrderedDict(sorted(dict_tmscore.items(), key=lambda x: x[1], reverse=True))
 
     def run_CalculateTMscore(self):
         """

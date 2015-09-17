@@ -76,7 +76,7 @@ class MonteCarlo2PG(object):
             html.append('<div class="sectionmessage">')
             html.append('<br>Submitted Primary Sequence.<br><br></div>')
             html.append('<div class="code">')
-            html.append('Length: %s' % len(self.sequence))
+            html.append('Length: %s<br>' % len(self.sequence))
             html.append('%s<br></div>' % self.sequence)
 
             # Dowload arquivos pop_X.pdb
@@ -402,7 +402,7 @@ class MonteCarlo2PG(object):
             html.append('<div class="sectionmessage">')
             html.append('<br>Submitted Primary Sequence.<br><br></div>')
             html.append('<div class="code">')
-            html.append('Length: %s' % len(self.sequence))
+            html.append('Length: %s<br>' % len(self.sequence))
             html.append('%s<br></div>' % self.sequence)
 
             fhtml = []
@@ -816,7 +816,7 @@ class MonteCarlo2PG(object):
 
             mc.makeHtml()
 
-            if(self.opts.useJmol == 'True'):
+            if(self.opts.useJmol in ('True', 'true')):
                 self.makeHtmlWithJMol(pdbs[0])
 
             if(self.opts.inputEmail):

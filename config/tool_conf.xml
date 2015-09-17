@@ -1,16 +1,18 @@
 <?xml version='1.0' encoding='utf-8'?>
 <toolbox>
   <label id="pre_processing" text="Pre-processing" />
-  <section id="getext" name="Get/Edit Data">
-    <label id="pre_get" text="Upload Data" />
-    <tool file="data_source/upload.xml"/>
-    <tool file="pdb-tools/pdb_download.xml"/>
-    <label id="pre_edit" text="Modif Data" />
-    <tool file="pdb-tools/rename_atoms_pdb.xml"/>
-    <tool file="pdb-tools/check_pdb.xml"/>
-    <tool file="pdb-tools/split_pdb.xml"/>
-    <tool file="pdb-tools/merge_pdb.xml"/>
-  </section>
+  <!-- <section id="getext" name="Get/Edit Data"> -->
+    <section id="pre_get" name="Get Data">
+      <tool file="data_source/upload.xml"/>
+      <tool file="pdb-tools/pdb_download.xml"/>
+    </section>
+    <section id="pre_edit" name="Modif Data" >
+      <tool file="pdb-tools/rename_atoms_pdb.xml"/>
+      <tool file="pdb-tools/check_pdb.xml"/>
+      <tool file="pdb-tools/split_pdb.xml"/>
+      <tool file="pdb-tools/merge_pdb.xml"/>
+     </section>
+  <!-- </section> -->
   <label id="predictors" text="Ab initio Predictors" />
   <section id="build_pop" name="Build Conformations">
     <tool file="protpred-2pg/buildconformation2pg.xml" />
@@ -34,16 +36,18 @@
     <tool file="meamt/meamt.xml" />
   </section>
   <label id="analysistxt" text="Analysis of the solutions" />
-  <section id="analysis" name="Analysis Tools">
-    <label id="analysis_rank" text="Solutions Ranking" />
-    <tool file="analysis/dominance_ranking.xml" />
-    <tool file="analysis/sort_by_front_dominance.xml" />
-    <tool file="analysis/sort_method_by_front_dominance.xml" />
-    <label id="analysis_compare" text="Solutions Comparing" />
-    <tool file="analysis/calculate_rmsd.xml" />
-    <tool file="analysis/calculate_tmscore.xml" />
-    <tool file="analysis/calculate_gdtts.xml" />
-  </section>
+  <!-- <section id="analysis" name="Analysis Tools"> -->
+    <section id="analysis_rank" name="Solutions Ranking">
+      <tool file="analysis/dominance_ranking.xml" />
+      <tool file="analysis/sort_by_front_dominance.xml" />
+      <tool file="analysis/sort_method_by_front_dominance.xml" />
+    </section>
+    <section id="analysis_compare" name="Solutions Comparing">
+      <tool file="analysis/calculate_rmsd.xml" />
+      <tool file="analysis/calculate_tmscore.xml" />
+      <tool file="analysis/calculate_gdtts.xml" />
+    </section>
+  <!-- </section> -->
   <label id="gromacs" text="Gromacs" />
   <section id="gromacstools" name="GROMACS Tools">
     <tool file="gromacs-tools/definebox.xml"/>

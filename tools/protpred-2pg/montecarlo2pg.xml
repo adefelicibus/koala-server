@@ -56,7 +56,7 @@
         <param name="How_Many_Rotation" label="How many rotation" type="integer" optional="false" value="1" min="1"/>
         <param name="force_field" type="select" label="Force Field" help="">
             <option value="charmm27">Charmm27</option>
-            <option value="amber99sb-ildn">AMBER 99</option>
+            <option value="amber99sb-ildn" selected="True">AMBER 99</option>
         </param>
         <param name="email" type="text" label="User's Email Adress (optional)" optional="True" size="30" help="Email address to which the notice will be sent when the run ends"/>
         <conditional name="create_compressed">

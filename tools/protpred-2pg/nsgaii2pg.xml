@@ -52,7 +52,7 @@
         <param name="NumberGeration" label="Number of Generation" type="integer" optional="false" value="1" min="1"/>
         <param name="rotamer_library" type="select" label="Rotamer Library" help="">
             <option value="none">None</option>
-            <option value="cad_tuffery">Cad Tuffery</option>
+            <option value="cad_tuffery" selected="True">Cad Tuffery</option>
         </param>
         <param name="How_Many_Rotation" label="How many rotation" type="integer" optional="false" value="1" min="1"/>
         <param name="Fitness_Energy" type="select" display="checkboxes" multiple="true" optional="false" label="Objectives">

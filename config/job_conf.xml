@@ -11,30 +11,74 @@
     </handlers>
     <destinations default="local">
         <destination id="local" runner="local"/>
-        <destination id="lcrcloud2" runner="pulsar">
-            <param id="url">http://lcrcloud2.icmc.usp.br/managers/queue</param>
-            <!-- <param id="url">http://200.144.255.42:8005/managers/queue</param> -->
+        <destination id="docking01" runner="pulsar">
+            <param id="url">http://200.144.255.35:8084/managers/queue</param>
             <param id="docker_enabled">true</param>
             <param id="docker_volumes">$default_file_path:rw</param>
             <param id="docker_auto_rm">true</param>
         </destination>
-        <destination id="lcrcloud3" runner="pulsar">
-            <param id="url">http://lcrcloud3.icmc.usp.br/managers/queue</param>
-            <!-- <param id="url">http://200.144.255.42:8006/managers/queue</param> -->
+        <destination id="docking02" runner="pulsar">
+            <param id="url">http://200.144.255.35:8085/managers/queue</param>
             <param id="docker_enabled">true</param>
             <param id="docker_volumes">$default_file_path:rw</param>
             <param id="docker_auto_rm">true</param>
         </destination>
-        <destination id="lcrcloud4" runner="pulsar">
-            <param id="url">http://lcrcloud4.icmc.usp.br/managers/queue</param>
-            <!-- <param id="url">http://200.144.255.42:8007/managers/queue</param> -->
+        <destination id="docking03" runner="pulsar">
+            <param id="url">http://200.144.255.35:8086/managers/queue</param>
             <param id="docker_enabled">true</param>
             <param id="docker_volumes">$default_file_path:rw</param>
             <param id="docker_auto_rm">true</param>
         </destination>
-        <destination id="lcrcloud5" runner="pulsar">
-            <param id="url">http://lcrcloud5.icmc.usp.br/managers/queue</param>
-            <!-- <param id="url">http://200.144.255.42:8011/managers/queue</param> -->
+        <destination id="docking04" runner="pulsar">
+            <param id="url">http://200.144.255.35:8087/managers/queue</param>
+            <param id="docker_enabled">true</param>
+            <param id="docker_volumes">$default_file_path:rw</param>
+            <param id="docker_auto_rm">true</param>
+        </destination>
+        <destination id="docking05" runner="pulsar">
+            <param id="url">http://200.144.255.35:8088/managers/queue</param>
+            <param id="docker_enabled">true</param>
+            <param id="docker_volumes">$default_file_path:rw</param>
+            <param id="docker_auto_rm">true</param>
+        </destination>
+        <destination id="docking06" runner="pulsar">
+            <param id="url">http://200.144.255.35:8089/managers/queue</param>
+            <param id="docker_enabled">true</param>
+            <param id="docker_volumes">$default_file_path:rw</param>
+            <param id="docker_auto_rm">true</param>
+        </destination>
+        <destination id="docking07" runner="pulsar">
+            <param id="url">http://200.144.255.35:8090/managers/queue</param>
+            <param id="docker_enabled">true</param>
+            <param id="docker_volumes">$default_file_path:rw</param>
+            <param id="docker_auto_rm">true</param>
+        </destination>
+        <destination id="docking08" runner="pulsar">
+            <param id="url">http://200.144.255.35:8091/managers/queue</param>
+            <param id="docker_enabled">true</param>
+            <param id="docker_volumes">$default_file_path:rw</param>
+            <param id="docker_auto_rm">true</param>
+        </destination>
+        <destination id="docking09" runner="pulsar">
+            <param id="url">http://200.144.255.35:8092/managers/queue</param>
+            <param id="docker_enabled">true</param>
+            <param id="docker_volumes">$default_file_path:rw</param>
+            <param id="docker_auto_rm">true</param>
+        </destination>
+        <destination id="docking10" runner="pulsar">
+            <param id="url">http://200.144.255.35:8093/managers/queue</param>
+            <param id="docker_enabled">true</param>
+            <param id="docker_volumes">$default_file_path:rw</param>
+            <param id="docker_auto_rm">true</param>
+        </destination>
+        <destination id="docking11" runner="pulsar">
+            <param id="url">http://200.144.255.35:8094/managers/queue</param>
+            <param id="docker_enabled">true</param>
+            <param id="docker_volumes">$default_file_path:rw</param>
+            <param id="docker_auto_rm">true</param>
+        </destination>
+        <destination id="docking12" runner="pulsar">
+            <param id="url">http://200.144.255.35:8095/managers/queue</param>
             <param id="docker_enabled">true</param>
             <param id="docker_volumes">$default_file_path:rw</param>
             <param id="docker_auto_rm">true</param>

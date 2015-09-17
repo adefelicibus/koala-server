@@ -158,12 +158,12 @@ class IcmcGalaxy(object):
 
     general_parameters = {
         'gromacs_energy_min': 'ener_implicit',
-        'NumberProcessor': '1',
+        'NumberProcessor': '8',
         'NumberObjective': '1',
         'NumberGeration': '1',
         'SizePopulation': '1',
-        'MonteCarloSteps': '100',
-        'FrequencyMC': '10',
+        'MonteCarloSteps': '50',
+        'FrequencyMC': '5',
         'TemperatureMC': '370',
         'Fitness_Energy': 'Potential',
         'NativeProtein': '/home/faccioli/Execute/1VII_teste_1_1/1VII.pdb',
@@ -177,7 +177,7 @@ class IcmcGalaxy(object):
         'top_file': 'top_protein.top',
         'IniPopFileName': 'pop_0.pdb',
         'Started_Generation': '-1',
-        'z_matrix_fileName': 'z_matrix_file',
+        'z_matrix_fileName': 'z_matrix',
         'Path_Gromacs_Programs':
             '/home/faccioli/programs/gmx-4.6.5/no_mpi/bin/',
         'Computed_Energies_Gromacs_File':
@@ -196,19 +196,19 @@ class IcmcGalaxy(object):
         'max_angle_mutation_omega': '10',
         'min_angle_mutation_side_chain': '-10',
         'max_angle_mutation_side_chain': '10',
-        'apply_crossover': 'no',
-        'Individual_Mutation_Rate': '0.75',
+        'apply_crossover': 'yes',
+        'Individual_Mutation_Rate': '0.60',
         'mdp_file_min': 'energy_minimization_implicit.mdp',
         'mdp_file_name': 'compute_energy_implicit.mdp',
-        'c_terminal_charge': 'none',
-        'n_terminal_charge': 'none',
-        'force_field': 'charmm27',
+        'c_terminal_charge': 'ACE',
+        'n_terminal_charge': 'NME',
+        'force_field': 'amber99sb-ildn',
         'objective_analisys': 'none',
         'objective_analisys_dimo_source':
             '/home/faccioli/workspace/dimo/DIMO2',
         'Program_Run_GreedyTreeGenerator2PG':
             '/2pg_cartesian/scripts/dimo/call_GreedyTreeGenerator2PG.sh',
-        '1_point_cros_Rate': '0.5',
+        '1_point_cros_Rate': '0.80',
         'StepNumber': '100',
     }
 

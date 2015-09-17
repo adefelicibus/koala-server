@@ -67,21 +67,21 @@
         <param name="SizePopulation" label="Size of Population" type="integer" optional="false" value="20" min="1"/>
         <param name="gromacs_energy_min" type="select" label="Gromacs Energy Minimization" help="">
             <option value="none">None</option>
-            <option value="ener_implicit">Energy Implicit</option>
+            <option value="ener_implicit" selected="True">Energy Implicit</option>
         </param>
         <param name="rotamer_library" type="select" label="Rotamer Library" help="">
             <option value="none">None</option>
-            <option value="cad_tuffery">Cad Tuffery</option>
+            <option value="cad_tuffery" selected="True">Cad Tuffery</option>
         </param>
         <conditional name="forcefield">
             <param name="force_field" type="select" label="Force Field" help="">
                 <option value="charmm27">Charmm27</option>
-                <option value="amber99sb-ildn">AMBER 99</option>
+                <option value="amber99sb-ildn" selected="True">AMBER 99</option>
             </param>
             <when value="amber99sb-ildn">
                 <param name="c_terminal_charge" type="select" label="C-Terminal with charge" help="">
                     <option value="none">None</option>
-                    <option value="ACE" selected="#if $force_field.value == 'charmm27' #end if">ACE</option>
+                    <option value="ACE" selected="#if $force_field.value == 'amber99sb-ildn' #end if">ACE</option>
                 </param>
                 <param name="n_terminal_charge" type="select" label="N-Terminal with charge" help="">
                     <option value="none">None</option>
