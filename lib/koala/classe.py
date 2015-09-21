@@ -200,8 +200,8 @@ class IcmcGalaxy(object):
         'Individual_Mutation_Rate': '0.60',
         'mdp_file_min': 'energy_minimization_implicit.mdp',
         'mdp_file_name': 'compute_energy_implicit.mdp',
-        'c_terminal_charge': 'ACE',
-        'n_terminal_charge': 'NME',
+        'c_terminal_charge': 'none',
+        'n_terminal_charge': 'none',
         'force_field': 'amber99sb-ildn',
         'objective_analisys': 'none',
         'objective_analisys_dimo_source':
@@ -678,14 +678,16 @@ class IcmcGalaxy(object):
                         arq_fasta.write("none:A|PDBID|CHAIN|SEQUENCE"+'\n')
                         linha = fasta_file  # neste caso é só a sequência, mas a variável é a mesma
                     elif type_input == '1':
-                        i = 0
-                        for line in file(fasta_file, "r"):
-                            if(i == 1):
-                                linha = line
-                            else:
-                                i += 1
+                        input_fasta = file(fasta_file, "r")
+                        lines = input_fasta.readlines()
+                        header = lines[0]
+                        linha = lines[1]
 
-                    if(self.getParameterValue('c_terminal_charge') == 'ACE' and
+                    if(self.getParameterValue('c_terminal_charge') == 'none' and
+                            self.getParameterValue('n_terminal_charge') == 'none'):
+                        arq_fasta.write(header)
+                        arq_fasta.write(linha)
+                    elif(self.getParameterValue('c_terminal_charge') == 'ACE' and
                             self.getParameterValue('n_terminal_charge') == 'none'):
                         arq_fasta.write('X')
                         arq_fasta.write(linha)

@@ -48,7 +48,7 @@ class BuildConformation2PG(object):
             self.ClassColection.setParameter('SizePopulation', self.opts.sizePopulation)
             self.ClassColection.setParameter('force_field', self.opts.forceField)
             self.ClassColection.setParameter('rotamer_library', self.opts.rotamerLibrary)
-            if(self.ClassColection.getParameterValue('force_field') == 'amber99sb-ildn'):
+            if(self.opts.forceField == 'amber99sb-ildn'):
                 self.ClassColection.setParameter('c_terminal_charge', self.opts.cTerminal)
                 self.ClassColection.setParameter('n_terminal_charge', self.opts.nTerminal)
             self.ClassColection.setParameter(
