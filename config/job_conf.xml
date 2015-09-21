@@ -11,12 +11,6 @@
     </handlers>
     <destinations default="local">
         <destination id="local" runner="local"/>
-        <destination id="docking01" runner="pulsar">
-            <param id="url">http://200.144.255.35:8084/managers/queue</param>
-            <param id="docker_enabled">true</param>
-            <param id="docker_volumes">$default_file_path:rw</param>
-            <param id="docker_auto_rm">true</param>
-        </destination>
         <destination id="docking02" runner="pulsar">
             <param id="url">http://200.144.255.35:8085/managers/queue</param>
             <param id="docker_enabled">true</param>
@@ -86,10 +80,22 @@
     </destinations>
     <tools>
         <tool id="upload1" destination="local"/>
-        <!-- <tool id="2pg_mono" destination="lcrcloud2"/>
-        <tool id="2pg_monte_carlo" destination="lcrcloud3"/>
-        <tool id="2pg_nsga2" destination="lcrcloud4"/>
-        <tool id="2pg_random" destination="lcrcloud5"/> -->
+        <tool id="2pg_mono" destination="docking03"/>
+        <tool id="2pg_monte_carlo" destination="docking04"/>
+        <tool id="2pg_nsga2" destination="docking05"/>
+        <tool id="2pg_random" destination="docking06"/>
+        <tool id="protprededa_ceda" destination="docking07"/>
+        <tool id="protprededa_de" destination="docking07"/>
+        <tool id="protprededa_eda" destination="docking08"/>
+        <tool id="protprededa_ga" destination="docking08"/>
+        <tool id="protprededa_mcm" destination="docking09"/>
+        <tool id="protprededa_rw" destination="docking09"/>
+        <tool id="protprededa_rboa" destination="docking10"/>
+        <tool id="calculate_gdtts" destination="docking11"/>
+        <tool id="calculate_rmsd" destination="docking11"/>
+        <tool id="calculate_tmscore" destination="docking11"/>
+        <tool id="dominance_ranking" destination="docking12"/>
+        <tool id="sort_by_front" destination="docking12"/>
     </tools>
     <limits>
         <limit type="registered_user_concurrent_jobs">10</limit>
