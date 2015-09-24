@@ -575,8 +575,8 @@ class IcmcGalaxy(object):
 
     def getPathExecute(self):  # the folder where all the execution folders run
         try:
-            return "/home/alexandre/execute/"
-            # return "/dados/%s/execute/" % self.getLoggedUser()
+            # return "/home/alexandre/execute/"
+            return "/dados/%s/execute/" % self.getLoggedUser()
         except Exception, e:
             self.ShowErrorMessage("Error when getPathExecute\n%s" % e)
 
