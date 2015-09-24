@@ -80,7 +80,7 @@
         <param type="hidden" name="toolname" value="ProtPred_EDA"/>
     </inputs>
     <outputs>
-        <data format="zip" name="output" label="ProtPredEDA_out.zip"/>
+        <data format="zip" name="output" label="ProtPredEDA_GA.zip"/>
     </outputs>
     <help>
 Execute ProtPred-EDA algorithm
