@@ -550,7 +550,9 @@ class IcmcGalaxy(object):
             if(self.framework == '2PG'):
                 # self.command = '%ssrc/%s' % (
                 self.command = '/usr/local/bin/%s' % (algorithm)
-            elif(self.framework == 'MEAMT'):
+            # elif(self.framework == 'MEAMT'):
+            #     self.command = '%s%s' % (self.getPathAlgorithms(framework), algorithm)
+            elif(self.framework == 'i-paes'):
                 self.command = '%s%s' % (self.getPathAlgorithms(framework), algorithm)
             else:
                 self.command = '%s%s' % (self.getPathExecute(), algorithm)
@@ -573,7 +575,8 @@ class IcmcGalaxy(object):
 
     def getPathExecute(self):  # the folder where all the execution folders run
         try:
-            return "/dados/%s/execute/" % self.getLoggedUser()
+            return "/home/alexandre/execute/"
+            # return "/dados/%s/execute/" % self.getLoggedUser()
         except Exception, e:
             self.ShowErrorMessage("Error when getPathExecute\n%s" % e)
 
@@ -746,6 +749,30 @@ class IcmcGalaxy(object):
         except Exception, e:
             self.ShowErrorMessage("Error when CreateLocalFastaFile\n%s" % e)
             # raise Exception("Error while creating the local fasta file!\n%s" % e)
+
+    def CreateLocalSeqFile(self, path, type_input, seq_file, tool):
+        try:
+            arq_fasta = open(path + "protein.seq", "wr")
+            sequence = ''
+            residues = 0
+
+            if type_input == '0':  # verify
+                residues = len(seq_file.strip().replace("\n", ""))
+                arq_fasta.write(seq_file)
+                sequence = seq_file
+            elif type_input == '1':
+                for line in file(seq_file, "r"):
+                    residues += 1
+                    sequence += line.split(" ")[0]  # three letter code
+                    arq_fasta.write(line.strip().replace("\n", ""))
+                    arq_fasta.write("\n")  # TODO: do not insert an empty line
+
+            arq_fasta.close()
+
+            return sequence, residues
+
+        except Exception, e:
+            self.ShowErrorMessage("Error when CreateLocalSeqFile\n%s" % e)
 
     def CreateConfigurationFile(self, path):
         try:
@@ -932,6 +959,7 @@ class IcmcGalaxy(object):
                         for f in fileList]
             for arquivo in fileList:
                 if not os.path.isdir(arquivo):
+                    print 'fram class', self.framework
                     if(self.framework == 'MEAMT'):
                         shutil.copy(arquivo, new_path)
                     else:
