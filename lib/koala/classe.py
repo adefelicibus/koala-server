@@ -959,7 +959,6 @@ class IcmcGalaxy(object):
                         for f in fileList]
             for arquivo in fileList:
                 if not os.path.isdir(arquivo):
-                    print 'fram class', self.framework
                     if(self.framework == 'MEAMT'):
                         shutil.copy(arquivo, new_path)
                     else:
@@ -1176,7 +1175,7 @@ class IcmcGalaxy(object):
                     pass
                 for file_name in files:
                     name, ext = os.path.splitext(file_name)
-                    if(name == folder and ext == '.pdb'):
+                    if(ext == '.pdb'):
                         src = os.path.join(root, file_name)
                         dst = os.path.join(path, file_name)
                         shutil.copy(src, dst)
