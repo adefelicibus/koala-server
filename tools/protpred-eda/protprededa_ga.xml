@@ -10,6 +10,12 @@
             #set $from_fasta = 0
         #end if
 
+        #if $create_compressed.chk_compress == True
+            #set $output_zip = $pdbs
+        #else
+            #set $output_zip = "None"
+        #end if
+
         protprededa_ga.py
         "$Threshold"
         "$MaxEval"
@@ -30,8 +36,14 @@
         "$CrossoverRate"
         "$MutationRate"
         "$MutationFactor"
-        "$output"
-        "$output.files_path"
+        "$html_file"
+        "$html_file.files_path"
+        "$create_compressed.chk_compress"
+        "$output_zip"
+        "$__app__.security.encode_id( '%s' % $html_file.id )"
+        "$active_jmol"
+        <!-- "$output"
+        "$output.files_path" -->
         "$email"
         "$toolname"
         "$__root_dir__"
@@ -75,12 +87,20 @@
 
         <param name="UseAngleDB" type="boolean" label="Use Amino Acid Database (ADB)" truevalue="yes" falsevalue="no" checked="no" help="" />
         <param name="AminoAcidL" type="boolean" label="Use L amino acids" truevalue="yes" falsevalue="no" checked="yes" help="L is common in nature " />
-
         <param name="email" type="text" label="User's Email Adress" optional="false" size="30" help="Email address to which the notice will be sent when the run ends"/>
+
+        <conditional name="create_compressed">
+            <param name="chk_compress" type="boolean" label="Create a compressed file with all the PDB files?" help="" checked="False"/>
+        </conditional>
+        <param type="boolean" name="active_jmol" value="false" label="Use Jmol visualization?" help="Jmol offers a 3D visualization of the molecule. You must have JavaScript enabled on your browser."/>
         <param type="hidden" name="toolname" value="ProtPred_EDA"/>
     </inputs>
     <outputs>
-        <data format="zip" name="output" label="ProtPredEDA_GA.zip"/>
+        <data format="html" name="html_file" label="ProtPredEDA_GA.html"/>
+        <data name="pdbs" format="zip" label="ProtPredEDA_GA.zip">
+            <filter>create_compressed['chk_compress'] == True</filter>
+        </data>
+        <!-- <data format="zip" name="output" label="ProtPredEDA_GA.zip"/> -->
     </outputs>
     <help>
 Execute ProtPred-EDA algorithm
