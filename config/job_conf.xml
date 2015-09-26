@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <job_conf>
     <plugins workers="4">
-        <plugin id="pulsar" type="runner" load="galaxy.jobs.runners.pulsar:PulsarRESTJobRunner">
+        <plugin id="pulsar" type="runner" load="galaxy.jobs.runners.pulsar:PulsarRESTJobRunner" workers="10">
             <param id="transport">curl</param>
         </plugin>
-        <plugin id="local" type="runner" load="galaxy.jobs.runners.local:LocalJobRunner"/>
+        <plugin id="local" type="runner" load="galaxy.jobs.runners.local:LocalJobRunner" workers="6"/>
     </plugins>
     <handlers default="handler0">
         <handler id="handler0" tags="handlers"/>
