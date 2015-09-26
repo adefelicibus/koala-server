@@ -244,7 +244,7 @@ class IcmcGalaxy(object):
                     ('UseAngleDB', 'no'),
                     ('AminoAcidL', 'yes'),
                     ('SideChainMulti', 'no'),
-                    ('SinglePDB', 'yes'),
+                    ('SinglePDB', 'no'),
                     ('ChiDB', 'no'),
                     ]
 
@@ -715,6 +715,7 @@ class IcmcGalaxy(object):
             elif(tool == 'ProtPred_EDA'):
                 if type_input == '0':
                     arq_fasta.write(fasta_file)
+                    sequence = fasta_file
                     caption = 'none'
                 elif type_input == '1':
                     for line in file(fasta_file, "r"):
@@ -722,6 +723,7 @@ class IcmcGalaxy(object):
                             caption = line[1:5]
                         else:
                             arq_fasta.write(line.replace('\n', ''))
+                            sequence += line
             elif(tool in ('MEAMT_BuildConformation_Tool', 'MEAMT_Tool')):
                 residues = 0
                 if type_input == '0':
@@ -1113,17 +1115,32 @@ class IcmcGalaxy(object):
             # elif tool == '2PG_MC_Metropolis':
             #     os.chdir(path)
             #     resultFile = '%s%s' % (path, 'monte_carlo_solutions.pdb')
+            # elif(tool == 'ProtPred_EDA'):
+            #     resultFile = '%s%s' % (path, '/ProtPredEDA_out.zip')
+            #     z = zipfile.ZipFile(resultFile, 'w', zipfile.ZIP_DEFLATED)
+            #     self.copyFilesToExecuteFolder(path)
+            #     listaArquivosPDB = self.listDirectory(path, '*.pdb')
+            #     for arq in listaArquivosPDB:
+            #         z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
+            #         z.write(arq)
+            #         z.close()
+            # listadic = self.listDirectory(path)
+            # self.zip_folder(listadic[0], resultFile)
             elif(tool == 'ProtPred_EDA'):
-                resultFile = '%s%s' % (path, '/ProtPredEDA_out.zip')
+                resultFile = '%s%s.zip' % (path, tool)
                 z = zipfile.ZipFile(resultFile, 'w', zipfile.ZIP_DEFLATED)
-                self.copyFilesToExecuteFolder(path)
                 listaArquivosPDB = self.listDirectory(path, '*.pdb')
                 for arq in listaArquivosPDB:
                     z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
                     z.write(arq)
                     z.close()
-                # listadic = self.listDirectory(path)
-                # self.zip_folder(listadic[0], resultFile)
+                    filesToHtml.append(os.path.join(path, arq))
+                listaArquivosPng = self.listDirectory(path, '*.png')
+                for arq in listaArquivosPng:
+                    z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
+                    z.write(arq)
+                    z.close()
+                    filesToHtml.append(os.path.join(path, arq))
             elif tool == 'Download_From_Quark':
                 resultFile = '%s%s' % (path, '/ResultQuark.zip')
                 z = zipfile.ZipFile(resultFile, 'w', zipfile.ZIP_DEFLATED)
