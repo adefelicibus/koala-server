@@ -74,7 +74,7 @@ class MEAMT(object):
             html.append('<div class="sectionmessage">')
             html.append('<br>Submitted Primary Sequence.<br><br></div>')
             html.append('<div class="code">')
-            html.append('Length: %s' % len(self.sequence))
+            html.append('Length: %s<br>' % len(self.sequence))
             html.append('%s<br></div>' % self.sequence)
 
             fhtml = []
@@ -401,7 +401,7 @@ class MEAMT(object):
             html.append('<div class="sectionmessage">')
             html.append('<br>Submitted Primary Sequence.<br><br></div>')
             html.append('<div class="code">')
-            html.append('Length: %s' % len(self.sequence))
+            html.append('Length: %s<br>' % len(self.sequence))
             html.append('%s<br></div>' % self.sequence)
 
             fhtml = []
@@ -793,8 +793,15 @@ class MEAMT(object):
                 os.path.join(self.path_execute, "meat.txt"),
                 '&']
 
-            retProcess = subprocess.Popen(cl, 0, None, None, None, False)
-            retProcess.wait()
+            # retProcess = subprocess.Popen(cl, 0, None, None, None, False)
+            # retProcess.wait()
+
+            retProcess = subprocess.Popen(
+                cl, 0, stdout=None,  stderr=subprocess.STDOUT, shell=False)
+            retCode = retProcess.wait()
+            if(retCode != 0):
+                self.ClassColection.ShowErrorMessage(
+                    "The MEAMT framework finished wrong.\nContact the system administrator.")
 
             path_output, file_output = os.path.split(self.opts.filehtml)
 
