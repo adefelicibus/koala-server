@@ -1,0 +1,5 @@
+argparse==1.2.1
+beautifulsoup4==4.4.0
+natsort==4.0.3
+pycrypto==2.6.1
+wsgiref==0.1.2
