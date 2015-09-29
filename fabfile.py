@@ -86,9 +86,9 @@ env_path = '/home/%s/env/bin/activate' % username
 # pulsar_server_6 = '%s@%s' % (username, ip_server)
 
 # # pulsar server 7, docking09
-# username = 'koala'
-# port_http = 8092
-# pulsar_server_7 = '%s@%s' % (username, ip_server)
+username = 'koala'
+port_http = 8092
+pulsar_server_7 = '%s@%s' % (username, ip_server)
 
 # # pulsar server 8, docking10
 # username = 'koala'
@@ -106,9 +106,9 @@ env_path = '/home/%s/env/bin/activate' % username
 # pulsar_server_10 = '%s@%s' % (username, ip_server)
 
 # # pulsar server 11, docking2
-username = 'koala'
-port_http = 8085
-pulsar_server_11 = '%s@%s' % (username, ip_server)
+# username = 'koala'
+# port_http = 8085
+# pulsar_server_11 = '%s@%s' % (username, ip_server)
 
 # Configurações Locais
 # tool_path = 'galaxy-dist/tools/protpred'
@@ -119,8 +119,8 @@ pulsar_server_11 = '%s@%s' % (username, ip_server)
 # env.user = "koala"
 env.key_filename = "/home/alexandre/.ssh/id_rsa"
 # env.password = ""
-env.port = 2227
-env.hosts = [pulsar_server_11]
+env.port = 2234
+env.hosts = [pulsar_server_7]
 env.forward_agent = True
 
 # -------------------------------
@@ -266,7 +266,10 @@ def setPythonPath():
         ['export PYTHONPATH=/usr/lib/python2.7/dist-packages:$PYTHONPATH',
             'export PYTHONPATH=/usr/lib/python2.7/dist-packages/pymol:$PYTHONPATH',
             'export PYTHONPATH=/usr/local/lib/python2.7/dist-packages:$PYTHONPATH',
-            'export PYTHONPATH=/usr/local/bin/pymol/modules:$PYTHONPATH'],
+            'export PYTHONPATH=/usr/local/bin/pymol/modules:$PYTHONPATH',
+            'export MPI_DIR=/lib/openmpi',
+            'export PATH=/lib/openmpi/bin:$PATH',
+            'export LD_LIBRARY_PATH=/lib/openmpi/lib:$LD_LIBRARY_PATH'],
         use_sudo=True,
         )
     sudo('source ~/.bashrc')
@@ -289,6 +292,17 @@ def install2PGCartesian():
                 run('cmake ..')
                 run('make')
                 sudo('make install')
+
+
+# def install2PGBuildConformation():
+#     cd /usr/local/bin
+#     sudo ln -s /home/koala/programs/2pg_build_conformation/src/protpred-Gromacs_pop_initial .
+
+
+# def installMEAMT():
+# cp ~/programs/meamt/aemt-mo-up2
+# cp ~/programs/meamt/aemt-pop-up2
+#     pass
 
 
 # clone Koala
@@ -338,8 +352,7 @@ def buildEnvPulsar():
 
 def setKoalaLibLink_server():
     sudo(
-        'ln -s %s/lib/koala/ /home/koala/envs/%s/lib/python2.7/site-packages/koala' % (
-            CURRENT_PATH, pulsar_project))
+        'ln -s /home/koala/koala-server/lib/koala/ /home/koala/envs/%s/lib/python2.7/site-packages/koala' % pulsar_project)
 
 
 def setConfigNginx():
@@ -385,8 +398,20 @@ def startPulsar():
 
 
 def copyExecuteFiles():
-    with cd('/dados/koala/execute'):
-        run('cp -R ~/%s/execute/* .' % koala_project)
+    with cd('/dados/koala/'):
+        run('cp -rR ~/%s/execute/ .' % koala_project)
+
+
+def setLibOpenMPI():
+    sudo('ln -s sudo ln -s /usr/lib/libmpi_cxx.so.0.0.1 /usr/lib/libmpi_cxx.so.1')
+    sudo('ln -s /usr/lib/openmpi/lib/libmpi_cxx.so.0.0.1 /usr/lib/openmpi/lib/libmpi_cxx.so.1')
+    sudo('ln -s /usr/lib/libmpi.so.0 /usr/lib/libmpi.so.1')
+    sudo('ln -s /usr/lib/openmpi/lib/libmpi.so /usr/lib/openmpi/lib/libmpi.so.1')
+
+
+def updateKoala():
+    # atualizar o koala em todos os server
+    pass
 
 
 def newServerPulsar():
