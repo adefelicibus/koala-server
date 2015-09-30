@@ -94,8 +94,8 @@
         <tool id="calculate_gdtts" destination="docking11"/>
         <tool id="calculate_rmsd" destination="docking11"/>
         <tool id="calculate_tmscore" destination="docking11"/>
-        <tool id="dominance_ranking" destination="docking12"/>
-        <tool id="sort_by_front" destination="docking12"/>
+        <!-- <tool id="dominance_ranking" destination="docking12"/> -->
+        <!-- <tool id="sort_by_front" destination="docking12"/> -->
     </tools>
     <limits>
         <limit type="registered_user_concurrent_jobs">10</limit>
