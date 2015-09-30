@@ -800,7 +800,9 @@ class NSGAII2PG(object):
             self.opts.htmlfiledir = htmldir
 
             result, filesHtml = self.ClassColection.getResultFiles(
-                self.path_execute, self.opts.toolname)
+                self.path_execute,
+                self.opts.toolname,
+                'NSGAIISolutions-M')
 
             self.ClassColection.sendOutputResults(path_output, file_output, result)
 

@@ -787,7 +787,7 @@ class Random2PG(object):
             self.ClassColection.parse_PDB(
                     self.path_execute,
                     'random_algorithm_solutions.pdb',
-                    10,
+                    20,
                     'randomSolution')
 
             self.build_images()
@@ -805,7 +805,8 @@ class Random2PG(object):
 
             result, filesHtml = self.ClassColection.getResultFiles(
                     self.path_execute,
-                    self.opts.toolname)
+                    self.opts.toolname,
+                    'randomSolution-M')
 
             self.ClassColection.sendOutputFilesHtml(self.opts.htmlfiledir, filesHtml)
             self.ClassColection.sendOutputFilesHtml(self.opts.htmlfiledir, [result])

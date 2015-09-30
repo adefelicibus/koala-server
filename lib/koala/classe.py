@@ -1000,7 +1000,7 @@ class IcmcGalaxy(object):
         except Exception, e:
             self.ShowErrorMessage("Error when ExecuteProgram:\n%s" % e)
 
-    def getResultFiles(self, path, tool):
+    def getResultFiles(self, path, tool, fileName=None):
         try:
             resultFile = ''
             filesToHtml = []
@@ -1082,7 +1082,10 @@ class IcmcGalaxy(object):
                     '2PG_MC_Metropolis', '2PG_Random_Tool'):
                 resultFile = '%s%s.zip' % (path, tool)
                 z = zipfile.ZipFile(resultFile, 'w', zipfile.ZIP_DEFLATED)
-                listaArquivosPDB = self.listDirectory(path, 'PROT_IND_*.pdb')
+                if(fileName):
+                    listaArquivosPDB = self.listDirectory(path, '%s*.pdb' % fileName)
+                else:
+                    listaArquivosPDB = self.listDirectory(path, '*.pdb')
                 for arq in listaArquivosPDB:
                     z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
                     z.write(arq)

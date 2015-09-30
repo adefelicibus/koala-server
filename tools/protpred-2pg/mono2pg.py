@@ -787,7 +787,7 @@ class Mono2PG(object):
             self.ClassColection.parse_PDB(
                     self.path_execute,
                     'pop_sorted_file.pdb',
-                    10,
+                    20,
                     'monoSolution')
 
             self.build_images()
@@ -805,7 +805,8 @@ class Mono2PG(object):
 
             result, filesHtml = self.ClassColection.getResultFiles(
                     self.path_execute,
-                    self.opts.toolname)
+                    self.opts.toolname,
+                    'monoSolution-M')
 
             self.ClassColection.sendOutputFilesHtml(self.opts.htmlfiledir, filesHtml)
             self.ClassColection.sendOutputFilesHtml(self.opts.htmlfiledir, [result])

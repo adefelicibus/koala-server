@@ -797,7 +797,9 @@ class MonteCarlo2PG(object):
             self.opts.htmlfiledir = htmldir
 
             result, fileshtml = self.ClassColection.getResultFiles(
-                    self.path_execute, self.opts.toolname)
+                    self.path_execute,
+                    self.opts.toolname,
+                    'monte-carlo-solutions-')
 
             self.ClassColection.sendOutputFilesHtml(self.opts.htmlfiledir, fileshtml)
             self.ClassColection.sendOutputFilesHtml(self.opts.htmlfiledir, [result])
