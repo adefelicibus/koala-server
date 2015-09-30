@@ -18,6 +18,7 @@ import zipfile
 import gzip
 import cProfile
 import shutil
+import math
 
 pymol.finish_launching()
 
@@ -139,7 +140,11 @@ class CalculateRMSD(object):
             for key, value in self.rmsd_values.items():
                 html += '<tr>'
                 html += '<td>%s</td>' % str(key)  # PDBFile
-                html += '<td align="center">%s</td>' % str(value)  # RMSD
+                # if(math.isinf(value)):
+                #     value = '> 15 Å'
+                # else:
+                #     value = '%d Å' % value * 10
+                html += '<td align="center">%s Å</td>' % str(value)  # RMSD
                 html += '</tr>'
             return html
         except Exception, e:
@@ -859,24 +864,40 @@ class CalculateRMSD(object):
             for pdb in pdbs:
                 if not (pdb == self.opts.inputPDBRefName):
 
-                    aux_command = self.command.replace(
-                        "@PATH_GROMACS@",
-                        self.ClassColection.getPathGromacs()).replace(
-                            "@PROT@",
-                            (os.path.join(self.path_execute,  pdb))).replace(
-                                "@NATIVE@",
-                                (os.path.join(self.path_execute, self.opts.inputPDBRefName)))
+                    # aux_command = self.command.replace(
+                    #     "@PATH_GROMACS@",
+                    #     self.ClassColection.getPathGromacs()).replace(
+                    #         "@PROT@",
+                    #         (os.path.join(self.path_execute,  pdb))).replace(
+                    #             "@NATIVE@",
+                    #             (os.path.join(self.path_execute, self.opts.inputPDBRefName)))
 
-                    os.system(aux_command)
+                    # os.system(aux_command)
 
-                    temp_rmsd = open("temporary_rmsd.xvg", "r")
-                    for line in temp_rmsd.readlines():
-                        if line.find("@") < 0 and line.find("#") < 0:
-                            rmsd_value = float(str(line).split()[1])
-                            only_pdb_file_name = os.path.basename(pdb)
-                            dict_rmsd[only_pdb_file_name] = rmsd_value
-                    temp_rmsd.close()
-                    os.remove("temporary_rmsd.xvg")
+                    # temp_rmsd = open("temporary_rmsd.xvg", "r")
+                    # for line in temp_rmsd.readlines():
+                    #     if line.find("@") < 0 and line.find("#") < 0:
+                    #         rmsd_value = float(str(line).split()[1])
+                    #         only_pdb_file_name = os.path.basename(pdb)
+                    #         dict_rmsd[only_pdb_file_name] = rmsd_value
+                    # temp_rmsd.close()
+                    # os.remove("temporary_rmsd.xvg")
+
+                    # Load Structures
+                    a = os.path.join(self.path_execute,  pdb)
+                    aname, ext = os.path.splitext(pdb)
+                    b = os.path.join(self.path_execute, self.opts.inputPDBRefName)
+                    bname, ext = os.path.splitext(self.opts.inputPDBRefName)
+                    pymol.cmd.load(a, aname)
+                    pymol.cmd.load(b, bname)
+                    ret = pymol.cmd.align(aname, bname)
+                    rms = list(ret)
+                    print 'rmds %s, atoms %s, residues %s' % (rms[0], rms[1], rms[-1])
+                    only_pdb_file_name = os.path.basename(pdb)
+                    dict_rmsd[only_pdb_file_name] = round(rms[0], 3)
+
+                    sleep(0.25)  # (in seconds)
+                    pymol.cmd.reinitialize()
 
             return OrderedDict(sorted(dict_rmsd.items(), key=lambda x: x[1]))
 
