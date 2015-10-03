@@ -1186,7 +1186,7 @@ class IcmcGalaxy(object):
             self.ShowErrorMessage("Error when getResultFiles:\n%s" % e)
             # raise Exception("Error while getting result files: \n%s" % e)
 
-    def copyFilesToExecuteFolder(self, path):
+    def copyFilesToExecuteFolder(self, path, prefix_filename=None):
         try:
             job_folder = os.path.join(path, 'out')
             contents = os.walk(job_folder)
@@ -1197,7 +1197,11 @@ class IcmcGalaxy(object):
                     name, ext = os.path.splitext(file_name)
                     if(ext == '.pdb'):
                         src = os.path.join(root, file_name)
-                        dst = os.path.join(path, file_name)
+                        if(prefix_filename):
+                            new_filename = prefix_filename + '-' + file_name
+                            dst = os.path.join(path, new_filename)
+                        else:
+                            dst = os.path.join(path, file_name)
                         shutil.copy(src, dst)
         except Exception, e:
             self.ShowErrorMessage("Error when copyFilesToExecuteFolder:\n%s" % e)
