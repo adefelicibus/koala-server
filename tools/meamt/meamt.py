@@ -786,7 +786,7 @@ class MEAMT(object):
                 os.path.join(self.path_execute, "fasta.txt"),
                 os.path.join(self.path_execute, "result.txt"),
                 os.path.join(self.path_execute, "pop_meamt.txt"),
-                os.path.join(self.path_execute, "protein.pdb"),
+                os.path.join(self.path_execute, "MEAMT-M1.pdb"),
                 os.path.join(self.path_execute, "saida1.txt"),
                 os.path.join(self.path_execute, "angles.txt"),
                 str(0),
@@ -803,11 +803,11 @@ class MEAMT(object):
                 self.ClassColection.ShowErrorMessage(
                     "The MEAMT framework finished wrong.\nContact the system administrator.")
 
-            path_output, file_output = os.path.split(self.opts.filehtml)
+            # path_output, file_output = os.path.split(self.opts.filehtml)
 
-            result, html = self.ClassColection.getResultFiles(self.path_execute, self.opts.toolname)
+            # result, html = self.ClassColection.getResultFiles(self.path_execute, self.opts.toolname)
 
-            self.ClassColection.sendOutputResults(path_output, file_output, result)
+            # self.ClassColection.sendOutputResults(path_output, file_output, result)
 
             self.build_images()
 
