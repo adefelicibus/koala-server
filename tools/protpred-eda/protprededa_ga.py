@@ -783,7 +783,7 @@ class ProtPredEDAGA(object):
                 self.ClassColection.ShowErrorMessage(
                     "The ProtPred-EDA framework finished wrong.\nContact the system administrator.")
 
-            self.ClassColection.copyFilesToExecuteFolder(self.path_execute)
+            self.ClassColection.copyFilesToExecuteFolder(self.path_execute, 'ProtPredEDA_GA')
 
             self.build_images()
 
@@ -829,26 +829,6 @@ class ProtPredEDAGA(object):
                         self.ClassColection.getMessageEmail(self.opts.toolname),
                         [],
                         'smtp.gmail.com')
-
-            # path_output, file_output = os.path.split(self.opts.output)
-
-            # result, filesHtml = self.ClassColection.getResultFiles(
-            #         self.path_execute,
-            #         self.opts.toolname)
-
-            # self.ClassColection.sendOutputResults(
-            #                 path_output,
-            #                 file_output,
-            #                 result)
-
-            # if(self.opts.inputEmail):
-            #     self.ClassColection.SendEmail(
-            #             'adefelicibus@gmail.com',
-            #             email,
-            #             '%s Execution on Galaxy - Cloud USP' % self.opts.toolname,
-            #             self.ClassColection.getMessageEmail(self.opts.toolname),
-            #             [],
-            #             'smtp.gmail.com')
 
         except Exception, e:
             self.ClassColection.ShowErrorMessage(str(e))
