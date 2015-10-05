@@ -711,6 +711,8 @@ class MonteCarlo2PG(object):
                 pymol.cmd.ray()
                 pymol.cmd.png("%s.png" % name, dpi=300)
 
+                pymol.cmd.save("%s.pdb" % os.path.join(self.path_execute, name), name)
+
                 time.sleep(0.25)  # (in seconds)
 
                 pymol.cmd.reinitialize()
