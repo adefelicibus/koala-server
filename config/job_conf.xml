@@ -100,7 +100,7 @@
     <limits>
         <limit type="registered_user_concurrent_jobs">10</limit>
         <limit type="unregistered_user_concurrent_jobs">5</limit>
-        <limit type="job_walltime">24:00:00</limit>
+        <!-- <limit type="job_walltime">24:00:00</limit> -->
         <limit type="concurrent_jobs" id="local">10 </limit>
     </limits>
 </job_conf>
