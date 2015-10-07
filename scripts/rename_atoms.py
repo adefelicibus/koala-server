@@ -38,7 +38,7 @@ def delete_check_files():
 def rename_atoms_structue_by_pdb2gmx(pdbfile, gmx_path, forcefield='amber99sb-ildn'):
 	delete_check_files()
 	program = os.path.join(gmx_path, "pdb2gmx")
-	process = Popen([program, '-f', pdbfile, '-o', pdbfile, '-p', 'check.top', '-water', 'none', '-ff', forcefield], stdout=PIPE, stderr=PIPE)
+	process = Popen([program, '-f', pdbfile, '-o', pdbfile, '-p', 'check.top', '-water', 'none', '-ff', forcefield, '-ignh'], stdout=PIPE, stderr=PIPE)
 	stdout, stderr = process.communicate()	 	
 	delete_check_files()	
 
