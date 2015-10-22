@@ -35,6 +35,14 @@
 	/*margin-left: 310px;*/
 }
 
+.koala-logo{
+	background: url(logo-koala.png) no-repeat;
+	margin: 0 auto;
+	height: 182px;
+	width: 206px;
+	/*margin-left: 310px;*/
+}
+
 h1{
 	text-align: center;
 }
