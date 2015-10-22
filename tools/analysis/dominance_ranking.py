@@ -570,7 +570,7 @@ class DominanceRanking(object):
                     disableInitialConsole: false,
                     readyFunction: jmol_isReady,
                     allowjavascript: true,
-                    script: "set antialiasDisplay;set showtiming;load async /datasets/%s/display/%s;cartoons only;color  cartoons structure"
+                    script: "set antialiasDisplay;set showtiming;load async /datasets/%s/display/%s;cartoons only;color  cartoons structure; spin on"
                     //,defaultModel: ":dopamine"
                     //,noscript: true
                     //console: "none", // default will be jmolApplet0_infodiv
@@ -710,7 +710,7 @@ class DominanceRanking(object):
                 fhtml.append(
                     '<td>'
                     '<a href="javascript:Jmol.script(jmolApplet0,'
-                    "'load /datasets/%s/display/%s;cartoons only;color  cartoons structure')"
+                    "'load /datasets/%s/display/%s;cartoons only;color  cartoons structure; spin on')"
                     '">Load on Jmol</a></td>' % (
                         self.opts.datasetID, listaArquivosPdb[idx]))
                 idx += 1
@@ -748,7 +748,7 @@ class DominanceRanking(object):
                     fhtml.append(
                         '<td>'
                         '<a href="javascript:Jmol.script(jmolApplet0,'
-                        "'load /datasets/%s/display/%s;cartoons only;color cartoons structure')"
+                        "'load /datasets/%s/display/%s;cartoons only;color cartoons structure; spin on')"
                         '">Load on Jmol</a></td>' % (
                             self.opts.datasetID, listaArquivosPdb[idx]))
                     idx += 1
@@ -785,7 +785,7 @@ class DominanceRanking(object):
                 fhtml.append(
                     '<td>'
                     '<a href="javascript:Jmol.script(jmolApplet0,'
-                    "'load /datasets/%s/display/%s;cartoons only;color cartoons structure')"
+                    "'load /datasets/%s/display/%s;cartoons only;color cartoons structure; spin on')"
                     '">Load on Jmol</a></td>' % (
                         self.opts.datasetID, listaArquivosPdb[idx]))
                 idx += 1
