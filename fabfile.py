@@ -123,6 +123,8 @@ env.port = 2234
 env.hosts = [pulsar_server_7]
 env.forward_agent = True
 
+# para o Koala, ver no LOCAL abaixo
+
 # -------------------------------
 # SERVER
 # -------------------------------
@@ -414,6 +416,10 @@ def updateKoala():
     pass
 
 
+def installScripts():
+    pass
+
+
 def newServerPulsar():
     """Configurar e instalar todos pacotes necessários para servidor"""
     log('Configurar e instalar todos pacotes necessários para servidor')
@@ -574,3 +580,21 @@ def log(message):
 #     login()
 #     with cd(project_path):
 #         run('git pull origin master')
+
+# -------------------------------
+# LOCAL
+# -------------------------------
+
+# criar usuario koala  e definir senha
+# colocar como sudoer
+# criar banco postgresql
+#  download do galaxy
+# instalar galaxy
+# criar env galaxy
+# criar links do koala no galaxy na pasta config
+# criar links do koala no galaxy na pasta static
+# criar links do koala no galaxy na pasta datatypes
+# criar links do koala no galaxy na pasta lib
+# criar links do koala no galaxy na pasta scripts
+# criar links do koala no galaxy na pasta tools
+# rodar galaxy

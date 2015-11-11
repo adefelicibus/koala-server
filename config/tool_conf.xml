@@ -34,6 +34,8 @@
     <tool file="protpred-eda/protprededa_ceda.xml" />
     <label id="predict_meamt" text="MEAMT Framework" />
     <tool file="meamt/meamt.xml" />
+    <label id="predict_ipaes" text="I-PAES Algorithm" />
+    <tool file="i-paes/i_paes.xml" />
   </section>
   <label id="analysistxt" text="Analysis of the solutions" />
   <!-- <section id="analysis" name="Analysis Tools"> -->

@@ -45,6 +45,8 @@
         <tool id="protprededa_ceda" />
         <label id="predict_meamt" text="MEAMT Framework" version="" />
         <tool id="meamt" />
+        <label id="predict_ipaes" text="I-PAES Algorithm" version="" />
+        <tool id="i_paes" />
     </section>
     <label id="analysistxt" text="Analysis of the solutions" version="" />
     <section id="analysis_rank" name="Solutions Ranking" version="">
