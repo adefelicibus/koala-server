@@ -1,0 +1,31 @@
+<tool id="tool_eq" name="Eq" version="1.0.0">
+    <description>
+        performs the equilibration.
+    </description>
+
+    <command interpreter="python">
+
+        eq.py $input_mdp $input_gro $input_top $input_itp $source_name $output_gro $output_top $output_itp $output_log
+
+    </command>
+
+    <inputs>
+        <param format="mdp" name="input_mdp" type="data" label="Source file MDP"/>
+        <param format="gro" name="input_gro" type="data" label="Source file GRO"/>
+        <param format="top" name="input_top" type="data" label="Source file TOP"/>
+        <param format="itp" name="input_itp" type="data" label="Source file ITP"/>
+        <param name="source_name" type="text" size="30" label="Default File Name"/>
+    </inputs>
+
+    <outputs>
+        <data format="gro" name="output_gro" label="Gromacs File by Eq"/>
+        <data format="top" name="output_top" label="Topology File by Eq"/>
+        <data format="itp" name="output_itp" label="ITP File by Eq"/>
+        <data format="log" name="output_log" label="Log File by Eq"/>
+    </outputs>
+
+    <help>
+        Equilibration 1 ns protein with restricted movements to allow the system to reach the appropriate pressure and temperature.
+    </help>
+
+</tool>

@@ -1,12 +1,12 @@
-<tool id="tool_definebox" name="Define Box" version="1.0.0">
+<tool id="tool_definebox" name="Define Box" version="2.0.0">
     <description>
         generates the box of simulation to use PBC
         <!--gera a caixa de simulação para uso de PBC-->
     </description>
 
-    <command interpreter="bash">
+    <command interpreter="python">
 
-        definebox.sh $input $source_group $source_box $source_distance $output_gro
+        definebox.py $input $source_group $source_box $source_distance $output_gro
 
     </command>
 

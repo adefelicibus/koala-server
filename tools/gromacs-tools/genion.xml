@@ -1,12 +1,12 @@
-<tool id="tool_genion" name="Genion" version="1.0.0">
+<tool id="tool_genion" name="Genion" version="2.0.0">
     <description>
         <!--O programa Genion lê um arquivo de entrada run (.tpr) e acrescenta íons para o sistema.-->
         the Genion program reads an input file run (.tpr) and adds ions to the system.
     </description>
 
-    <command interpreter="bash">
+    <command interpreter="python">
 
-        genion.sh $input_tpr $input_top $source_conc $output_gro $output_top
+        genion.py $input_tpr $input_top $source_conc $output_gro $output_top
 
     </command>
 
