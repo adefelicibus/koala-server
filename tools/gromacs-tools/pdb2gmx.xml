@@ -1,11 +1,11 @@
-<tool id="tool_pdb2gmx" name="PDB2GMX" version="1.0.0">
+<tool id="tool_pdb2gmx" name="PDB2GMX" version="2.0.0">
 
     <description>
         converts PDB file for gro and generates topology files Gromacs
         <!--converte arquivo pdb para gro e gera arquivos de topologia do Gromacs-->
     </description>
 
-    <command interpreter="bash">
+    <command interpreter="python">
 
         ##if $source_ff_water.source_ff == "amber03"
             ##set $ff =  $source_ff_water.source_ff
@@ -18,7 +18,7 @@
             ##set $water = $source_ff_water.source_water
         ##end if
 
-        pdb2gmx.sh $input $input.name $source_ff_water.source_ff $source_ff_water.source_water $source_ignh $output_gro $output_top $output_itp
+        pdb2gmx.py $input $input.name $source_ff_water.source_ff $source_ff_water.source_water $source_ignh $output_gro $output_top $output_itp
 
     </command>
 

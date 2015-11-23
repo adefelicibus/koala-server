@@ -1,13 +1,13 @@
-<tool id="tool_mdrun" name="Mdrun" version="1.0.0">
+<tool id="tool_mdrun" name="Mdrun" version="2.0.0">
 
     <description>
         performs molecular dynamics simulations, but may also perform other computational operations such as energy minimization.
         <!--realiza simulações de dinâmica molecular, mas também pode executar outras operações computacionais como minimização de energia.-->
     </description>
 
-    <command interpreter="bash">
+    <command interpreter="python">
 
-        mdrun.sh $input_tpr $source_name $output_gro $output_edr $output_trr $output_log
+        mdrun.py $input_tpr $source_name $output_gro $output_top $output_edr $output_trr $output_log
 
     </command>
 
@@ -18,6 +18,7 @@
 
     <outputs>
         <data format="gro" name="output_gro" label="Gromacs File by Mdrun"/>
+        <data format="top" name="output_top" label="Topology File by Mdrun"/>
         <data format="edr" name="output_edr" label="EDR File by Mdrun"/>
         <data format="trr" name="output_trr" label="TRR File by Mdrun"/>
         <data format="log" name="output_log" label="Log File by Mdrun"/>

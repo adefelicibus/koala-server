@@ -1,13 +1,13 @@
-<tool id="tool_solvate" name="Solvate" version="1.0.0">
+<tool id="tool_solvate" name="Solvate" version="2.0.0">
 
     <description>
         insert water on the box
         <!--coloca água na caixa-->
     </description>
 
-    <command interpreter="bash">
+    <command interpreter="python">
 
-        solvate.sh $input_top $input_gro $output_gro $output_top
+        solvate.py $input_top $input_gro $output_gro $output_top
 
     </command>
 

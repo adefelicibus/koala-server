@@ -1,12 +1,12 @@
-<tool id="tool_grompp" name="Grompp" version="1.0.0">
+<tool id="tool_grompp" name="Grompp" version="2.0.0">
     <description>
         <!--lê um arquivo de topologia molecular, verifica a validade do arquivo, expande topologia de uma descrição molecular para uma descrição atômica.-->
         reading a molecular topology file, verifies the validity of the file, expands topology of a molecular description of an atomic description.
     </description>
 
-    <command interpreter="bash">
+    <command interpreter="python">
 
-        grompp.sh $input_mdp $input_gro $input_top $output_tpr
+        grompp.py $input_mdp $input_gro $input_top $output_tpr
 
     </command>
 

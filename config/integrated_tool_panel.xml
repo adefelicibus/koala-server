@@ -68,5 +68,9 @@
         <tool id="tool_pdb2gmx" />
         <tool id="tool_remove_water" />
         <tool id="tool_solvate" />
+        <tool id="tool_eq" />
+        <tool id="tool_md" />
+        <tool id="tool_min_all" />
+        <tool id="tool_min_none" />
     </section>
 </toolbox>
