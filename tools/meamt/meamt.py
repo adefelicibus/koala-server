@@ -12,6 +12,7 @@ import datetime
 import time
 import cProfile
 import pymol
+import shutil
 
 pymol.finish_launching()
 
@@ -722,6 +723,75 @@ class MEAMT(object):
         except Exception, e:
             self.ClassColection.ShowErrorMessage(str(e))
 
+    def runMinimization(self, path, path_gromacs):
+        try:
+            cl = [
+                '%s/scripts/check_structures_gromacs.py' %
+                self.opts.galaxyroot, path, path_gromacs, '&']
+
+            retProcess = subprocess.Popen(cl, 0, None, None, None, False)
+            pvalue = retProcess.wait()
+
+            if pvalue != 0:
+                return False
+
+            directory = os.path.join(path, 'no_accepted_by_pdb2gmx')
+            if os.path.exists(directory):
+                pdbs = os.listdir(directory)
+                self.ClassColection.showMessage(
+                    'These files could not be accepted by Gromacs.\n%s\n\n' % pdbs)
+
+            return True
+        except Exception, e:
+            self.ClassColection.ShowErrorMessage("Error while checking PDBs:\n%s" % e)
+
+        try:
+            cl = [
+                '%s/scripts/prepare_structures.py' %
+                self.opts.galaxyroot, path, '&']
+
+            retProcess = subprocess.Popen(cl, 0, None, None, None, False)
+            pvalue = retProcess.wait()
+
+            if pvalue != 0:
+                return False
+
+            return True
+        except Exception, e:
+            self.ClassColection.ShowErrorMessage("Error while preparing PDBs:\n%s" % e)
+
+        try:
+            cl = [
+                '%s/scripts/residue_renumber_all_pdbs.py' %
+                self.opts.galaxyroot, path, path_gromacs, '&']
+
+            retProcess = subprocess.Popen(cl, 0, None, None, None, False)
+            pvalue = retProcess.wait()
+
+            if pvalue != 0:
+                return False
+
+            return True
+        except Exception, e:
+            self.ClassColection.ShowErrorMessage("Error while renumbering PDBs:\n%s" % e)
+
+        try:
+            cl = ['min.sh', path, path_gromacs, '&']
+
+            shutil.copy(
+                os.path.join(self.opts.galaxyroot, 'min.sh'),
+                self.path_execute)
+
+            retProcess = subprocess.Popen(cl, 0, None, None, None, False)
+            pvalue = retProcess.wait()
+
+            if pvalue != 0:
+                return False
+
+            return True
+        except Exception, e:
+            self.ClassColection.ShowErrorMessage("Error while minimization PDBs:\n%s" % e)
+
     def main(self):
         """
         Create the MEAMT configuration file and begin
@@ -809,6 +879,9 @@ class MEAMT(object):
 
             # self.ClassColection.sendOutputResults(path_output, file_output, result)
 
+            if(self.opts.runMinimization == 'true'):
+                self.runMinimization(self.path_execute, self.ClassColection.getPathGromacs())
+
             self.build_images()
 
             path_output, file_output = os.path.split(self.opts.filehtml)
@@ -876,6 +949,7 @@ if __name__ == '__main__':
     op.add_option('-p', '--createCompressFile', default=None)
     op.add_option('-x', '--useJmol', default=None)
     op.add_option('-f', '--datasetID', default=None)
+    op.add_option('-z', '--runMinimization', default=None)
     opts, args = op.parse_args()
 
     meamt = MEAMT(opts)
