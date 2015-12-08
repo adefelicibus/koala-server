@@ -723,7 +723,7 @@ class MEAMT(object):
         except Exception, e:
             self.ClassColection.ShowErrorMessage(str(e))
 
-    def runMinimization(self, path, path_gromacs):
+    def runCheckPDB(self, path, path_gromacs):
         try:
             cl = [
                 '%s/scripts/check_structures_gromacs.py' %
@@ -745,6 +745,7 @@ class MEAMT(object):
         except Exception, e:
             self.ClassColection.ShowErrorMessage("Error while checking PDBs:\n%s" % e)
 
+    def runPreparePDB(self, path, path_gromacs):
         try:
             cl = [
                 '%s/scripts/prepare_structures.py' %
@@ -760,6 +761,7 @@ class MEAMT(object):
         except Exception, e:
             self.ClassColection.ShowErrorMessage("Error while preparing PDBs:\n%s" % e)
 
+    def runResidueRenumber(self, path, path_gromacs):
         try:
             cl = [
                 '%s/scripts/residue_renumber_all_pdbs.py' %
@@ -775,11 +777,13 @@ class MEAMT(object):
         except Exception, e:
             self.ClassColection.ShowErrorMessage("Error while renumbering PDBs:\n%s" % e)
 
+    def runMinimization(self, path, path_gromacs, pdbPrefix=''):
         try:
-            cl = ['min.sh', path, path_gromacs, '&']
+            cl = ['%s/min.sh' % path, path, path_gromacs, pdbPrefix, '&']
 
             shutil.copy(
-                os.path.join(self.opts.galaxyroot, 'min.sh'),
+                os.path.join(
+                    '%s/scripts/%s' % (self.opts.galaxyroot, 'min.sh')),
                 self.path_execute)
 
             retProcess = subprocess.Popen(cl, 0, None, None, None, False)
@@ -791,6 +795,19 @@ class MEAMT(object):
             return True
         except Exception, e:
             self.ClassColection.ShowErrorMessage("Error while minimization PDBs:\n%s" % e)
+
+    def minimization(self, path, path_gromacs, pdbPrefix=''):
+        if not self.runCheckPDB(path, path_gromacs):
+            raise Exception("The script to check the PDBs finished wrong.")
+
+        if not self.runPreparePDB(path, path_gromacs):
+            raise Exception("The script to prepare the PDBs finished wrong.")
+
+        if not self.runResidueRenumber(path, path_gromacs):
+            raise Exception("The script to renumber the residues finished wrong.")
+
+        if not self.runMinimization(path, path_gromacs, pdbPrefix):
+            raise Exception("The script of minimization finished wrong.")
 
     def main(self):
         """
@@ -880,7 +897,7 @@ class MEAMT(object):
             # self.ClassColection.sendOutputResults(path_output, file_output, result)
 
             if(self.opts.runMinimization == 'true'):
-                self.runMinimization(self.path_execute, self.ClassColection.getPathGromacs())
+                self.minimization(self.path_execute, self.ClassColection.getPathGromacs())
 
             self.build_images()
 
