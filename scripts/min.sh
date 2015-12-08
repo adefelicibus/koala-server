@@ -13,13 +13,12 @@ total_rep=1
 
 gmx_path=$2
 
+pdb_prefix=$3
 
 #Identify how many pdbs there is in directory "$here"
 cd "$here"
-find . -maxdepth 1 -type f -name "*.pdb" | sed 's/.\///g' > "$here""/""temporary_list_pdbs"
+find . -maxdepth 1 -type f -name "$pdb_prefix*.pdb" | sed 's/.\///g' > "$here""/""temporary_list_pdbs"
 total_pdbs=$(wc -l "temporary_list_pdbs" | awk '{print $1}')
-
-
 
 #How many execution?
 n=1
