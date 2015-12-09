@@ -1,10 +1,18 @@
-Koala's documentation!
+Welcome to Koala's documentation!
 =================================
 
-Another header
-=========
+Contents:
 
-Hello!
+.. toctree::
+   :maxdepth: 2
+
+   readme
+   install
+   algorithms
+   scripts
+   tools
+   workflows
+
 
 Guide
 *****
