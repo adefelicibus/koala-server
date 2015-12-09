@@ -10,7 +10,7 @@ Check PDB Structures
 
 A script to check the structures of the PDB files create by the algorithms.
 
-Minimization
+Rename Atoms
 ------------
 
-A script to execute a minimization of energy of the PDB files.
+A script to rename the atoms of a PDB file that are not according to Gromacs.
