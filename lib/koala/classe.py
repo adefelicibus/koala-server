@@ -678,7 +678,7 @@ class IcmcGalaxy(object):
                 if(self.getParameterValue('force_field') == 'amber99sb-ildn'):
                     linha = ''
                     if type_input == '0':
-                        arq_fasta.write("none:A|PDBID|CHAIN|SEQUENCE"+'\n')
+                        header = "none:A|PDBID|CHAIN|SEQUENCE"+'\n'
                         linha = fasta_file  # neste caso é só a sequência, mas a variável é a mesma
                     elif type_input == '1':
                         input_fasta = file(fasta_file, "r")
