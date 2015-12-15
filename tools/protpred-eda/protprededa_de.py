@@ -12,6 +12,7 @@ import subprocess
 import datetime
 import time
 import cProfile
+import shutil
 
 pymol.finish_launching()
 
@@ -719,6 +720,92 @@ class ProtPredEDADE(object):
         except Exception, e:
             self.ClassColection.ShowErrorMessage(str(e))
 
+    def runCheckPDB(self, path, path_gromacs):
+        try:
+            cl = [
+                '%s/scripts/check_structures_gromacs.py' %
+                self.opts.galaxyroot, path, path_gromacs, '&']
+
+            retProcess = subprocess.Popen(cl, 0, None, None, None, False)
+            pvalue = retProcess.wait()
+
+            if pvalue != 0:
+                return False
+
+            directory = os.path.join(path, 'no_accepted_by_pdb2gmx')
+            if os.path.exists(directory):
+                pdbs = os.listdir(directory)
+                self.ClassColection.showMessage(
+                    'These files could not be accepted by Gromacs.\n%s\n\n' % pdbs)
+
+            return True
+        except Exception, e:
+            self.ClassColection.ShowErrorMessage("Error while checking PDBs:\n%s" % e)
+
+    def runPreparePDB(self, path, path_gromacs):
+        try:
+            cl = [
+                '%s/scripts/prepare_structures.py' %
+                self.opts.galaxyroot, path, '&']
+
+            retProcess = subprocess.Popen(cl, 0, None, None, None, False)
+            pvalue = retProcess.wait()
+
+            if pvalue != 0:
+                return False
+
+            return True
+        except Exception, e:
+            self.ClassColection.ShowErrorMessage("Error while preparing PDBs:\n%s" % e)
+
+    def runResidueRenumber(self, path, path_gromacs):
+        try:
+            cl = [
+                '%s/scripts/residue_renumber_all_pdbs.py' %
+                self.opts.galaxyroot, path, path_gromacs, '&']
+
+            retProcess = subprocess.Popen(cl, 0, None, None, None, False)
+            pvalue = retProcess.wait()
+
+            if pvalue != 0:
+                return False
+
+            return True
+        except Exception, e:
+            self.ClassColection.ShowErrorMessage("Error while renumbering PDBs:\n%s" % e)
+
+    def runMinimization(self, path, path_gromacs, pdbPrefix=None):
+        try:
+            cl = ['%s/min.sh' % path, path, path_gromacs, pdbPrefix, '&']
+
+            shutil.copy(
+                os.path.join(
+                    '%s/scripts/%s' % (self.opts.galaxyroot, 'min.sh')),
+                self.path_execute)
+
+            retProcess = subprocess.Popen(cl, 0, None, None, None, False)
+            pvalue = retProcess.wait()
+
+            if pvalue != 0:
+                return False
+
+            return True
+        except Exception, e:
+            self.ClassColection.ShowErrorMessage("Error while minimization PDBs:\n%s" % e)
+
+    def minimization(self, path, path_gromacs, pdbPrefix=None):
+        if not self.runCheckPDB(path, path_gromacs):
+            raise Exception("The script to check the PDBs finished wrong.")
+
+        if not self.runPreparePDB(path, path_gromacs):
+            raise Exception("The script to prepare the PDBs finished wrong.")
+
+        if not self.runResidueRenumber(path, path_gromacs):
+            raise Exception("The script to renumber the residues finished wrong.")
+
+        if not self.runMinimization(path, path_gromacs, pdbPrefix):
+            raise Exception("The script of minimization finished wrong.")
+
     def main(self):
         """
         Create the ProtPred-EDA configuration file and begin the execution.
@@ -784,6 +871,12 @@ class ProtPredEDADE(object):
                     "The ProtPred-EDA framework finished wrong.\nContact the system administrator.")
 
             self.ClassColection.copyFilesToExecuteFolder(self.path_execute, 'ProtPredEDA_DE')
+
+            if(self.opts.runMinimization == 'true'):
+                self.minimization(
+                    self.path_execute,
+                    self.ClassColection.getPathGromacs(),
+                    "ProtPredEDA_DE")
 
             self.build_images()
 
@@ -868,6 +961,7 @@ if __name__ == '__main__':
     parser.add_argument('inputEmail')
     parser.add_argument('toolname')
     parser.add_argument('galaxyroot')
+    parser.add_argument('runMinimization')
     parser.parse_args(namespace=ap)
 
     protpred_eda = ProtPredEDADE(ap)
