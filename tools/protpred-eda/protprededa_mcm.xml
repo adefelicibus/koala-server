@@ -42,6 +42,7 @@
         "$email"
         "$toolname"
         "$__root_dir__"
+        "$run_minimization"
 
     </command>
     <inputs>
@@ -79,6 +80,7 @@
             <param name="chk_compress" type="boolean" label="Create a compressed file with all the PDB files?" help="" checked="False"/>
         </conditional>
         <param type="boolean" name="active_jmol" value="false" label="Use Jmol visualization?" help="Jmol offers a 3D visualization of the molecule. You must have JavaScript enabled on your browser."/>
+        <param type="boolean" name="run_minimization" value="true" label="Run minimization process of energy?" help="This option will execute a minimization process to all the created PDB files."/>
         <param type="hidden" name="toolname" value="ProtPred_EDA"/>
     </inputs>
     <outputs>
