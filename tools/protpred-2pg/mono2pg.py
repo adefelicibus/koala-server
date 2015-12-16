@@ -12,6 +12,7 @@ import datetime
 import time
 import cProfile
 import pymol
+import shutil
 
 pymol.finish_launching()
 
@@ -725,6 +726,92 @@ class Mono2PG(object):
         except Exception, e:
             self.ClassColection.ShowErrorMessage("Error on build_images:\n%s" % str(e))
 
+    def runCheckPDB(self, path, path_gromacs):
+        try:
+            cl = [
+                '%s/scripts/check_structures_gromacs.py' %
+                self.opts.galaxyroot, path, path_gromacs, '&']
+
+            retProcess = subprocess.Popen(cl, 0, None, None, None, False)
+            pvalue = retProcess.wait()
+
+            if pvalue != 0:
+                return False
+
+            directory = os.path.join(path, 'no_accepted_by_pdb2gmx')
+            if os.path.exists(directory):
+                pdbs = os.listdir(directory)
+                self.ClassColection.showMessage(
+                    'These files could not be accepted by Gromacs.\n%s\n\n' % pdbs)
+
+            return True
+        except Exception, e:
+            self.ClassColection.ShowErrorMessage("Error while checking PDBs:\n%s" % e)
+
+    def runPreparePDB(self, path, path_gromacs):
+        try:
+            cl = [
+                '%s/scripts/prepare_structures.py' %
+                self.opts.galaxyroot, path, '&']
+
+            retProcess = subprocess.Popen(cl, 0, None, None, None, False)
+            pvalue = retProcess.wait()
+
+            if pvalue != 0:
+                return False
+
+            return True
+        except Exception, e:
+            self.ClassColection.ShowErrorMessage("Error while preparing PDBs:\n%s" % e)
+
+    def runResidueRenumber(self, path, path_gromacs):
+        try:
+            cl = [
+                '%s/scripts/residue_renumber_all_pdbs.py' %
+                self.opts.galaxyroot, path, path_gromacs, '&']
+
+            retProcess = subprocess.Popen(cl, 0, None, None, None, False)
+            pvalue = retProcess.wait()
+
+            if pvalue != 0:
+                return False
+
+            return True
+        except Exception, e:
+            self.ClassColection.ShowErrorMessage("Error while renumbering PDBs:\n%s" % e)
+
+    def runMinimization(self, path, path_gromacs, pdbPrefix=None):
+        try:
+            cl = ['%s/min.sh' % path, path, path_gromacs, pdbPrefix, '&']
+
+            shutil.copy(
+                os.path.join(
+                    '%s/scripts/%s' % (self.opts.galaxyroot, 'min.sh')),
+                self.path_execute)
+
+            retProcess = subprocess.Popen(cl, 0, None, None, None, False)
+            pvalue = retProcess.wait()
+
+            if pvalue != 0:
+                return False
+
+            return True
+        except Exception, e:
+            self.ClassColection.ShowErrorMessage("Error while minimization PDBs:\n%s" % e)
+
+    def minimization(self, path, path_gromacs, pdbPrefix=None):
+        if not self.runCheckPDB(path, path_gromacs):
+            raise Exception("The script to check the PDBs finished wrong.")
+
+        if not self.runPreparePDB(path, path_gromacs):
+            raise Exception("The script to prepare the PDBs finished wrong.")
+
+        if not self.runResidueRenumber(path, path_gromacs):
+            raise Exception("The script to renumber the residues finished wrong.")
+
+        if not self.runMinimization(path, path_gromacs, pdbPrefix):
+            raise Exception("The script of minimization finished wrong.")
+
     def run_Mono2PG(self):
         """
         Create the 2PG mono configuration file and begin the execution.
@@ -791,6 +878,12 @@ class Mono2PG(object):
                     'pop_sorted_file.pdb',
                     20,
                     'monoSolution')
+
+            if(self.opts.runMinimization == 'true'):
+                self.minimization(
+                    self.path_execute,
+                    self.ClassColection.getPathGromacs(),
+                    "monoSolution")
 
             self.build_images()
 
@@ -859,6 +952,7 @@ if __name__ == '__main__':
     op.add_option('-b', '--outputZip', default=None)
     op.add_option('-x', '--useJmol', default=None)
     op.add_option('-d', '--datasetID', default=None)
+    op.add_option('-n', '--runMinimization', default=None)
     opts, args = op.parse_args()
 
     mono_2pg = Mono2PG(opts)
