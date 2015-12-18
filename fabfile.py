@@ -3,8 +3,11 @@
 import os
 from fabric.api import *
 from fabric.contrib.files import upload_template, append, sed, exists, comment
+import getpass
 
 CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
+
+LOGGED_USER = getpass.getuser()
 
 # Configurações para o Cloud USP - Ribeirão
 
@@ -24,14 +27,16 @@ CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
 # docking11     2236    8094
 # docking12     2224    8095
 
+# USER THAT WILL EXECUTE THE KOALA SERVER
+user = 'kuser'
+
 # IP SERVER
-user = 'koala'
 ip_server = "200.144.255.35"
 
 #  LOCAL
-# folder_local = '~/koala/'
-galaxy_path = '~/galaxy/'
-data_path = '/dados/koala/'
+folder_local = '/home/%s/' % user
+galaxy_path = '/home/%s/galaxy/' % user
+data_path = '/home/%s/dados/' % user
 
 # GALAXY
 galaxy_user = 'galaxyproject'
@@ -117,19 +122,17 @@ pulsar_server_7 = '%s@%s' % (username, ip_server)
 # hosts
 # env.hosts = ["myserver.net"]
 # env.user = "koala"
-env.key_filename = "/home/alexandre/.ssh/id_rsa"
+env.key_filename = "/home/%s/.ssh/id_rsa" % LOGGED_USER
 # env.password = ""
 env.port = 2234
 env.hosts = [pulsar_server_7]
 env.forward_agent = True
 
-# para o Koala, ver no LOCAL abaixo
-
 # -------------------------------
 # SERVER
 # -------------------------------
 
-# ANTES DE QUALQUER COISA, CRIAR O USUARIO KOALA, COLOCAR COMO ROOT,
+# ANTES DE QUALQUER COISA, CRIAR O USUARIO $user, COLOCAR COMO ROOT,
 # LOGAR, CRIAR O SSH-KEYGEN, COPIAR
 # SSH KEY DO COMPUTADOR LOCAL PARA O AUTHORIZED_KEYS NO SERVIDOR
 # ssh-copy-id -i ~/.ssh/id_rsa.pub remote-host
@@ -584,6 +587,121 @@ def log(message):
 # -------------------------------
 # LOCAL
 # -------------------------------
+
+def localLocale():
+    local('sudo locale-gen --no-purge --lang pt_BR')
+
+
+def createLocalUser(user_senha=None):
+    """Criar um usuário no servidor"""
+
+    if not user_senha:
+        user_senha = raw_input('Digite a senha do usuário: ')
+
+    log('Criando usuário {0}'.format(user))
+    local(
+        'sudo useradd -m -p '
+        'pass=$(perl -e \'print crypt($ARGV[0], "password")\' \'{0}\') {1}'.format(
+            user_senha, user))
+    print '\nSenha usuário: {0}'.format(user_senha)
+    local('sudo gpasswd -a %s sudo' % user)
+    print '\n============================================================='
+
+
+# Update local
+def updateLocal():
+    """Atualizando pacotes no servidor"""
+    log('Atualizando pacotes')
+    local('sudo apt-get -y update')
+
+
+# Upgrade local
+def upgradeLocal():
+    """Updating programs"""
+    log('Updating programs')
+    local('sudo apt-get -y upgrade')
+
+
+# install system dependencies
+def buildLocal():
+    """Install all necessary packages"""
+    log('Installing all necessary packages')
+    local('sudo apt-get -y install git')
+    local('sudo apt-get -y install python-dev')
+    local('sudo apt-get -y install python-pip')
+    local('sudo apt-get -y install zip')
+    local('sudo apt-get -y install python-virtualenv')
+    local('sudo apt-get -y install pymol')
+    local('sudo apt-get -y install postgresql postgresql-contrib')
+    local('sudo pip install virtualenvwrapper')
+    local('sudo apt-get -y install openmpi-bin openmpi-doc libopenmpi-dev')
+    local('sudo apt-get -y install automake')
+    local('sudo apt-get -y install nginx supervisor')
+    local('sudo apt-get -y install libcurl4-gnutls-dev')
+    local('sudo apt-get -y install libffi-dev')
+    local('sudo apt-get -y install python-numpy')
+
+
+def createDirectoriesLocal(path=None):
+    env.hosts = ['localhost']
+    if(not os.path.exists('%sprograms' % folder_local)):
+        local('sudo mkdir %sprograms' % folder_local)
+    if(not os.path.exists('%senvs' % folder_local)):
+        local('sudo mkdir %senvs' % folder_local)
+    if(not os.path.exists('%sexecute' % data_path)):
+        local('sudo mkdir -p %sexecute' % data_path)
+
+    local('sudo chown %s:%s %senvs' % (user, user, folder_local))
+    local('sudo chown %s:%s %sprograms' % (user, user, folder_local))
+    local('sudo chown -R %s:%s %s' % (user, user, data_path))
+
+
+def installZlibLocal():
+    local('su %s' % user)
+    with cd('%sprograms' % folder_local):
+        local('pwd')
+        local('wget http://zlib.net/zlib-1.2.8.tar.gz')
+        local('tar xzf zlib-1.2.8.tar.gz')
+        with cd('zlib-1.2.8'):
+            local('./configure')
+            local('make')
+            local('sudo make install')
+    with cd('%sprograms' % folder_local):
+        local('rm zlib-1.2.8.tar.gz')
+        # sudo('rm -r zlib-1.2.8')
+
+
+def installFFTW_server():
+    with cd('~/programs'):
+        sudo('wget http://www.fftw.org/fftw-3.3.4.tar.gz')
+        sudo('tar xzf fftw-3.3.4.tar.gz')
+        with cd('fftw-3.3.4'):
+            sudo('./configure --enable-float')
+            sudo('make')
+            sudo('make install')
+    with cd('~/programs'):
+        sudo('rm fftw-3.3.4.tar.gz')
+
+
+def installGROMACS_server():
+    with cd('~/programs'):
+        sudo('wget ftp://ftp.gromacs.org/pub/gromacs/gromacs-4.6.5.tar.gz')
+        sudo('tar xzf gromacs-4.6.5.tar.gz')
+        with cd('gromacs-4.6.5'):
+            sudo('mkdir build')
+            sudo('cd build/')
+            sudo(
+                'cmake /home/koala/programs/gromacs-4.6.5/ -DSHARED_LIBS_DEFAULT=OFF -DBUILD_SHARED_LIBS=OFF -DGMX_PREFER_STATIC_LIBS=YES '
+                '-DGMX_BUILD_OWN_FFTW=OFF -DFFTW_LIBRARY=/usr/local/lib/libfftw3f.a '
+                '-DFFTW_INCLUDE_DIR=/usr/local/include/ '
+                '-DGMX_GSL=OFF -DGMX_DEFAULT_SUFFIX=ON -DGMX_GPU=OFF -DGMX_MPI=OFF -DGMX_DOUBLE=OFF '
+                '-DGMX_INSTALL_PREFIX=/home/%s/programs/gmx-4.6.5/no_mpi/ '
+                '-DCMAKE_INSTALL_PREFIX=/home/%s/programs/gmx-4.6.5/no_mpi/' % (user, user))
+            sudo('make -j 8')
+            sudo('make install')
+    with cd('~/programs'):
+        sudo('rm -r gromacs-4.6.5')
+        sudo('rm gromacs-4.6.5.tar.gz')
 
 # criar usuario koala  e definir senha
 # colocar como sudoer
