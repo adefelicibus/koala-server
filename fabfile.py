@@ -232,10 +232,12 @@ def installGROMACS_server():
             sudo('mkdir build')
             sudo('cd build/')
             sudo(
-                'cmake /home/koala/programs/gromacs-4.6.5/ -DSHARED_LIBS_DEFAULT=OFF -DBUILD_SHARED_LIBS=OFF -DGMX_PREFER_STATIC_LIBS=YES '
+                'cmake /home/koala/programs/gromacs-4.6.5/ -DSHARED_LIBS_DEFAULT=OFF '
+                '-DBUILD_SHARED_LIBS=OFF -DGMX_PREFER_STATIC_LIBS=YES '
                 '-DGMX_BUILD_OWN_FFTW=OFF -DFFTW_LIBRARY=/usr/local/lib/libfftw3f.a '
                 '-DFFTW_INCLUDE_DIR=/usr/local/include/ '
-                '-DGMX_GSL=OFF -DGMX_DEFAULT_SUFFIX=ON -DGMX_GPU=OFF -DGMX_MPI=OFF -DGMX_DOUBLE=OFF '
+                '-DGMX_GSL=OFF -DGMX_DEFAULT_SUFFIX=ON -DGMX_GPU=OFF '
+                '-DGMX_MPI=OFF -DGMX_DOUBLE=OFF '
                 '-DGMX_INSTALL_PREFIX=/home/%s/programs/gmx-4.6.5/no_mpi/ '
                 '-DCMAKE_INSTALL_PREFIX=/home/%s/programs/gmx-4.6.5/no_mpi/' % (user, user))
             sudo('make -j 8')
@@ -671,48 +673,241 @@ def installZlibLocal():
         # sudo('rm -r zlib-1.2.8')
 
 
-def installFFTW_server():
-    with cd('~/programs'):
-        sudo('wget http://www.fftw.org/fftw-3.3.4.tar.gz')
-        sudo('tar xzf fftw-3.3.4.tar.gz')
+def installFFTWlocal():
+    with cd('%sprograms' % folder_local):
+        local('wget http://www.fftw.org/fftw-3.3.4.tar.gz')
+        local('tar xzf fftw-3.3.4.tar.gz')
         with cd('fftw-3.3.4'):
-            sudo('./configure --enable-float')
-            sudo('make')
-            sudo('make install')
-    with cd('~/programs'):
-        sudo('rm fftw-3.3.4.tar.gz')
+            local('./configure --enable-float')
+            local('make')
+            local('sudo make install')
+    with cd('%sprograms' % folder_local):
+        local('rm fftw-3.3.4.tar.gz')
 
 
-def installGROMACS_server():
-    with cd('~/programs'):
-        sudo('wget ftp://ftp.gromacs.org/pub/gromacs/gromacs-4.6.5.tar.gz')
-        sudo('tar xzf gromacs-4.6.5.tar.gz')
+def installGROMACSlocal():
+    with cd('%sprograms' % folder_local):
+        local('wget ftp://ftp.gromacs.org/pub/gromacs/gromacs-4.6.5.tar.gz')
+        local('tar xzf gromacs-4.6.5.tar.gz')
         with cd('gromacs-4.6.5'):
-            sudo('mkdir build')
-            sudo('cd build/')
-            sudo(
-                'cmake /home/koala/programs/gromacs-4.6.5/ -DSHARED_LIBS_DEFAULT=OFF -DBUILD_SHARED_LIBS=OFF -DGMX_PREFER_STATIC_LIBS=YES '
+            local('mkdir build')
+            local('cd build/')
+            local(
+                'cmake /home/koala/programs/gromacs-4.6.5/ -DSHARED_LIBS_DEFAULT=OFF '
+                '-DBUILD_SHARED_LIBS=OFF -DGMX_PREFER_STATIC_LIBS=YES '
                 '-DGMX_BUILD_OWN_FFTW=OFF -DFFTW_LIBRARY=/usr/local/lib/libfftw3f.a '
                 '-DFFTW_INCLUDE_DIR=/usr/local/include/ '
-                '-DGMX_GSL=OFF -DGMX_DEFAULT_SUFFIX=ON -DGMX_GPU=OFF -DGMX_MPI=OFF -DGMX_DOUBLE=OFF '
-                '-DGMX_INSTALL_PREFIX=/home/%s/programs/gmx-4.6.5/no_mpi/ '
-                '-DCMAKE_INSTALL_PREFIX=/home/%s/programs/gmx-4.6.5/no_mpi/' % (user, user))
-            sudo('make -j 8')
-            sudo('make install')
-    with cd('~/programs'):
-        sudo('rm -r gromacs-4.6.5')
-        sudo('rm gromacs-4.6.5.tar.gz')
+                '-DGMX_GSL=OFF -DGMX_DEFAULT_SUFFIX=ON -DGMX_GPU=OFF '
+                '-DGMX_MPI=OFF -DGMX_DOUBLE=OFF '
+                '-DGMX_INSTALL_PREFIX=%sprograms/gmx-4.6.5/no_mpi/ '
+                '-DCMAKE_INSTALL_PREFIX=%sprograms/gmx-4.6.5/no_mpi/' % (
+                    folder_local, folder_local))
+            local('make -j 8')
+            local('sudo make install')
+    with cd('%sprograms' % folder_local):
+        local('rm -r gromacs-4.6.5')
+        local('rm gromacs-4.6.5.tar.gz')
 
-# criar usuario koala  e definir senha
-# colocar como sudoer
+
+def setVirtualenvlocal():
+    local('sudo echo "export WORKON_HOME=%senvs" >> ~/.bashrc' % folder_local)
+    local('sudo echo "source /usr/local/bin/virtualenvwrapper.sh" >> ~/.bashrc')
+
+    local('sudo echo "export WORKON_HOME=%senvs" >> ~/.profile' % folder_local)
+    local('sudo echo "source /usr/local/bin/virtualenvwrapper.sh" >> ~/.profile')
+
+    local('sudo source ~/.bashrc')
+    local('sudo source ~/.profile')
+
+
+def setPythonPathLocal():
+    local(
+        'sudo echo "export PYTHONPATH=/usr/lib/python2.7/dist-packages:$PYTHONPATH\n'
+        'export PYTHONPATH=/usr/lib/python2.7/dist-packages/pymol:$PYTHONPATH\n'
+        'export PYTHONPATH=/usr/local/lib/python2.7/dist-packages:$PYTHONPATH\n'
+        'export PYTHONPATH=/usr/local/bin/pymol/modules:$PYTHONPATH\n'
+        'export MPI_DIR=/lib/openmpi\n'
+        'export PATH=/lib/openmpi/bin:$PATH\n'
+        'export LD_LIBRARY_PATH=/lib/openmpi/lib:$LD_LIBRARY_PATH" >> ~/bashrc')
+
+    local('sudo source ~/.bashrc')
+
+
+def installPyHighchartsLocal():
+    with cd('%sprograms' % folder_local):
+        local('git clone git@github.com:%s/PyHighcharts.git' % koala_user)
+        with cd('/usr/lib/python2.7/dist-packages'):
+            local('sudo ln -s %sprograms/PyHighcharts/ PyHighcharts' % folder_local)
+
+
+def install2PGCartesianLocal():
+    path = '2pg_cartesian'
+    with cd("%sprograms" % folder_local):
+        local('git clone git@github.com:rodrigofaccioli/2pg_cartesian.git %s' % path)
+        with cd(path):
+            local('mkdir build')
+            with cd('build'):
+                local('cmake ..')
+                local('make')
+                local('sudo make install')
+
+
+# def install2PGBuildConformation():
+#     cd /usr/local/bin
+#     sudo ln -s /home/koala/programs/2pg_build_conformation/src/protpred-Gromacs_pop_initial .
+
+
+# def installMEAMT():
+# cp ~/programs/meamt/aemt-mo-up2
+# cp ~/programs/meamt/aemt-pop-up2
+#     pass
+
+
+def cloneGalaxyLocal():
+    with cd('%sprograms' % folder_local):
+        local('git clone %s' % galaxy_repository)
+        with cd('%s' % galaxy_project):
+            local('mkvirtualenv %s' % galaxy_project)
+            local('pip install -r requirements.txt')
+
+
+def buildEnvGalaxyLocal():
+    sudo('workon %s' % galaxy_project)
+    sudo('pip install -U distribute')
+    sudo('pip install pycrypto')
+    sudo('pip install natsort')
+    sudo('pip install beautifulsoup4')
+    sudo('pip install certifi')
+    sudo('pip install pyopenssl ndg-httpsclient pyasn1')
+    sudo('pip install pycurl')
+    sudo('pip install fabric')
+
+
+def setKoalaLibLinksLocal():
+    local(
+        'sudo ln -s %s/lib/koala/ %senvs/%s/lib/python2.7/site-packages/koala' % (
+            CURRENT_PATH, folder_local, galaxy_project))
+    local(
+        'sudo ln -s %s/config/datatypes_conf.xml %sprograms/%s/config/' % (
+            CURRENT_PATH, folder_local, galaxy_project))
+    local(
+        'sudo ln -s %s/config/galaxy.ini %sprograms/%s/config/' % (
+            CURRENT_PATH, folder_local, galaxy_project))
+    local(
+        'sudo ln -s %s/config/integrated_tool_panel.xml %sprograms/%s/config/' % (
+            CURRENT_PATH, folder_local, galaxy_project))
+    local(
+        'sudo ln -s %s/config/job_conf.xml %sprograms/%s/config/' % (
+            CURRENT_PATH, folder_local, galaxy_project))
+    local(
+        'sudo ln -s %s/config/tool_conf.xml %sprograms/%s/config/' % (
+            CURRENT_PATH, folder_local, galaxy_project))
+    local(
+        'sudo ln -s %s/datatypes/confFiles.py %sprograms/%s/lib/galaxy/datatypes/' % (
+            CURRENT_PATH, folder_local, galaxy_project))
+    local(
+        'sudo ln -s %s/datatypes/gromacs_datatype.py %sprograms/%s/lib/galaxy/datatypes/' % (
+            CURRENT_PATH, folder_local, galaxy_project))
+    local(
+        'sudo ln -s %s/datatypes/molFiles.py %sprograms/%s/lib/galaxy/datatypes/' % (
+            CURRENT_PATH, folder_local, galaxy_project))
+    local(
+        'sudo ln -s %s/tools/analysis/ %sprograms/%s/tools/' % (
+            CURRENT_PATH, folder_local, galaxy_project))
+    local(
+        'sudo ln -s %s/tools/gromacs-tools/ %sprograms/%s/tools/' % (
+            CURRENT_PATH, folder_local, galaxy_project))
+    local(
+        'sudo ln -s %s/tools/meamt/ %sprograms/%s/tools/' % (
+            CURRENT_PATH, folder_local, galaxy_project))
+    local(
+        'sudo ln -s %s/tools/pdb-tools/ %sprograms/%s/tools/' % (
+            CURRENT_PATH, folder_local, galaxy_project))
+    local(
+        'sudo ln -s %s/tools/protpred-2pg/ %sprograms/%s/tools/' % (
+            CURRENT_PATH, folder_local, galaxy_project))
+    local(
+        'sudo ln -s %s/tools/protpred-eda/ %sprograms/%s/tools/' % (
+            CURRENT_PATH, folder_local, galaxy_project))
+    local(
+        'sudo ln -s %s/static/Bio-200.png %sprograms/%s/static/' % (
+            CURRENT_PATH, folder_local, galaxy_project))
+    local(
+        'sudo ln -s %s/static/LOGO-ICMC-RGB-300.png %sprograms/%s/static/' % (
+            CURRENT_PATH, folder_local, galaxy_project))
+    local(
+        'sudo ln -s %s/static/koala.css %sprograms/%s/static/' % (
+            CURRENT_PATH, folder_local, galaxy_project))
+    local(
+        'sudo ln -s %s/static/logo-koala.png %sprograms/%s/static/' % (
+            CURRENT_PATH, folder_local, galaxy_project))
+    local(
+        'sudo ln -s %s/static/usp-logo-300px.png %sprograms/%s/static/' % (
+            CURRENT_PATH, folder_local, galaxy_project))
+    local(
+        'sudo ln -s %s/static/welcome.html %sprograms/%s/static/' % (
+            CURRENT_PATH, folder_local, galaxy_project))
+
+
+def copyExecuteFilesLocal():
+    with cd(data_path):
+        local('cp -rR ~/%s/execute/ .' % koala_project)
+
+
+def setLibOpenMPILocal():
+    local('sudo ln -s /usr/lib/libmpi_cxx.so.0.0.1 /usr/lib/libmpi_cxx.so.1')
+    local(
+        'sudo ln -s /usr/lib/openmpi/lib/libmpi_cxx.so.0.0.1 /usr/lib/openmpi/lib/libmpi_cxx.so.1')
+    local('sudo ln -s /usr/lib/libmpi.so.0 /usr/lib/libmpi.so.1')
+    local('sudo ln -s /usr/lib/openmpi/lib/libmpi.so /usr/lib/openmpi/lib/libmpi.so.1')
+
+
+def installScriptsLocal():
+    local(
+        'sudo ln -s %s/scripts/check_structures_gromacs.py %sprograms/%s/scripts/' % (
+            CURRENT_PATH, folder_local, galaxy_project))
+    local(
+        'sudo ln -s %s/scripts/min.sh %sprograms/%s/scripts/' % (
+            CURRENT_PATH, folder_local, galaxy_project))
+    local(
+        'sudo ln -s %s/scripts/prepare_structures.py %sprograms/%s/scripts/' % (
+            CURRENT_PATH, folder_local, galaxy_project))
+    local(
+        'sudo ln -s %s/scripts/rename_atoms.py %sprograms/%s/scripts/' % (
+            CURRENT_PATH, folder_local, galaxy_project))
+    local(
+        'sudo ln -s %s/scripts/residue_renumber_all_pdbs.py %sprograms/%s/scripts/' % (
+            CURRENT_PATH, folder_local, galaxy_project))
+
+
+def runKoalaLocal():
+    log('Running Koala server local')
+    local('sh %sprograms/%s/run.sh --reload')
+
+
+def newKoalaLocal():
+    """Create a new Koala Server local"""
+    log('Creating a new Koala Server local')
+
+    localLocale()
+    createLocalUser()
+    updateLocal()
+    upgradeLocal()
+    buildLocal()
+    createDirectoriesLocal()
+    installZlibLocal()
+    installFFTWlocal()
+    installGROMACSlocal()
+    setVirtualenvlocal()
+    setPythonPathLocal()
+    installPyHighchartsLocal()
+    install2PGCartesianLocal()
+    cloneGalaxyLocal()
+    buildEnvGalaxyLocal()
+    setKoalaLibLinksLocal()
+    copyExecuteFilesLocal()
+    setLibOpenMPILocal()
+    installScriptsLocal()
+    runKoalaLocal()
+
 # criar banco postgresql
-#  download do galaxy
-# instalar galaxy
-# criar env galaxy
-# criar links do koala no galaxy na pasta config
-# criar links do koala no galaxy na pasta static
-# criar links do koala no galaxy na pasta datatypes
-# criar links do koala no galaxy na pasta lib
-# criar links do koala no galaxy na pasta scripts
-# criar links do koala no galaxy na pasta tools
-# rodar galaxy
