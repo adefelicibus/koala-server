@@ -182,3 +182,22 @@ tbody tr:hover {
 	padding-left: 45%;
 }
 
+.wf {
+	margin: 0 auto;
+	width: 100%;
+	height: 155px;
+}
+
+.wf .wf-comparison {
+	background: url(workflow_comparison.png) no-repeat;
+	height: 175px;
+	width: 100%;
+	padding: left;
+}
+
+.wf .wf-ranking {
+	background: url(workflow_ranking.png) no-repeat;
+	height: 175px;
+	width: 100%;
+	padding: right;
+}

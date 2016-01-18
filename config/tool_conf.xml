@@ -59,6 +59,10 @@
     <tool file="gromacs-tools/pdb2gmx.xml"/>
     <tool file="gromacs-tools/remover_agua.xml"/>
     <tool file="gromacs-tools/solvate.xml"/>
+    <tool file="gromacs-tools/eq.xml"/>
+    <tool file="gromacs-tools/md.xml"/>
+    <tool file="gromacs-tools/min_all.xml"/>
+    <tool file="gromacs-tools/min_none.xml"/>
   </section>
   <!-- <section id="protpred-2pg" name="ProtPred Tools">
     <tool file="protpred-2pg/buildconformation2pg.xml" />
