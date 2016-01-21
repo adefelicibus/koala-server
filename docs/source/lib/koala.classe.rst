@@ -1,6 +1,6 @@
 koala.classe package
 ======================
 
-.. autoclass:: IcmcGalaxy
+.. autoclass:: koala.classe
     :members:
 
