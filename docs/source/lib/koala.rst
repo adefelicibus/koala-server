@@ -6,10 +6,15 @@ Koala package
     :undoc-members:
     :show-inheritance:
 
-Subpackages
------------
+Submodules
+----------
 
-.. toctree::
+koala.classe module
+---------------------------
 
-    koala.classe
+.. automodule:: koala.classe
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 
