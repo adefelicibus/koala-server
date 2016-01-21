@@ -1,7 +1,6 @@
 koala.classe package
 ======================
 
-.. automodule:: koala.classe
+.. autoclass:: IcmcGalaxy
     :members:
-    :undoc-members:
-    :show-inheritance:
+
