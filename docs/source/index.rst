@@ -12,6 +12,7 @@ Contents:
    scripts
    tools
    workflows
+   Application Documentation <lib/modules>
 
 
 Guide
