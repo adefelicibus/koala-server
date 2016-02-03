@@ -8,6 +8,8 @@ import zipfile
 import subprocess
 from natsort import natsorted
 import fnmatch
+import getpass
+import sys
 
 
 def validateEmail(email):
@@ -156,3 +158,60 @@ def listDirectory(directory, ereg=None):
     except Exception, e:
         self.ShowErrorMessage("Error when listDirectory:\n%s" % e)
         # raise Exception("Error while listing the directory.\n%s" % e)
+
+def getjobStart():
+        return self.jobStart
+
+
+def setjobStart(jobStart):
+    self.jobStart = jobStart
+
+
+def getjobEnd():
+    return self.jobEnd
+
+
+def setjobEnd(jobEnd):
+    self.jobEnd = jobEnd
+
+
+def calcTimeExecution(start, end):
+
+    dif = end - start
+
+    minutes = 0
+    if (dif.seconds / 60) > 60:
+        minutes = (dif.seconds / 60) - ((dif.seconds / 3600) * 60)
+    else:
+        minutes = dif.seconds / 60
+
+    return [
+        dif.seconds / 3600,
+        minutes,
+        dif.seconds - ((dif.seconds / 60) * 60)]
+
+
+def getLoggedUser():
+    try:
+        return getpass.getuser()
+    except Exception, e:
+        self.ShowErrorMessage("Error when setCommand\n%s" % e)
+
+
+def ShowErrorMessage(msg):
+        error = sys.__stderr__
+        error.write(msg)
+        error.flush()
+        sys.stderr = error
+        sys.exit(1)
+
+
+def showMessage(msg):
+    print msg
+
+
+def ShowWarningMessage(msg):
+    info = sys.__stdout__
+    info.write(msg)
+    info.flush()
+    sys.stdout = info

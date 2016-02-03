@@ -1,19 +1,21 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import sys
+# util/__init__
+# import sys
 # utils/input.py
 # import string
-import shutil
-import subprocess
-import os
-import stat
+# import shutil
+# import subprocess
+# import os
+# utils/path
+# import stat
 # utils/mail.py
 # import smtplib
 # utils/__init__
 # import re
-import datetime
-import zipfile
+# import datetime
+# import zipfile
 # utils/__init__
 # import fnmatch
 # utils/mail.py
@@ -22,11 +24,14 @@ import zipfile
 # from email.mime.base import MIMEBase
 # from email.mime.multipart import MIMEMultipart
 # from email.mime.text import MIMEText
-import getpass
-import urllib2
+# util/__init__
+# import getpass
+# utils/output
+# import urllib2
 # ordered_dict/default.py
 # from collections import OrderedDict,  Callable
-import random
+# utils/path
+# import random
 
 
 # ordered_dict/default.py
@@ -349,47 +354,50 @@ class IcmcGalaxy(object):
     def __init__(self):
         super(IcmcGalaxy, self).__init__()
 
-    def getjobStart(self):
-        return self.jobStart
+    # util/__init__
+    # def getjobStart(self):
+    #     return self.jobStart
 
-    def setjobStart(self, jobStart):
-        self.jobStart = jobStart
+    # def setjobStart(self, jobStart):
+    #     self.jobStart = jobStart
 
-    def getjobEnd(self):
-        return self.jobEnd
+    # def getjobEnd(self):
+    #     return self.jobEnd
 
-    def setjobEnd(self, jobEnd):
-        self.jobEnd = jobEnd
+    # def setjobEnd(self, jobEnd):
+    #     self.jobEnd = jobEnd
 
-    def calcTimeExecution(self, start, end):
+    # def calcTimeExecution(self, start, end):
 
-        dif = end - start
+    #     dif = end - start
 
-        minutes = 0
-        if (dif.seconds / 60) > 60:
-            minutes = (dif.seconds / 60) - ((dif.seconds / 3600) * 60)
-        else:
-            minutes = dif.seconds / 60
+    #     minutes = 0
+    #     if (dif.seconds / 60) > 60:
+    #         minutes = (dif.seconds / 60) - ((dif.seconds / 3600) * 60)
+    #     else:
+    #         minutes = dif.seconds / 60
 
-        return [
-            dif.seconds / 3600,
-            minutes,
-            dif.seconds - ((dif.seconds / 60) * 60)]
+    #     return [
+    #         dif.seconds / 3600,
+    #         minutes,
+    #         dif.seconds - ((dif.seconds / 60) * 60)]
 
-    def getPathGromacs(self):
-        self.pathGromacs = '/home/%s/programs/gmx-4.6.5/no_mpi/bin/' \
-                                        % self.getLoggedUser()
-        return self.pathGromacs
+    # utils/path
+    # def getPathGromacs(self):
+    #     self.pathGromacs = '/home/%s/programs/gmx-4.6.5/no_mpi/bin/' \
+    #                                     % self.getLoggedUser()
+    #     return self.pathGromacs
 
     # frameworks/params.py
     # def getParameters(self):
     #     return self.general_parameters
 
-    def setFramework(self, framework):
-        self.framework = framework
+    # frameworks/framework
+    # def setFramework(self, framework):
+    #     self.framework = framework
 
-    def getFramework(self):
-        return self.framework
+    # def getFramework(self):
+    #     return self.framework
 
     # frameworks/params.py
     # def setParameter(self, key, value):
@@ -499,57 +507,60 @@ class IcmcGalaxy(object):
     #         self.ShowErrorMessage("Error when getParameterValue\n%s" % e)
     #         # raise Exception("Error while getting parameter value: %s" % e)
 
-    def getLoggedUser(self):
-        try:
-            return getpass.getuser()
-        except Exception, e:
-            self.ShowErrorMessage("Error when setCommand\n%s" % e)
+    # util/__init__
+    # def getLoggedUser(self):
+    #     try:
+    #         return getpass.getuser()
+    #     except Exception, e:
+    #         self.ShowErrorMessage("Error when setCommand\n%s" % e)
 
-    def getConfigurationFile(self, filename):
-        # return '%s%s' % (self.getPathExecution(), filename)
-        return '%s' % filename
+    # frameworks/framework
+    # def getConfigurationFile(self, filename):
+    #     # return '%s%s' % (self.getPathExecution(), filename)
+    #     return '%s' % filename
 
-    def setCommand(self, framework, algorithm):
-        try:
-            global command
-            if(self.framework == '2PG'):
-                # self.command = '%ssrc/%s' % (
-                self.command = '/usr/local/bin/%s' % (algorithm)
-            # elif(self.framework == 'MEAMT'):
-            #     self.command = '%s%s' % (self.getPathAlgorithms(framework), algorithm)
-            elif(self.framework == 'i-paes'):
-                self.command = '%s%s' % (self.getPathAlgorithms(framework), algorithm)
-            else:
-                self.command = '%s%s' % (self.getPathExecute(), algorithm)
-        except Exception, e:
-            self.ShowErrorMessage("Error when setCommand\n%s" % e)
+    # def setCommand(self, framework, algorithm):
+    #     try:
+    #         global command
+    #         if(self.framework == '2PG'):
+    #             # self.command = '%ssrc/%s' % (
+    #             self.command = '/usr/local/bin/%s' % (algorithm)
+    #         # elif(self.framework == 'MEAMT'):
+    #         #     self.command = '%s%s' % (self.getPathAlgorithms(framework), algorithm)
+    #         elif(self.framework == 'i-paes'):
+    #             self.command = '%s%s' % (self.getPathAlgorithms(framework), algorithm)
+    #         else:
+    #             self.command = '%s%s' % (self.getPathExecute(), algorithm)
+    #     except Exception, e:
+    #         self.ShowErrorMessage("Error when setCommand\n%s" % e)
 
-    def getCommand(self):
-        return self.command
+    # def getCommand(self):
+    #     return self.command
 
-    def getProgram(self):
-        return self.program
+    # def getProgram(self):
+    #     return self.program
 
-    # fazer com que ele pegue o diretorio deste arquivo e una com o nome do programa
-    def setProgram(self, executable):
-        global program
-        self.program = executable
+    # # fazer com que ele pegue o diretorio deste arquivo e una com o nome do programa
+    # def setProgram(self, executable):
+    #     global program
+    #     self.program = executable
 
-    def getPathExecution(self):  # the directory where the execution will run
-        return self.pathExecution
+    # utils/path
+    # def getPathExecution(self):  # the directory where the execution will run
+    #     return self.pathExecution
 
-    def getPathExecute(self):  # the folder where all the execution folders run
-        try:
-            # return "/home/alexandre/execute/"
-            return "/dados/%s/execute/" % self.getLoggedUser()
-        except Exception, e:
-            self.ShowErrorMessage("Error when getPathExecute\n%s" % e)
+    # def getPathExecute(self):  # the folder where all the execution folders run
+    #     try:
+    #         # return "/home/alexandre/execute/"
+    #         return "/dados/%s/execute/" % self.getLoggedUser()
+    #     except Exception, e:
+    #         self.ShowErrorMessage("Error when getPathExecute\n%s" % e)
 
-    def getPathAlgorithms(self, framework):
-        try:
-            return "/home/%s/programs/%s/" % (self.getLoggedUser(), framework)
-        except Exception, e:
-            self.ShowErrorMessage("Error when getPathAlgorithms\n%s" % e)
+    # def getPathAlgorithms(self, framework):
+    #     try:
+    #         return "/home/%s/programs/%s/" % (self.getLoggedUser(), framework)
+    #     except Exception, e:
+    #         self.ShowErrorMessage("Error when getPathAlgorithms\n%s" % e)
 
     # utils/__init__.py
     # def ValidateEmail(self, email):
@@ -564,30 +575,31 @@ class IcmcGalaxy(object):
     #     except Exception, e:
     #         self.ShowErrorMessage("Error when ValidateEmail\n%s" % e)
 
-    def CreateExecutionDirectory(self, email=None):
-        try:
-            now = datetime.datetime.now()
-            tupla = now.timetuple()
-            rand = random.randint(0, 1000)
+    # utils/path.py
+    # def CreateExecutionDirectory(self, email=None):
+    #     try:
+    #         now = datetime.datetime.now()
+    #         tupla = now.timetuple()
+    #         rand = random.randint(0, 1000)
 
-            try:   # dia        #mes        #ano            #hora       #min        #seg
-                if email is None:
-                    nome_diretorio = str(tupla[2]) + str(tupla[1]) + str(tupla[0]) \
-                        + "_" + str(tupla[3]) + str(tupla[4]) + str(tupla[5]) + "_" + str(rand) + "/"
-                else:
-                    nome_diretorio = email + str(tupla[2]) + str(tupla[1]) + str(tupla[0]) \
-                        + "_" + str(tupla[3]) + str(tupla[4]) + str(tupla[5]) + "_" + str(rand) + "/"
-                os.mkdir(os.path.join(self.getPathExecute(), nome_diretorio))
-                os.chmod(os.path.join(self.getPathExecute(), nome_diretorio), stat.S_IRWXU)
-            except Exception, e:
-                self.ShowErrorMessage("Error when CreateExecutionDirectory\n%s" % e)
-                # raise Exception("Error while creating the execution directory!\n%s" % e)
+    #         try:   # dia        #mes        #ano            #hora       #min        #seg
+    #             if email is None:
+    #                 nome_diretorio = str(tupla[2]) + str(tupla[1]) + str(tupla[0]) \
+    #                     + "_" + str(tupla[3]) + str(tupla[4]) + str(tupla[5]) + "_" + str(rand) + "/"
+    #             else:
+    #                 nome_diretorio = email + str(tupla[2]) + str(tupla[1]) + str(tupla[0]) \
+    #                     + "_" + str(tupla[3]) + str(tupla[4]) + str(tupla[5]) + "_" + str(rand) + "/"
+    #             os.mkdir(os.path.join(self.getPathExecute(), nome_diretorio))
+    #             os.chmod(os.path.join(self.getPathExecute(), nome_diretorio), stat.S_IRWXU)
+    #         except Exception, e:
+    #             self.ShowErrorMessage("Error when CreateExecutionDirectory\n%s" % e)
+    #             # raise Exception("Error while creating the execution directory!\n%s" % e)
 
-            self.pathExecution = nome_diretorio
-            return nome_diretorio
+    #         self.pathExecution = nome_diretorio
+    #         return nome_diretorio
 
-        except Exception, e:
-            self.ShowErrorMessage("Error when CreateExecutionDirectory\n%s" % e)
+    #     except Exception, e:
+    #         self.ShowErrorMessage("Error when CreateExecutionDirectory\n%s" % e)
 
     # utils/input.py
     # def CreateLocalPopFile(self, path, pop_file):
@@ -903,23 +915,24 @@ class IcmcGalaxy(object):
     #         self.ShowErrorMessage("Error when SendEmail:\n%s" % e)
     #         # raise Exception("Error while sending email!\n%s" % e)
 
-    def ShowErrorMessage(self, msg):
-        error = sys.__stderr__
-        error.write(msg)
-        error.flush()
-        sys.stderr = error
-        sys.exit(1)
-        # sys.stderr.write(msg)
-        # sys.exit()
+    # util/__init__
+    # def ShowErrorMessage(self, msg):
+    #     error = sys.__stderr__
+    #     error.write(msg)
+    #     error.flush()
+    #     sys.stderr = error
+    #     sys.exit(1)
+    #     # sys.stderr.write(msg)
+    #     # sys.exit()
 
-    def showMessage(self, msg):
-        print msg
+    # def showMessage(self, msg):
+    #     print msg
 
-    def ShowWarningMessage(self, msg):
-        info = sys.__stdout__
-        info.write(msg)
-        info.flush()
-        sys.stdout = info
+    # def ShowWarningMessage(self, msg):
+    #     info = sys.__stdout__
+    #     info.write(msg)
+    #     info.flush()
+    #     sys.stdout = info
 
     # utils/__init__.py
     # def CopyNecessaryFiles(self, new_path):
@@ -942,238 +955,241 @@ class IcmcGalaxy(object):
     #     except Exception, e:
     #         self.ShowErrorMessage("Error when CopyNecessaryFiles:\n%s" % e)
 
-    def ExecuteProgram(
-            self, program, config, path_execution, path_output,
-            tool, email, framework='2PG', galaxydir="None", outputID="None"):
-        try:
-            stdout_file = open("%sstdout.txt" % self.getPathExecution(), "wr")
-            retProcess = None
-            retProcess = subprocess.Popen([
-                'nohup',
-                program,
-                self.getCommand(),
-                config,
-                path_execution,
-                galaxydir,
-                path_output,
-                outputID,
-                tool,
-                framework,
-                email,
-                '&'],
-                stdout=stdout_file, stderr=subprocess.STDOUT, shell=False)
+    # framework/framework
+    # def ExecuteProgram(
+    #         self, program, config, path_execution, path_output,
+    #         tool, email, framework='2PG', galaxydir="None", outputID="None"):
+    #     try:
+    #         stdout_file = open("%sstdout.txt" % self.getPathExecution(), "wr")
+    #         retProcess = None
+    #         retProcess = subprocess.Popen([
+    #             'nohup',
+    #             program,
+    #             self.getCommand(),
+    #             config,
+    #             path_execution,
+    #             galaxydir,
+    #             path_output,
+    #             outputID,
+    #             tool,
+    #             framework,
+    #             email,
+    #             '&'],
+    #             stdout=stdout_file, stderr=subprocess.STDOUT, shell=False)
 
-            if retProcess is not None:
-                pass
+    #         if retProcess is not None:
+    #             pass
 
-        except Exception, e:
-            self.ShowErrorMessage("Error when ExecuteProgram:\n%s" % e)
+    #     except Exception, e:
+    #         self.ShowErrorMessage("Error when ExecuteProgram:\n%s" % e)
 
-    def getResultFiles(self, path, tool, fileName=None):
-        try:
-            resultFile = ''
-            filesToHtml = []
-            os.chdir(path)
-            # if tool == '2PG_Random_Tool':
-            #     resultFile = '%s%s' % (path, 'random_algorithm_solutions.pdb')
-            if tool == '2PG_SortByFront_Tool':
-                resultFile = '%s%s.zip' % (path, tool)
-                z = zipfile.ZipFile(resultFile, 'w', zipfile.ZIP_DEFLATED)
-                listaArquivosFront = self.listDirectory(path, '*.front')
-                for arq in listaArquivosFront:
-                    z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
-                    z.write(arq)
-                    z.close()
-                    filesToHtml.append(os.path.join(path, arq))
-                listaArquivosXvg = self.listDirectory(path, '*.xvg')
-                for arq in listaArquivosXvg:
-                    z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
-                    z.write(arq)
-                    z.close()
-                    filesToHtml.append(os.path.join(path, arq))
-                listaArquivosPng = self.listDirectory(path, '*.png')
-                for arq in listaArquivosPng:
-                    z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
-                    z.write(arq)
-                    z.close()
-                    filesToHtml.append(os.path.join(path, arq))
-                listaArquivosLog = self.listDirectory(path, '*.log')
-                for arq in listaArquivosLog:
-                    z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
-                    z.write(arq)
-                    z.close()
-                    filesToHtml.append(os.path.join(path, arq))
-            elif tool in (
-                    'Dominance_Ranking', '2PG_SortMethodByFront_Tool',
-                    'CalculateRMSD', 'CalculateTMScore', 'CalculateGDTTS'):
-                resultFile = '%s%s.zip' % (path, tool)
-                z = zipfile.ZipFile(resultFile, 'w', zipfile.ZIP_DEFLATED)
-                listaArquivosFront = self.listDirectory(path, '*.front')
-                for arq in listaArquivosFront:
-                    z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
-                    z.write(arq)
-                    z.close()
-                    filesToHtml.append(os.path.join(path, arq))
-                listaArquivosXvg = self.listDirectory(path, '*.xvg')
-                for arq in listaArquivosXvg:
-                    z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
-                    z.write(arq)
-                    z.close()
-                    filesToHtml.append(os.path.join(path, arq))
-                listaArquivosPdf = self.listDirectory(path, '*.pdf')
-                for arq in listaArquivosPdf:
-                    z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
-                    z.write(arq)
-                    z.close()
-                    filesToHtml.append(os.path.join(path, arq))
-                listaArquivosPng = self.listDirectory(path, '*.png')
-                for arq in listaArquivosPng:
-                    z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
-                    z.write(arq)
-                    z.close()
-                    filesToHtml.append(os.path.join(path, arq))
-                listaArquivosTxt = self.listDirectory(path, '*.txt')
-                for arq in listaArquivosTxt:
-                    z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
-                    z.write(arq)
-                    z.close()
-                    filesToHtml.append(os.path.join(path, arq))
-                listaArquivosLog = self.listDirectory(path, '*.log')
-                for arq in listaArquivosLog:
-                    z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
-                    z.write(arq)
-                    z.close()
-                    filesToHtml.append(os.path.join(path, arq))
-            elif tool == '2PG_BuildConformation_Tool':
-                resultFile = '%s%s' % (path, 'pop_0.pdb')
-            elif tool in (
-                    '2PG_NSGA2_Tool', '2PG_Mono_Tool',
-                    '2PG_MC_Metropolis', '2PG_Random_Tool'):
-                resultFile = '%s%s.zip' % (path, tool)
-                z = zipfile.ZipFile(resultFile, 'w', zipfile.ZIP_DEFLATED)
-                if(fileName):
-                    listaArquivosPDB = self.listDirectory(path, '%s*.pdb' % fileName)
-                else:
-                    listaArquivosPDB = self.listDirectory(path, '*.pdb')
-                for arq in listaArquivosPDB:
-                    z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
-                    z.write(arq)
-                    z.close()
-                    filesToHtml.append(os.path.join(path, arq))
-                listaArquivosXvg = self.listDirectory(path, '*.xvg')
-                for arq in listaArquivosXvg:
-                    z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
-                    z.write(arq)
-                    z.close()
-                    filesToHtml.append(os.path.join(path, arq))
-                listaArquivosFit = self.listDirectory(path, '*.fit')
-                for arq in listaArquivosFit:
-                    z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
-                    z.write(arq)
-                    z.close()
-                    filesToHtml.append(os.path.join(path, arq))
-                listaArquivosPng = self.listDirectory(path, '*.png')
-                for arq in listaArquivosPng:
-                    z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
-                    z.write(arq)
-                    z.close()
-                    filesToHtml.append(os.path.join(path, arq))
-                # listaArquivosPdb = self.listDirectory(path, 'PROT_IND_*.pdb')
-                # for arq in listaArquivosPdb:
-                #     z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
-                #     z.write(arq)
-                #     z.close()
-                #     filesToHtml.append(os.path.join(path, arq))
-            # elif tool == '2PG_MC_Metropolis':
-            #     os.chdir(path)
-            #     resultFile = '%s%s' % (path, 'monte_carlo_solutions.pdb')
-            # elif(tool == 'ProtPred_EDA'):
-            #     resultFile = '%s%s' % (path, '/ProtPredEDA_out.zip')
-            #     z = zipfile.ZipFile(resultFile, 'w', zipfile.ZIP_DEFLATED)
-            #     self.copyFilesToExecuteFolder(path)
-            #     listaArquivosPDB = self.listDirectory(path, '*.pdb')
-            #     for arq in listaArquivosPDB:
-            #         z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
-            #         z.write(arq)
-            #         z.close()
-            # listadic = self.listDirectory(path)
-            # self.zip_folder(listadic[0], resultFile)
-            elif(tool == 'ProtPred_EDA'):
-                resultFile = '%s%s.zip' % (path, tool)
-                z = zipfile.ZipFile(resultFile, 'w', zipfile.ZIP_DEFLATED)
-                listaArquivosPDB = self.listDirectory(path, '*.pdb')
-                for arq in listaArquivosPDB:
-                    z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
-                    z.write(arq)
-                    z.close()
-                    filesToHtml.append(os.path.join(path, arq))
-                listaArquivosPng = self.listDirectory(path, '*.png')
-                for arq in listaArquivosPng:
-                    z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
-                    z.write(arq)
-                    z.close()
-                    filesToHtml.append(os.path.join(path, arq))
-            elif tool == 'Download_From_Quark':
-                resultFile = '%s%s' % (path, '/ResultQuark.zip')
-                z = zipfile.ZipFile(resultFile, 'w', zipfile.ZIP_DEFLATED)
-                listaArquivosPDB = self.listDirectory(path, '*.pdb')
-                for arq in listaArquivosPDB:
-                    z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
-                    z.write(arq)
-                    z.close()
-                listaArquivosTxt = self.listDirectory(path, '*.txt')
-                for arq in listaArquivosTxt:
-                    z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
-                    z.write(arq)
-                    z.close()
-            elif(tool == 'MEAMT_BuildConformation_Tool'):
-                resultFile = '%s%s' % (path, 'pop_meamt.txt')
-            elif(tool == 'MEAMT_Tool'):  # criar o html tbm, depois
-                # resultFile = '%s%s' % (path, 'protein.pdb')
-                resultFile = '%s%s.zip' % (path, tool)
-                z = zipfile.ZipFile(resultFile, 'w', zipfile.ZIP_DEFLATED)
-                listaArquivosPDB = self.listDirectory(path, '*.pdb')
-                for arq in listaArquivosPDB:
-                    z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
-                    z.write(arq)
-                    z.close()
-                    filesToHtml.append(os.path.join(path, arq))
-                listaArquivosPng = self.listDirectory(path, '*.png')
-                for arq in listaArquivosPng:
-                    z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
-                    z.write(arq)
-                    z.close()
-                    filesToHtml.append(os.path.join(path, arq))
-                listaArquivosTxt = self.listDirectory(path, 'subpop*.txt')
-                for arq in listaArquivosTxt:
-                    z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
-                    z.write(arq)
-                    z.close()
-                    filesToHtml.append(os.path.join(path, arq))
-            return resultFile, filesToHtml
-        except Exception, e:
-            self.ShowErrorMessage("Error when getResultFiles:\n%s" % e)
-            # raise Exception("Error while getting result files: \n%s" % e)
+    # utils/output
+    # def getResultFiles(self, path, tool, fileName=None):
+    #     try:
+    #         resultFile = ''
+    #         filesToHtml = []
+    #         os.chdir(path)
+    #         # if tool == '2PG_Random_Tool':
+    #         #     resultFile = '%s%s' % (path, 'random_algorithm_solutions.pdb')
+    #         if tool == '2PG_SortByFront_Tool':
+    #             resultFile = '%s%s.zip' % (path, tool)
+    #             z = zipfile.ZipFile(resultFile, 'w', zipfile.ZIP_DEFLATED)
+    #             listaArquivosFront = self.listDirectory(path, '*.front')
+    #             for arq in listaArquivosFront:
+    #                 z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
+    #                 z.write(arq)
+    #                 z.close()
+    #                 filesToHtml.append(os.path.join(path, arq))
+    #             listaArquivosXvg = self.listDirectory(path, '*.xvg')
+    #             for arq in listaArquivosXvg:
+    #                 z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
+    #                 z.write(arq)
+    #                 z.close()
+    #                 filesToHtml.append(os.path.join(path, arq))
+    #             listaArquivosPng = self.listDirectory(path, '*.png')
+    #             for arq in listaArquivosPng:
+    #                 z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
+    #                 z.write(arq)
+    #                 z.close()
+    #                 filesToHtml.append(os.path.join(path, arq))
+    #             listaArquivosLog = self.listDirectory(path, '*.log')
+    #             for arq in listaArquivosLog:
+    #                 z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
+    #                 z.write(arq)
+    #                 z.close()
+    #                 filesToHtml.append(os.path.join(path, arq))
+    #         elif tool in (
+    #                 'Dominance_Ranking', '2PG_SortMethodByFront_Tool',
+    #                 'CalculateRMSD', 'CalculateTMScore', 'CalculateGDTTS'):
+    #             resultFile = '%s%s.zip' % (path, tool)
+    #             z = zipfile.ZipFile(resultFile, 'w', zipfile.ZIP_DEFLATED)
+    #             listaArquivosFront = self.listDirectory(path, '*.front')
+    #             for arq in listaArquivosFront:
+    #                 z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
+    #                 z.write(arq)
+    #                 z.close()
+    #                 filesToHtml.append(os.path.join(path, arq))
+    #             listaArquivosXvg = self.listDirectory(path, '*.xvg')
+    #             for arq in listaArquivosXvg:
+    #                 z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
+    #                 z.write(arq)
+    #                 z.close()
+    #                 filesToHtml.append(os.path.join(path, arq))
+    #             listaArquivosPdf = self.listDirectory(path, '*.pdf')
+    #             for arq in listaArquivosPdf:
+    #                 z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
+    #                 z.write(arq)
+    #                 z.close()
+    #                 filesToHtml.append(os.path.join(path, arq))
+    #             listaArquivosPng = self.listDirectory(path, '*.png')
+    #             for arq in listaArquivosPng:
+    #                 z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
+    #                 z.write(arq)
+    #                 z.close()
+    #                 filesToHtml.append(os.path.join(path, arq))
+    #             listaArquivosTxt = self.listDirectory(path, '*.txt')
+    #             for arq in listaArquivosTxt:
+    #                 z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
+    #                 z.write(arq)
+    #                 z.close()
+    #                 filesToHtml.append(os.path.join(path, arq))
+    #             listaArquivosLog = self.listDirectory(path, '*.log')
+    #             for arq in listaArquivosLog:
+    #                 z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
+    #                 z.write(arq)
+    #                 z.close()
+    #                 filesToHtml.append(os.path.join(path, arq))
+    #         elif tool == '2PG_BuildConformation_Tool':
+    #             resultFile = '%s%s' % (path, 'pop_0.pdb')
+    #         elif tool in (
+    #                 '2PG_NSGA2_Tool', '2PG_Mono_Tool',
+    #                 '2PG_MC_Metropolis', '2PG_Random_Tool'):
+    #             resultFile = '%s%s.zip' % (path, tool)
+    #             z = zipfile.ZipFile(resultFile, 'w', zipfile.ZIP_DEFLATED)
+    #             if(fileName):
+    #                 listaArquivosPDB = self.listDirectory(path, '%s*.pdb' % fileName)
+    #             else:
+    #                 listaArquivosPDB = self.listDirectory(path, '*.pdb')
+    #             for arq in listaArquivosPDB:
+    #                 z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
+    #                 z.write(arq)
+    #                 z.close()
+    #                 filesToHtml.append(os.path.join(path, arq))
+    #             listaArquivosXvg = self.listDirectory(path, '*.xvg')
+    #             for arq in listaArquivosXvg:
+    #                 z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
+    #                 z.write(arq)
+    #                 z.close()
+    #                 filesToHtml.append(os.path.join(path, arq))
+    #             listaArquivosFit = self.listDirectory(path, '*.fit')
+    #             for arq in listaArquivosFit:
+    #                 z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
+    #                 z.write(arq)
+    #                 z.close()
+    #                 filesToHtml.append(os.path.join(path, arq))
+    #             listaArquivosPng = self.listDirectory(path, '*.png')
+    #             for arq in listaArquivosPng:
+    #                 z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
+    #                 z.write(arq)
+    #                 z.close()
+    #                 filesToHtml.append(os.path.join(path, arq))
+    #             # listaArquivosPdb = self.listDirectory(path, 'PROT_IND_*.pdb')
+    #             # for arq in listaArquivosPdb:
+    #             #     z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
+    #             #     z.write(arq)
+    #             #     z.close()
+    #             #     filesToHtml.append(os.path.join(path, arq))
+    #         # elif tool == '2PG_MC_Metropolis':
+    #         #     os.chdir(path)
+    #         #     resultFile = '%s%s' % (path, 'monte_carlo_solutions.pdb')
+    #         # elif(tool == 'ProtPred_EDA'):
+    #         #     resultFile = '%s%s' % (path, '/ProtPredEDA_out.zip')
+    #         #     z = zipfile.ZipFile(resultFile, 'w', zipfile.ZIP_DEFLATED)
+    #         #     self.copyFilesToExecuteFolder(path)
+    #         #     listaArquivosPDB = self.listDirectory(path, '*.pdb')
+    #         #     for arq in listaArquivosPDB:
+    #         #         z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
+    #         #         z.write(arq)
+    #         #         z.close()
+    #         # listadic = self.listDirectory(path)
+    #         # self.zip_folder(listadic[0], resultFile)
+    #         elif(tool == 'ProtPred_EDA'):
+    #             resultFile = '%s%s.zip' % (path, tool)
+    #             z = zipfile.ZipFile(resultFile, 'w', zipfile.ZIP_DEFLATED)
+    #             listaArquivosPDB = self.listDirectory(path, '*.pdb')
+    #             for arq in listaArquivosPDB:
+    #                 z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
+    #                 z.write(arq)
+    #                 z.close()
+    #                 filesToHtml.append(os.path.join(path, arq))
+    #             listaArquivosPng = self.listDirectory(path, '*.png')
+    #             for arq in listaArquivosPng:
+    #                 z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
+    #                 z.write(arq)
+    #                 z.close()
+    #                 filesToHtml.append(os.path.join(path, arq))
+    #         elif tool == 'Download_From_Quark':
+    #             resultFile = '%s%s' % (path, '/ResultQuark.zip')
+    #             z = zipfile.ZipFile(resultFile, 'w', zipfile.ZIP_DEFLATED)
+    #             listaArquivosPDB = self.listDirectory(path, '*.pdb')
+    #             for arq in listaArquivosPDB:
+    #                 z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
+    #                 z.write(arq)
+    #                 z.close()
+    #             listaArquivosTxt = self.listDirectory(path, '*.txt')
+    #             for arq in listaArquivosTxt:
+    #                 z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
+    #                 z.write(arq)
+    #                 z.close()
+    #         elif(tool == 'MEAMT_BuildConformation_Tool'):
+    #             resultFile = '%s%s' % (path, 'pop_meamt.txt')
+    #         elif(tool == 'MEAMT_Tool'):  # criar o html tbm, depois
+    #             # resultFile = '%s%s' % (path, 'protein.pdb')
+    #             resultFile = '%s%s.zip' % (path, tool)
+    #             z = zipfile.ZipFile(resultFile, 'w', zipfile.ZIP_DEFLATED)
+    #             listaArquivosPDB = self.listDirectory(path, '*.pdb')
+    #             for arq in listaArquivosPDB:
+    #                 z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
+    #                 z.write(arq)
+    #                 z.close()
+    #                 filesToHtml.append(os.path.join(path, arq))
+    #             listaArquivosPng = self.listDirectory(path, '*.png')
+    #             for arq in listaArquivosPng:
+    #                 z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
+    #                 z.write(arq)
+    #                 z.close()
+    #                 filesToHtml.append(os.path.join(path, arq))
+    #             listaArquivosTxt = self.listDirectory(path, 'subpop*.txt')
+    #             for arq in listaArquivosTxt:
+    #                 z = zipfile.ZipFile(resultFile, 'a', zipfile.ZIP_DEFLATED)
+    #                 z.write(arq)
+    #                 z.close()
+    #                 filesToHtml.append(os.path.join(path, arq))
+    #         return resultFile, filesToHtml
+    #     except Exception, e:
+    #         self.ShowErrorMessage("Error when getResultFiles:\n%s" % e)
+    #         # raise Exception("Error while getting result files: \n%s" % e)
 
-    def copyFilesToExecuteFolder(self, path, prefix_filename=None):
-        try:
-            job_folder = os.path.join(path, 'out')
-            contents = os.walk(job_folder)
-            for root, folders, files in contents:
-                for folder in folders:
-                    pass
-                for file_name in files:
-                    name, ext = os.path.splitext(file_name)
-                    if(ext == '.pdb'):
-                        src = os.path.join(root, file_name)
-                        if(prefix_filename):
-                            new_filename = prefix_filename + '-' + file_name
-                            dst = os.path.join(path, new_filename)
-                        else:
-                            dst = os.path.join(path, file_name)
-                        shutil.copy(src, dst)
-        except Exception, e:
-            self.ShowErrorMessage("Error when copyFilesToExecuteFolder:\n%s" % e)
+    # utils/input
+    # def copyFilesToExecuteFolder(self, path, prefix_filename=None):
+    #     try:
+    #         job_folder = os.path.join(path, 'out')
+    #         contents = os.walk(job_folder)
+    #         for root, folders, files in contents:
+    #             for folder in folders:
+    #                 pass
+    #             for file_name in files:
+    #                 name, ext = os.path.splitext(file_name)
+    #                 if(ext == '.pdb'):
+    #                     src = os.path.join(root, file_name)
+    #                     if(prefix_filename):
+    #                         new_filename = prefix_filename + '-' + file_name
+    #                         dst = os.path.join(path, new_filename)
+    #                     else:
+    #                         dst = os.path.join(path, file_name)
+    #                     shutil.copy(src, dst)
+    #     except Exception, e:
+    #         self.ShowErrorMessage("Error when copyFilesToExecuteFolder:\n%s" % e)
 
     # utils/__init__
     # def zip_folder(self, folder_path, output_path):
@@ -1221,23 +1237,24 @@ class IcmcGalaxy(object):
     #         self.ShowErrorMessage("Error when listDirectory:\n%s" % e)
     #         # raise Exception("Error while listing the directory.\n%s" % e)
 
-    def sendOutputResults(self, path_output, file_output, file_result):
-        try:
-            dest = path_output + "/" + file_output
-            copia = "cp " + file_result + " " + dest
-            os.system(copia)
-            # shutil.copy(arquivo, new_path)
-        except Exception, e:
-            self.ShowErrorMessage("Error when sendOutputResults:\n%s" % e)
-            # raise Exception("Error while sending output files: \n%s" % e)
+    # utils/output
+    # def sendOutputResults(self, path_output, file_output, file_result):
+    #     try:
+    #         dest = path_output + "/" + file_output
+    #         copia = "cp " + file_result + " " + dest
+    #         os.system(copia)
+    #         # shutil.copy(arquivo, new_path)
+    #     except Exception, e:
+    #         self.ShowErrorMessage("Error when sendOutputResults:\n%s" % e)
+    #         # raise Exception("Error while sending output files: \n%s" % e)
 
-    def sendOutputFilesHtml(self, path, files):  # copia os arquivos listados em files para o path
-        try:
-            for f in files:
-                shutil.copy(f, path)
-        except Exception, e:
-            self.ShowErrorMessage("Error when sendOutputFilesHtml:\n%s" % e)
-            # raise Exception("Error: %s" % e)
+    # def sendOutputFilesHtml(self, path, files):  # copia os arquivos listados em files para o path
+    #     try:
+    #         for f in files:
+    #             shutil.copy(f, path)
+    #     except Exception, e:
+    #         self.ShowErrorMessage("Error when sendOutputFilesHtml:\n%s" % e)
+    #         # raise Exception("Error: %s" % e)
 
     # utils/input.py
     # def format_fitness(self, fitness, tool=None):
@@ -1360,34 +1377,35 @@ class IcmcGalaxy(object):
 #             self.ShowErrorMessage("Error when mergePDB:\n%s" % e)
 #             # raise Exception("Error: %s" % e)
 
-    def sendMultipleOutputs(self, path, files, path_output, outputID):
-        try:
-            for pdb in files:
-                # pdb_name = pdb.split(".")[0].split("_")[2]
-                name, ext = os.path.splitext(pdb)
-                ext = ext.replace('.', '')
-                pdb_name = os.path.basename(pdb)
-                new_name = "%s_%s_%s_%s_%s" % ('primary', outputID, pdb_name, 'visible', ext)
-                f = os.path.join(path, pdb)
-                dest = path_output + '/' + new_name
-                copia = "cp " + f + " " + dest
-                os.system(copia)
-        except Exception, e:
-            self.ShowErrorMessage("Error when sendMultipleOutputs:\n%s" % e)
-            # raise Exception("Error sendMultipleOutputs: %s" % e)
+    # utils/output
+    # def sendMultipleOutputs(self, path, files, path_output, outputID):
+    #     try:
+    #         for pdb in files:
+    #             # pdb_name = pdb.split(".")[0].split("_")[2]
+    #             name, ext = os.path.splitext(pdb)
+    #             ext = ext.replace('.', '')
+    #             pdb_name = os.path.basename(pdb)
+    #             new_name = "%s_%s_%s_%s_%s" % ('primary', outputID, pdb_name, 'visible', ext)
+    #             f = os.path.join(path, pdb)
+    #             dest = path_output + '/' + new_name
+    #             copia = "cp " + f + " " + dest
+    #             os.system(copia)
+    #     except Exception, e:
+    #         self.ShowErrorMessage("Error when sendMultipleOutputs:\n%s" % e)
+    #         # raise Exception("Error sendMultipleOutputs: %s" % e)
 
-    def openURL(self, url, path_output, file_name):
-        """
-        Download the file from `url` and save it locally under `file_name`
-        """
-        try:
-            response = urllib2.urlopen(url)
-            file_result = os.path.join(path_output, file_name)
-            out_file = open(file_result, 'wb')
-            out_file.write(response.read())
-            out_file.close()
-        except Exception, e:
-            self.ShowErrorMessage("Error when openURL:\n%s" % e)
+    # def openURL(self, url, path_output, file_name):
+    #     """
+    #     Download the file from `url` and save it locally under `file_name`
+    #     """
+    #     try:
+    #         response = urllib2.urlopen(url)
+    #         file_result = os.path.join(path_output, file_name)
+    #         out_file = open(file_result, 'wb')
+    #         out_file.write(response.read())
+    #         out_file.close()
+    #     except Exception, e:
+    #         self.ShowErrorMessage("Error when openURL:\n%s" % e)
 
     # def extractZipFile(self, zipFile, path):
     #     try:
@@ -1458,17 +1476,18 @@ class IcmcGalaxy(object):
     #     except Exception, e:
     #         self.ShowErrorMessage("Error when copyPDBsFromInput:\n%s" % e)
 
-    def clearPathExecute(self, path):
-        try:
-            if os.path.isdir(path):
-                shutil.rmtree(path)
-                return True
-            else:
-                self.ShowErrorMessage("It is not a path:\n%s" % path)
-                return False
-        except Exception, e:
-            self.ShowErrorMessage("Error when clearPathExecute:\n%s" % e)
-            return False
+    # urila/path
+    # def clearPathExecute(self, path):
+    #     try:
+    #         if os.path.isdir(path):
+    #             shutil.rmtree(path)
+    #             return True
+    #         else:
+    #             self.ShowErrorMessage("It is not a path:\n%s" % path)
+    #             return False
+    #     except Exception, e:
+    #         self.ShowErrorMessage("Error when clearPathExecute:\n%s" % e)
+    #         return False
 
     # utils/__init__
     # def getFileSize(self, fpath, outpath):
