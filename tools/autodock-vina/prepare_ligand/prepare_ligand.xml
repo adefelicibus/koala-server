@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!-- Tag reservada para a definição da tool -->
+<tool name="Prepare ligand" id="prepare_ligand" require_login="True"  version="1.0.0">
+	<!-- Tag reservada para a descrição da tool -->
+	<description> - Tool to prepare ligand for virtual screening</description>
+	<!-- Tag reservada para a execução do script da tool -->
+	<command interpreter="python">
+		prepare_ligand.py -l $ligand
+											-p "$file_output.files_path"
+											-f $file_output
+	</command>
+	<!-- Tag reservada para a entrada de dados -->
+	<inputs>
+		<!-- Tag reservada para receber os valores dos parâmetros no script -->
+		<param format="mol2" name="ligand" type="data" label="Ligand: " help="No data? See tip below" />
+	</inputs>
+	<!-- Tag reservada para a saída de dados do script -->
+	<outputs>
+		<data name="file_output" format="pdbqt" label="#echo os.path.splitext (str($ligand.name))[0]#.pdbqt" />
+	</outputs>
+	<!-- Tag reservada para a área de ajuda da tool -->
+	<help>
+	</help>
+</tool>

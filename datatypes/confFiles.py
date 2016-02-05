@@ -26,7 +26,3 @@ class ini( data.Text ):
 					return True
 				else:
 					return False
-
-
-
-

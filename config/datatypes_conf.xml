@@ -251,7 +251,10 @@
     <datatype extension="rdf" type="galaxy.datatypes.graph:Rdf" display_in_upload="true"/>
     <!--<datatype extension="pdb" type="galaxy.datatypes.tabular:Pdb" display_in_upload="true"/>-->
     <!-- <datatype extension="xvg" type="galaxy.datatypes.tabular:Xvg"  display_in_upload="true"/> -->
+    <datatype extension="mol2" type="galaxy.datatypes.molFiles:MOL2" display_in_upload="true" />
     <datatype extension="pdb" type="galaxy.datatypes.molFiles:PDB" display_in_upload="true"/>
+    <datatype extension="pdbqt" type="galaxy.datatypes.molFiles:PDBQT" display_in_upload="true" />
+    <datatype extension="log" type="galaxy.datatypes.molFiles:LOG" display_in_upload="false" />
     <datatype extension="zip" type="galaxy.datatypes.binary:CompressedArchive" subclass="True" display_in_upload="True"/>
     <datatype extension="gz" type="galaxy.datatypes.binary:CompressedArchive" subclass="True" display_in_upload="True"/>
     <!-- GRO -->
