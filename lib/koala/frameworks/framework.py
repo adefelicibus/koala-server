@@ -1,71 +1,77 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-
 import subprocess
-# create a class to framework
+from koala.utils import path
+from koala.utils import ShowErrorMessage
+
+# TODO: review exception rules
+# TODO: build a new get_configuration_file method
 
 
-def setFramework(framework):
+class Framework(object):
+    """docstring for Framework"""
+
+    def __init__(self, framework='2PG'):
+        super(Framework, self).__init__()
+
+        self.framework = framework
+        self.pathExecution = ''
+        self.command = ''
+        self.program = ''
+
+    def set_framework(self, framework):
         self.framework = framework
 
+    def get_framework(self):
+        return self.framework
 
-def getFramework():
-    return self.framework
-
-
-def getConfigurationFile(filename):
-        # return '%s%s' % (self.getPathExecution(), filename)
+    def get_configuration_file(self, filename):
         return '%s' % filename
 
-
-def setCommand(framework, algorithm):
-    try:
-        global command
-        if(self.framework == '2PG'):
-            # self.command = '%ssrc/%s' % (
-            self.command = '/usr/local/bin/%s' % (algorithm)
-        # elif(self.framework == 'MEAMT'):
-        #     self.command = '%s%s' % (self.getPathAlgorithms(framework), algorithm)
-        elif(self.framework == 'i-paes'):
-            self.command = '%s%s' % (self.getPathAlgorithms(framework), algorithm)
-        else:
-            self.command = '%s%s' % (self.getPathExecute(), algorithm)
-    except Exception, e:
-        self.ShowErrorMessage("Error when setCommand\n%s" % e)
-
-
-def getCommand():
-    return self.command
-
-
-def getProgram():
-    return self.program
-
-
-# fazer com que ele pegue o diretorio deste arquivo e una com o nome do programa
-def setProgram(executable):
-    global program
-    self.program = executable
-
-
-def executeProgram(
-            program, config, path_execution, path_output,
-            tool, email, framework='2PG', galaxydir="None", outputID="None"):
+    def set_command(self, algorithm):
         try:
-            stdout_file = open("%sstdout.txt" % self.getPathExecution(), "wr")
+            if self.getFramework() == '2PG':
+                self.command = '/usr/local/bin/%s' % (algorithm)
+            elif self.getFramework() in ['MEAMT', 'i-paes']:
+                self.command = '%s%s' % (path.getPathAlgorithms(self.getFramework()), algorithm)
+            else:
+                self.command = '%s%s' % (path.getPathExecute(), algorithm)
+        except Exception, e:
+            ShowErrorMessage("Error when set_command\n%s" % e)
+
+    def get_command(self):
+        return self.command
+
+    def get_program(self):
+        return self.program
+
+    def set_program(self, executable):
+        self.program = executable
+
+    def __execute_program(
+            self,
+            program,
+            config,
+            path_output,
+            tool,
+            email,
+            galaxydir="None",
+            outputID="None"):
+        try:
+            stdout_file = open("%sstdout.txt" % path.getPathExecution(), "wr")
             retProcess = None
             retProcess = subprocess.Popen([
                 'nohup',
                 program,
                 self.getCommand(),
                 config,
-                path_execution,
+                path.getPathExecution(),
                 galaxydir,
                 path_output,
                 outputID,
                 tool,
-                framework,
+                self.getFramework(),
                 email,
                 '&'],
                 stdout=stdout_file, stderr=subprocess.STDOUT, shell=False)
@@ -74,4 +80,4 @@ def executeProgram(
                 pass
 
         except Exception, e:
-            self.ShowErrorMessage("Error when ExecuteProgram:\n%s" % e)
+            ShowErrorMessage("Error when _execute_program:\n%s" % e)
