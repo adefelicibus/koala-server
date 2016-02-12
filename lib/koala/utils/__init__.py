@@ -10,7 +10,8 @@ from natsort import natsorted
 import fnmatch
 import getpass
 import sys
-from koala.utils import path
+import time
+# from koala.utils.path import PathRuns
 
 # TODO: review exception rules
 # TODO: fix the time calculation when the diff is more than a day
@@ -187,14 +188,22 @@ def show_warning_message(msg):
     sys.stdout = info
 
 
+def get_timenow():
+    """
+    Return current time as a formmated string
+    """
+
+    return time.strftime('%d/%m/%Y %H:%M:%S', time.localtime(time.time()))
+
+
 class TimeJobExecution(object):
     """docstring for TimeJobExecution"""
 
-    def __init__(self, jobStart, jobEnd):
+    def __init__(self):
         super(TimeJobExecution, self).__init__()
 
-        self.jobStart = jobStart
-        self.jobEnd = jobEnd
+        self.jobStart = ''
+        self.jobEnd = ''
 
     def get_job_start(self):
         return self.jobStart

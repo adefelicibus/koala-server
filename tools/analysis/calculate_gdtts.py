@@ -1,15 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import __main__
-__main__.pymol_argv = ['pymol', '-qc']  # Quiet and no GUI
-
-import pymol
-from time import sleep
 import os
-from koala import classe
 import optparse
-import time
 import datetime
 from decimal import *
 from collections import OrderedDict
@@ -17,9 +10,13 @@ import zipfile
 import gzip
 import cProfile
 import subprocess
-import shutil
 
-pymol.finish_launching()
+from koala.utils import get_file_size, show_error_message, list_directory, show_warning_message
+from koala.utils import extract_zip_file, extract_gz_file, TimeJobExecution
+from koala.utils.input import copy_pdb_reference
+from koala.utils.output import send_output_files_html, get_result_files
+from koala.utils.path import PathRuns, clear_path_execute
+from koala.utils.input import copy_pdbs_from_input
 
 
 class CalculateGDTTS(object):
@@ -27,7 +24,6 @@ class CalculateGDTTS(object):
     Calculate the GDT-TS value from a set of PDB files using GDT-TS program
     """
 
-    path_execute = None
     methods = []
     ignoreoutfiles = ['.pdb']
     initTime = 0
@@ -44,38 +40,11 @@ class CalculateGDTTS(object):
         """
         assert opts is not None
         self.opts = opts
-        self.ClassColection = classe.IcmcGalaxy()
+        self.time_execution = TimeJobExecution()
+        self.path_runs = PathRuns()
+
         self.command = "@PATH@./TMscore @NATIVE@ @MODEL@ -o TM.sup > \
     @PATHEXECUTE@@NAMENATIVE@_@NAMEMODEL@.txt"
-
-    def timenow(self):
-        """
-        Return current time as a formmated string
-        @type self: koala.CalculateGDTTS.CalculateGDTTS
-        """
-
-        return time.strftime('%d/%m/%Y %H:%M:%S', time.localtime(time.time()))
-
-    def getfSize(self, fpath, outpath):
-        """
-        Get the file size and return as string
-        @type self: koala.CalculateGDTTS.CalculateGDTTS
-        @type fpath: string
-        @type outpath: string
-        """
-
-        size = ''
-        fp = os.path.join(outpath, fpath)
-        if os.path.isfile(fp):
-            size = '0 B'
-            n = float(os.path.getsize(fp))
-            if n > 2**20:
-                size = '%1.1f MB' % (n/2**20)
-            elif n > 2**10:
-                size = '%1.1f KB' % (n/2**10)
-            elif n > 0:
-                size = '%d B' % (int(n))
-        return size
 
     def buildGDTTable(self):
         """
@@ -142,7 +111,7 @@ class CalculateGDTTS(object):
         if len(flist) > 0:
             for rownum, fname in enumerate(flist):
                 dname, e = os.path.splitext(fname)
-                sfsize = self.ClassColection.getFileSize(fname, self.opts.htmlfiledir)
+                sfsize = get_file_size(fname, self.opts.htmlfiledir)
 
                 if e.lower() == ".front":
                     frontFiles.append(fname)
@@ -155,7 +124,7 @@ class CalculateGDTTS(object):
 
         # Arquivos front
         for front in frontFiles:
-            sfsize = self.ClassColection.getFileSize(front, self.opts.htmlfiledir)
+            sfsize = get_file_size(front, self.opts.htmlfiledir)
             fhtml.append('<tr>')
             fhtml.append('<td><a href="%s">%s</a></td>' % (front, front))
             fhtml.append('<td>%s</td>' % (sfsize))
@@ -207,7 +176,7 @@ class CalculateGDTTS(object):
             idx = idx_linha
             fhtml.append('</tr><tr>')
             for i in range(0, n):
-                sfsize = self.ClassColection.getFileSize(
+                sfsize = get_file_size(
                         listaArquivosPdb[idx],
                         self.opts.htmlfiledir)
                 fhtml.append('<td>%s</td>' % (sfsize))
@@ -234,7 +203,7 @@ class CalculateGDTTS(object):
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(start, end):
-                    sfsize = self.ClassColection.getFileSize(
+                    sfsize = get_file_size(
                             listaArquivosPdb[idx],
                             self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
@@ -259,7 +228,7 @@ class CalculateGDTTS(object):
             idx = idx_linha
             fhtml.append('</tr><tr>')
             for i in range(0, rest):
-                sfsize = self.ClassColection.getFileSize(
+                sfsize = get_file_size(
                         listaArquivosPdb[idx],
                         self.opts.htmlfiledir)
                 fhtml.append('<td>%s</td>' % (sfsize))
@@ -304,7 +273,7 @@ class CalculateGDTTS(object):
 
         # Outros arquivos de output
         for output in outputfiles:
-            sfsize = self.ClassColection.getFileSize(output, self.opts.htmlfiledir)
+            sfsize = get_file_size(output, self.opts.htmlfiledir)
             fhtml.append('<tr>')
             fhtml.append('<td><a href="%s">%s</a></td>' % (output, output))
             fhtml.append('<td>%s</td>' % (sfsize))
@@ -325,7 +294,7 @@ class CalculateGDTTS(object):
 
         # arquivo zipado
         for output in compressedFile:
-            sfsize = self.ClassColection.getFileSize(output, self.opts.htmlfiledir)
+            sfsize = get_file_size(output, self.opts.htmlfiledir)
             fhtml.append('<tr>')
             fhtml.append('<td><a href="%s">%s</a></td>' % (output, output))
             fhtml.append('<td>%s</td>' % (sfsize))
@@ -342,16 +311,16 @@ class CalculateGDTTS(object):
             fhtml.append('</table></div><br>')
             html += fhtml
 
-        self.ClassColection.setjobEnd(datetime.datetime.now())
+        self.time_execution.set_job_end(datetime.datetime.now())
         self.endTime = datetime.datetime.now()
 
-        dif = self.ClassColection.calcTimeExecution(self.initTime, self.endTime)
+        dif = self.time_execution.calculate_time_execution()
 
         html.append('<div>Time execution:<br>')
         html.append('Start: %s<br>' %
-                    self.ClassColection.getjobStart().strftime("%d/%m/%Y %H:%M:%S"))
+                    self.time_execution.get_job_start().strftime("%d/%m/%Y %H:%M:%S"))
         html.append('End: %s<br>' %
-                    self.ClassColection.getjobEnd().strftime("%d/%m/%Y %H:%M:%S"))
+                    self.time_execution.get_job_end().strftime("%d/%m/%Y %H:%M:%S"))
         html.append('Total time: ~%dh:%dm:%ds' % (dif[0], dif[1], dif[2]))
         html.append('</div>')
 
@@ -395,7 +364,7 @@ class CalculateGDTTS(object):
 
                     Jmol._isAsync = false;
 
-                    Jmol.getProfile() // records repeat calls to overridden or overloaded Java methods
+                    Jmol.getProfile()
 
                     var jmolApplet0; // set up in HTML table, below
 
@@ -462,7 +431,7 @@ class CalculateGDTTS(object):
             if len(flist) > 0:
                 for rownum, fname in enumerate(flist):
                     dname, e = os.path.splitext(fname)
-                    sfsize = self.ClassColection.getFileSize(fname, self.opts.htmlfiledir)
+                    sfsize = get_file_size(fname, self.opts.htmlfiledir)
 
                     if e.lower() == ".front":
                         frontFiles.append(fname)
@@ -475,7 +444,7 @@ class CalculateGDTTS(object):
 
             # Arquivos front
             for front in frontFiles:
-                sfsize = self.ClassColection.getFileSize(front, self.opts.htmlfiledir)
+                sfsize = get_file_size(front, self.opts.htmlfiledir)
                 fhtml.append('<tr>')
                 fhtml.append('<td><a href="%s">%s</a></td>' % (front, front))
                 fhtml.append('<td>%s</td>' % (sfsize))
@@ -529,7 +498,7 @@ class CalculateGDTTS(object):
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, n):
-                    sfsize = self.ClassColection.getFileSize(
+                    sfsize = get_file_size(
                             listaArquivosPdb[idx],
                             self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
@@ -569,7 +538,7 @@ class CalculateGDTTS(object):
                     idx = idx_linha
                     fhtml.append('</tr><tr>')
                     for i in range(start, end):
-                        sfsize = self.ClassColection.getFileSize(
+                        sfsize = get_file_size(
                                 listaArquivosPdb[idx],
                                 self.opts.htmlfiledir)
                         fhtml.append('<td>%s</td>' % (sfsize))
@@ -606,7 +575,7 @@ class CalculateGDTTS(object):
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, rest):
-                    sfsize = self.ClassColection.getFileSize(
+                    sfsize = get_file_size(
                             listaArquivosPdb[idx],
                             self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
@@ -659,7 +628,7 @@ class CalculateGDTTS(object):
 
             # Outros arquivos de output
             for output in outputfiles:
-                sfsize = self.ClassColection.getFileSize(output, self.opts.htmlfiledir)
+                sfsize = get_file_size(output, self.opts.htmlfiledir)
                 fhtml.append('<tr>')
                 fhtml.append(
                     '<td><a href="/datasets/%s/display/%s">%s</a></td>' % (
@@ -682,7 +651,7 @@ class CalculateGDTTS(object):
 
             # arquivo zipado
             for output in compressedFile:
-                sfsize = self.ClassColection.getFileSize(output, self.opts.htmlfiledir)
+                sfsize = get_file_size(output, self.opts.htmlfiledir)
                 fhtml.append('<tr>')
                 fhtml.append(
                     '<td><a href="/datasets/%s/display/%s">%s</a></td>' % (
@@ -701,16 +670,16 @@ class CalculateGDTTS(object):
                 fhtml.append('</table></div><br>')
                 html += fhtml
 
-            self.ClassColection.setjobEnd(datetime.datetime.now())
+            self.time_execution.set_job_end(datetime.datetime.now())
             self.endTime = datetime.datetime.now()
 
-            dif = self.ClassColection.calcTimeExecution(self.initTime, self.endTime)
+            dif = self.time_execution.calculate_time_execution()
 
             html.append('<div>Time execution:<br>')
             html.append('Start: %s<br>' %
-                        self.ClassColection.getjobStart().strftime("%d/%m/%Y %H:%M:%S"))
+                        self.time_execution.get_job_start().strftime("%d/%m/%Y %H:%M:%S"))
             html.append('End: %s<br>' %
-                        self.ClassColection.getjobEnd().strftime("%d/%m/%Y %H:%M:%S"))
+                        self.time_execution.get_job_end().strftime("%d/%m/%Y %H:%M:%S"))
             html.append('Total time: ~%dh:%dm:%ds' % (dif[0], dif[1], dif[2]))
             html.append('</div>')
 
@@ -728,65 +697,7 @@ class CalculateGDTTS(object):
             htmlf.write('\n')
             htmlf.close()
         except Exception, e:
-            self.ClassColection.ShowErrorMessage("Error on makeHtml method:\n%s" % e)
-
-    def copyPDBReference(self):
-        """
-        Copy the input PDB referente to the execute path
-        @type self: koala.CalculateGDTTS.CalculateGDTTS
-        """
-        try:
-            self.opts.inputPDBRefName = self.opts.inputPDBRefName.replace(
-                '(', '_').replace(
-                        ')', '').replace(
-                            " ", "").strip()
-            link_name = os.path.join(
-                    self.opts.htmlfiledir,
-                    os.path.basename(self.opts.inputPDBRefName))
-            if not os.path.exists(link_name):
-                os.symlink(self.opts.inputPDBRef, link_name)
-                # os.system("cp %s %s" % (link_name, self.path_execute))
-                shutil.copy(link_name, self.path_execute)
-        except Exception, e:
-            self.ClassColection.ShowErrorMessage("Erro on copyPDBReference method:\n%s" % e)
-
-    def build_images(self):
-        """
-        Build images from PDB files using PyMol package.
-        @type self: koala.CalculateGDTTS.CalculateGDTTS
-        """
-        try:
-            os.chdir(self.path_execute)
-
-            limit = 20
-            if len(self.methods) < 20:
-                limit = len(self.methods)
-
-            for i in range(0, limit):
-
-                pdb = self.methods[i]
-                arq = os.path.join(self.path_execute, pdb)
-
-                name, ext = os.path.splitext(pdb)
-
-                # Load Structures
-                pymol.cmd.load(arq, pdb)
-                pymol.cmd.disable("all")
-                pymol.cmd.set('ray_opaque_background', 0)
-                pymol.cmd.set('antialias', 1)
-                pymol.cmd.hide("everything")
-                pymol.cmd.show("cartoon")
-                pymol.cmd.show("ribbon")
-                pymol.cmd.enable(pdb)
-                pymol.cmd.ray()
-                pymol.cmd.png("%s.png" % name, dpi=300)
-
-                sleep(0.25)  # (in seconds)
-
-                pymol.cmd.reinitialize()
-
-        except Exception, e:
-            self.ClassColection.ShowErrorMessage("Erro on build_images method:\n%s" % e)
+            show_error_message("Error on makeHtml method:\n%s" % e)
 
     def getGDTValues(self):
         """
@@ -794,7 +705,7 @@ class CalculateGDTTS(object):
         @type self: koala.CalculateGDTTS.CalculateGDTTS
         """
         try:
-            pdbs = self.ClassColection.listDirectory(self.path_execute, "*.pdb")
+            pdbs = list_directory(self.path_runs.get_path_execution(), "*.pdb")
 
             if not pdbs:
                 raise "getGDTValues: No PDB file found.\n"
@@ -806,29 +717,32 @@ class CalculateGDTTS(object):
                     name_pdb, ext = os.path.splitext(pdb)
                     name_reference, ext = os.path.splitext(self.opts.inputPDBRefName)
 
-                    result_file = file(
-                        os.path.join(self.path_execute, name_reference + '_' + name_pdb + '.txt'),
+                    result_file = file(os.path.join(
+                            self.path_runs.get_path_execution(),
+                            name_reference + '_' + name_pdb + '.txt'),
                         'w')
 
                     cl = [
-                        self.ClassColection.getPathExecute()+'TMscore',
-                        os.path.join(self.path_execute, self.opts.inputPDBRefName),
-                        os.path.join(self.path_execute,  pdb),
+                        self.path_runs.get_path_execute()+'TMscore',
+                        os.path.join(
+                            self.path_runs.get_path_execution(), self.opts.inputPDBRefName),
+                        os.path.join(
+                            self.path_runs.get_path_execution(),  pdb),
                         '-o',
                         'TM.sup',
                         '>',
-                        self.path_execute+name_reference+'_'+name_pdb+'.txt',
+                        self.path_runs.get_path_execution()+name_reference+'_'+name_pdb+'.txt',
                         '&']
 
                     retProcess = subprocess.Popen(
                         cl, 0, stdout=result_file,  stderr=None, shell=False)
                     retCode = retProcess.wait()
                     if(retCode != 0):
-                        self.ClassColection.ShowErrorMessage(
+                        show_error_message(
                             "The TMscore program finished wrong.\n"
                             "Contact the system administrator.")
 
-                    os.chdir(self.path_execute)
+                    os.chdir(self.path_runs.get_path_execution())
 
                     result_file = name_reference + '_' + name_pdb + '.txt'
 
@@ -856,7 +770,7 @@ class CalculateGDTTS(object):
                 return None
 
         except Exception, e:
-            self.ClassColection.ShowErrorMessage("Error on getGDTValues:\n%s" % e)
+            show_error_message("Error on getGDTValues:\n%s" % e)
 
     def run_CalculateGDTTS(self):
         """
@@ -864,8 +778,8 @@ class CalculateGDTTS(object):
         @type self: koala.CalculateGDTTS.CalculateGDTTS
         """
         try:
-            dir_execucao = self.ClassColection.CreateExecutionDirectory()
-            self.path_execute = self.ClassColection.getPathExecute() + dir_execucao
+            self.path_runs.set_path_execute()
+            self.path_runs.set_execution_directory()
 
             if self.opts.compressedFile == '1':
 
@@ -873,44 +787,53 @@ class CalculateGDTTS(object):
 
                 for input_f in inputFiles:
                     if zipfile.is_zipfile(input_f):
-                        self.ClassColection.extractZipFile(input_f, self.path_execute)
+                        extract_zip_file(
+                            input_f,
+                            self.path_runs.get_path_execution())
                     else:
                         try:
                             inF = gzip.GzipFile(input_f, 'rb')
                             f = inF.read()
                             inF.close()
                             if f:
-                                self.ClassColection.extractGzFile(input_f, self.path_execute)
+                                extract_gz_file(
+                                    input_f,
+                                    self.path_runs.get_path_execution())
                         except Exception, e:
-                            self.ClassColection.ShowErrorMessage(
-                                "The input file could not be read.\n%s" % e)
+                            show_error_message("The input file could not be read.\n%s" % e)
             else:
-                    self.ClassColection.copyPDBsFromInput(
-                            self.path_execute,
+                    copy_pdbs_from_input(
+                            self.path_runs.get_path_execution(),
                             self.opts.htmlfiledir,
                             self.opts.inputnames,
                             self.opts.inputPdbs)
 
-            self.copyPDBReference()
+            copy_pdb_reference(
+                self.opts.htmlfiledir,
+                self.path_runs.get_path_execution(),
+                self.opts.inputPDBRefName,
+                self.opts.inputPDBRef
+                )
 
             self.gdt_value = self.getGDTValues()
 
             if(self.gdt_value is None):
-                self.ClassColection.ShowWarningMessage(
+                show_warning_message(
                     "There is no common residues in the input structures.")
             else:
                 for key, value in self.gdt_value.items():
                     self.methods.append(key)
 
-                self.build_images()
+                build_images(self.methods, path_execution)
 
-                pdbsToCopy = [os.path.join(self.path_execute, method) for method in self.methods]
-                self.ClassColection.sendOutputFilesHtml(self.opts.htmlfiledir, pdbsToCopy)
+                pdbsToCopy = [os.path.join(
+                    self.path_runs.get_path_execution(), method) for method in self.methods]
+                send_output_files_html(self.opts.htmlfiledir, pdbsToCopy)
 
-                result, filesHtml = self.ClassColection.getResultFiles(
-                    self.path_execute, self.opts.toolname)
+                result, filesHtml = get_result_files(
+                    self.path_runs.get_path_execution(), self.opts.toolname)
 
-                self.ClassColection.sendOutputFilesHtml(self.opts.htmlfiledir, filesHtml)
+                send_output_files_html(self.opts.htmlfiledir, filesHtml)
 
                 self.makeHtml()
 
@@ -918,7 +841,7 @@ class CalculateGDTTS(object):
                     self.makeHtmlWithJMol(pdbsToCopy[0].split('/')[-1])
 
         except Exception, e:
-            self.ClassColection.ShowErrorMessage("Error on run_CalculateGDTTS:\n%s" % e)
+            show_error_message("Error on run_CalculateGDTTS:\n%s" % e)
 
 
 if __name__ == '__main__':
@@ -941,9 +864,9 @@ if __name__ == '__main__':
 
     calctm = CalculateGDTTS(opts)
 
-    calctm.ClassColection.setjobStart(datetime.datetime.now())
+    calctm.time_execution.set_job_start(datetime.datetime.now())
     calctm.initTime = datetime.datetime.now()
 
     cProfile.run('calctm.run_CalculateGDTTS()', 'profileout.txt')
 
-    calctm.ClassColection.clearPathExecute(calctm.path_execute)
+    clear_path_execute(calctm.path_runs.get_path_execution())

@@ -15,9 +15,8 @@ from koala.utils import show_error_message, get_logged_user
 class PathRuns(object):
     """docstring for PathRuns"""
 
-    def __init__(self, arg):
+    def __init__(self):
         super(PathRuns, self).__init__()
-        self.arg = arg
 
         self.path_execution = ''
         self.path_execute = ''
@@ -42,7 +41,7 @@ class PathRuns(object):
             except Exception, e:
                 show_error_message("Error when CreateExecutionDirectory\n%s" % e)
 
-            self.pathExecution = nome_diretorio
+            self.pathExecution = os.path.join(self.get_path_execute(), nome_diretorio)
 
         except Exception, e:
             show_error_message("Error when CreateExecutionDirectory\n%s" % e)
@@ -52,8 +51,8 @@ class PathRuns(object):
 
     def set_path_execute(self):
         try:
-            # return "/home/alexandre/execute/"
-            self.path_execute = "/dados/%s/execute/" % get_logged_user()
+            self.path_execute = "/home/%s/execute/" % get_logged_user()
+            # self.path_execute = "/dados/%s/execute/" % get_logged_user()
         except Exception, e:
             show_error_message("Error when getPathExecute\n%s" % e)
 

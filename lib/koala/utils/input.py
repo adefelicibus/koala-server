@@ -6,6 +6,7 @@ import string
 import shutil
 from koala.utils import show_error_message
 from koala.frameworks import framework, params
+from koala.utils.path import PathRuns
 
 # TODO: review exception rules
 
@@ -46,7 +47,34 @@ def copy_pdbs_from_input(
         show_error_message("Error when copyPDBsFromInput:\n%s" % e)
 
 
-def format_fitness(self, fitness, tool=None):
+def copy_pdb_reference(
+        path_to,
+        path_execution,
+        pdb_ref_name,
+        pdb_ref_file,
+        ):
+    """
+    Copy the input PDB referente to the execute path
+    """
+    try:
+        pdb_ref_name = pdb_ref_name.replace(
+            '(', '_').replace(
+                    ')', '').replace(
+                        " ", "").strip()
+
+        link_name = os.path.join(
+                path_to,
+                os.path.basename(pdb_ref_name))
+
+        if not os.path.exists(link_name):
+            os.symlink(pdb_ref_file, link_name)
+            shutil.copy(link_name, path_execution)
+
+    except Exception, e:
+        show_error_message("Erro on copyPDBReference method:\n%s" % e)
+
+
+def format_fitness(fitness, tool=None):
     try:
         if(tool != 'Dominance_Ranking'):
             fe = string.split(fitness.rstrip(), ',')
