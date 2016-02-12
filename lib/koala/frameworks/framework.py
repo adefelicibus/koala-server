@@ -49,7 +49,7 @@ class Framework(object):
     def set_program(self, executable):
         self.program = executable
 
-    def __execute_program(
+    def execute_program(
             self,
             program,
             config,
