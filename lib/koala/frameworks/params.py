@@ -50,61 +50,117 @@ class Params(Framework):
             ('meat', '1vii_meat.txt'),
     ]
 
-    __general_parameters_2pg = {
-        'gromacs_energy_min': 'ener_implicit',
-        'NumberProcessor': '8',
-        'NumberObjective': '1',
-        'NumberGeration': '1',
-        'SizePopulation': '1',
-        'MonteCarloSteps': '50',
-        'FrequencyMC': '5',
-        'TemperatureMC': '370',
-        'Fitness_Energy': 'Potential',
-        'NativeProtein': '/home/faccioli/Execute/1VII_teste_1_1/1VII.pdb',
-        'SequenceAminoAcidsPathFileName':
-            '/home/faccioli/Execute/1VII_teste_1_1/1VII.fasta.txt',
-        'NameExecutation': '1VII_teste_1',
-        'Local_Execute': '/home/faccioli/Execute/1VII_teste_1_1/',
-        'Database':
-            '/home/faccioli/workspace/2pg_build_conformation/Database/',
-        'rotamer_library': 'cad_tuffery',
-        'top_file': 'top_protein.top',
-        'IniPopFileName': 'pop_0.pdb',
-        'Started_Generation': '-1',
-        'z_matrix_fileName': 'z_matrix',
-        'Path_Gromacs_Programs':
-            '/home/faccioli/programs/gmx-4.6.5/no_mpi/bin/',
-        'Computed_Energies_Gromacs_File':
-            'file_energy_computed.ener.edr',
-        'Energy_File_xvg': 'energy.xvg',
-        'Computed_Areas_g_sas_File': 'file_g_sas_areas.xvg',
-        'Computed_Energy_Value_File': 'energy_computed.xvg',
-        'Computed_Radius_g_gyrate_File': 'file_g_gyrate_radius.xvg',
-        'Computed_g_hbond_File': 'file_g_hbond.xvg',
-        'How_Many_Rotation': '1',
-        'min_angle_mutation_phi': '-10',
-        'max_angle_mutation_phi': '10',
-        'min_angle_mutation_psi': '-10',
-        'max_angle_mutation_psi': '10',
-        'min_angle_mutation_omega': '-10',
-        'max_angle_mutation_omega': '10',
-        'min_angle_mutation_side_chain': '-10',
-        'max_angle_mutation_side_chain': '10',
-        'apply_crossover': 'yes',
-        'Individual_Mutation_Rate': '0.60',
-        'mdp_file_min': 'energy_minimization_implicit.mdp',
-        'mdp_file_name': 'compute_energy_implicit.mdp',
-        'c_terminal_charge': 'none',
-        'n_terminal_charge': 'none',
-        'force_field': 'amber99sb-ildn',
-        'objective_analisys': 'none',
-        'objective_analisys_dimo_source':
-            '/home/faccioli/workspace/dimo/DIMO2',
-        'Program_Run_GreedyTreeGenerator2PG':
-            '/2pg_cartesian/scripts/dimo/call_GreedyTreeGenerator2PG.sh',
-        '1_point_cros_Rate': '0.80',
-        'StepNumber': '100',
-    }
+    # __general_parameters_2pg = {
+    #     'gromacs_energy_min': 'ener_implicit',
+    #     'NumberProcessor': '8',
+    #     'NumberObjective': '1',
+    #     'NumberGeration': '1',
+    #     'SizePopulation': '1',
+    #     'MonteCarloSteps': '50',
+    #     'FrequencyMC': '5',
+    #     'TemperatureMC': '370',
+    #     'Fitness_Energy': 'Potential',
+    #     'NativeProtein': '/home/faccioli/Execute/1VII_teste_1_1/1VII.pdb',
+    #     'SequenceAminoAcidsPathFileName':
+    #         '/home/faccioli/Execute/1VII_teste_1_1/1VII.fasta.txt',
+    #     'NameExecutation': '1VII_teste_1',
+    #     'Local_Execute': '/home/faccioli/Execute/1VII_teste_1_1/',
+    #     'Database':
+    #         '/home/faccioli/workspace/2pg_build_conformation/Database/',
+    #     'rotamer_library': 'cad_tuffery',
+    #     'top_file': 'top_protein.top',
+    #     'IniPopFileName': 'pop_0.pdb',
+    #     'Started_Generation': '-1',
+    #     'z_matrix_fileName': 'z_matrix',
+    #     'Path_Gromacs_Programs':
+    #         '/home/faccioli/programs/gmx-4.6.5/no_mpi/bin/',
+    #     'Computed_Energies_Gromacs_File':
+    #         'file_energy_computed.ener.edr',
+    #     'Energy_File_xvg': 'energy.xvg',
+    #     'Computed_Areas_g_sas_File': 'file_g_sas_areas.xvg',
+    #     'Computed_Energy_Value_File': 'energy_computed.xvg',
+    #     'Computed_Radius_g_gyrate_File': 'file_g_gyrate_radius.xvg',
+    #     'Computed_g_hbond_File': 'file_g_hbond.xvg',
+    #     'How_Many_Rotation': '1',
+    #     'min_angle_mutation_phi': '-10',
+    #     'max_angle_mutation_phi': '10',
+    #     'min_angle_mutation_psi': '-10',
+    #     'max_angle_mutation_psi': '10',
+    #     'min_angle_mutation_omega': '-10',
+    #     'max_angle_mutation_omega': '10',
+    #     'min_angle_mutation_side_chain': '-10',
+    #     'max_angle_mutation_side_chain': '10',
+    #     'apply_crossover': 'yes',
+    #     'Individual_Mutation_Rate': '0.60',
+    #     'mdp_file_min': 'energy_minimization_implicit.mdp',
+    #     'mdp_file_name': 'compute_energy_implicit.mdp',
+    #     'c_terminal_charge': 'none',
+    #     'n_terminal_charge': 'none',
+    #     'force_field': 'amber99sb-ildn',
+    #     'objective_analisys': 'none',
+    #     'objective_analisys_dimo_source':
+    #         '/home/faccioli/workspace/dimo/DIMO2',
+    #     'Program_Run_GreedyTreeGenerator2PG':
+    #         '/2pg_cartesian/scripts/dimo/call_GreedyTreeGenerator2PG.sh',
+    #     '1_point_cros_Rate': '0.80',
+    #     'StepNumber': '100',
+    # }
+
+    __general_parameters_protpred = [
+        ('gromacs_energy_min', 'ener_implicit'),
+        ('NumberProcessor', '8'),
+        ('NumberObjective', '1'),
+        ('NumberGeration', '1'),
+        ('SizePopulation', '1'),
+        ('MonteCarloSteps', '50'),
+        ('FrequencyMC', '5'),
+        ('TemperatureMC', '370'),
+        ('Fitness_Energy', 'Potential'),
+        ('NativeProtein', '/home/faccioli/Execute/1VII_teste_1_1/1VII.pdb'),
+        ('SequenceAminoAcidsPathFileName',
+            '/home/faccioli/Execute/1VII_teste_1_1/1VII.fasta.txt'),
+        ('NameExecutation', '1VII_teste_1'),
+        ('Local_Execute', '/home/faccioli/Execute/1VII_teste_1_1/'),
+        ('Database',
+            '/home/faccioli/workspace/2pg_build_conformation/Database/'),
+        ('rotamer_library', 'cad_tuffery'),
+        ('top_file', 'top_protein.top'),
+        ('IniPopFileName', 'pop_0.pdb'),
+        ('Started_Generation', '-1'),
+        ('z_matrix_fileName', 'z_matrix'),
+        ('Path_Gromacs_Programs',
+            '/home/faccioli/programs/gmx-4.6.5/no_mpi/bin/'),
+        ('Computed_Energies_Gromacs_File',
+            'file_energy_computed.ener.edr'),
+        ('Energy_File_xvg', 'energy.xvg'),
+        ('Computed_Areas_g_sas_File', 'file_g_sas_areas.xvg'),
+        ('Computed_Energy_Value_File', 'energy_computed.xvg'),
+        ('Computed_Radius_g_gyrate_File', 'file_g_gyrate_radius.xvg'),
+        ('Computed_g_hbond_File', 'file_g_hbond.xvg'),
+        ('How_Many_Rotation', '1'),
+        ('min_angle_mutation_phi', '-10'),
+        ('max_angle_mutation_phi', '10'),
+        ('min_angle_mutation_psi', '-10'),
+        ('max_angle_mutation_psi', '10'),
+        ('min_angle_mutation_omega', '-10'),
+        ('max_angle_mutation_omega', '10'),
+        ('min_angle_mutation_side_chain', '-10'),
+        ('max_angle_mutation_side_chain', '10'),
+        ('apply_crossover', 'yes'),
+        ('Individual_Mutation_Rate', '0.60'),
+        ('mdp_file_min', 'energy_minimization_implicit.mdp'),
+        ('mdp_file_name', 'compute_energy_implicit.mdp'),
+        ('c_terminal_charge', 'none'),
+        ('n_terminal_charge', 'none'),
+        ('force_field', 'amber99sb-ildn'),
+        ('objective_analisys', 'none'),
+        ('objective_analisys_dimo_source',
+            '/home/faccioli/workspace/dimo/DIMO2'),
+        ('Program_Run_GreedyTreeGenerator2PG',
+            '/2pg_cartesian/scripts/dimo/call_GreedyTreeGenerator2PG.sh'),
+        ('1_point_cros_Rate', '0.80'),
+        ('StepNumber', '100'),
+    ]
 
     __general_parameters_eda = [
         ('[Config]', ''),
@@ -233,124 +289,129 @@ class Params(Framework):
     def __init__(self):
         super(Params, self).__init__()
 
-        self.__protpred_eda_param = []
-        self.__meamt_param = []
-        self.__rw_param = []
-        self.__mcm_param = []
-        self.__ga_param = []
-        self.__rboa_param = []
-        self.__de_param = []
-        self.__eda_param = []
-        self.__ceda_param = []
-        self.__fgm_param = []
+        self.protpred_param = []
+        self.protpred_eda_param = []
+        self.meamt_param = []
+        self.rw_param = []
+        self.mcm_param = []
+        self.ga_param = []
+        self.rboa_param = []
+        self.de_param = []
+        self.eda_param = []
+        self.ceda_param = []
+        self.fgm_param = []
 
         self.__build_param_lists()
 
     def __build_param_lists(self):
-        if self.getFramework() == 'MEAMT':
-            self.__meamt_param = DefaultOrderedDict(list)
+        if self.get_framework() == '2PG':
+            self.protpred_param = DefaultOrderedDict(list)
+            for k, v in self.__general_parameters_protpred:
+                self.protpred_param[k].append(v)
+        elif self.get_framework() == 'MEAMT':
+            self.meamt_param = DefaultOrderedDict(list)
             for k, v in self.__general_parametersMEAMT:
-                self.__meamt_param[k].append(v)
-        elif self.getFramework() == 'EDA':
-            self.__protpred_eda_param = DefaultOrderedDict(list)
+                self.meamt_param[k].append(v)
+        elif self.get_framework() == 'EDA':
+            self.protpred_eda_param = DefaultOrderedDict(list)
             for k, v in self.__general_parameters_eda:
-                self.__protpred_eda_param[k].append(v)
-            if self.getParameterValue("OptimMethod") == 'rw':
-                self.__rw_param = DefaultOrderedDict(list)
+                self.protpred_eda_param[k].append(v)
+            if self.get_parameter_value("OptimMethod") == 'rw':
+                self.rw_param = DefaultOrderedDict(list)
                 for k, v in self.__l_rw_param:
-                    self.__rw_param[k].append(v)
-            elif self.getParameterValue("OptimMethod") == 'mcm':
-                self.__mcm_param = DefaultOrderedDict(list)
+                    self.rw_param[k].append(v)
+            elif self.get_parameter_value("OptimMethod") == 'mcm':
+                self.mcm_param = DefaultOrderedDict(list)
                 for k, v in self.__l_mcm_param:
-                    self.__mcm_param[k].append(v)
-            elif self.getParameterValue("OptimMethod") == 'ga':
-                self.__ga_param = DefaultOrderedDict(list)
+                    self.mcm_param[k].append(v)
+            elif self.get_parameter_value("OptimMethod") == 'ga':
+                self.ga_param = DefaultOrderedDict(list)
                 for k, v in self.__l_ga_param:
-                    self.__ga_param[k].append(v)
-            elif self.getParameterValue("OptimMethod") == 'rboa':
-                self.__rboa_param = DefaultOrderedDict(list)
+                    self.ga_param[k].append(v)
+            elif self.get_parameter_value("OptimMethod") == 'rboa':
+                self.rboa_param = DefaultOrderedDict(list)
                 for k, v in self.__l_rboa_param:
-                    self.__rboa_param[k].append(v)
-            elif self.getParameterValue("OptimMethod") == 'de':
-                self.__de_param = DefaultOrderedDict(list)
+                    self.rboa_param[k].append(v)
+            elif self.get_parameter_value("OptimMethod") == 'de':
+                self.de_param = DefaultOrderedDict(list)
                 for k, v in self.__l_de_param:
-                    self.__de_param[k].append(v)
-            elif self.getParameterValue("OptimMethod") == 'eda':
-                self.__eda_param = DefaultOrderedDict(list)
+                    self.de_param[k].append(v)
+            elif self.get_parameter_value("OptimMethod") == 'eda':
+                self.eda_param = DefaultOrderedDict(list)
                 for k, v in self.__l_eda_param:
-                    self.__eda_param[k].append(v)
-                self.__fgm_param = DefaultOrderedDict(list)
+                    self.eda_param[k].append(v)
+                self.fgm_param = DefaultOrderedDict(list)
                 for k, v in self.__l_fgm_param:
-                    self.__fgm_param[k].append(v)
-            elif self.getParameterValue("OptimMethod") == 'ceda':
-                self.__ceda_param = DefaultOrderedDict(list)
+                    self.fgm_param[k].append(v)
+            elif self.get_parameter_value("OptimMethod") == 'ceda':
+                self.ceda_param = DefaultOrderedDict(list)
                 for k, v in self.__l_ceda_param:
-                    self.__ceda_param[k].append(v)
-                self.__fgm_param = DefaultOrderedDict(list)
+                    self.ceda_param[k].append(v)
+                self.fgm_param = DefaultOrderedDict(list)
                 for k, v in self.__l_fgm_param:
-                    self.__fgm_param[k].append(v)
+                    self.fgm_param[k].append(v)
 
     def set_parameter(self, key, value):
         try:
-            if self.getFramework() == '2PG':
-                if key in self.__general_parameters_2pg:
-                    self.__general_parameters_2pg[key] = value
+            if self.get_framework() == '2PG':
+                if key in self.protpred_param:
+                    self.protpred_param[key] = value
                 else:
                     raise "There is no key %s in the parameters list. \
                                 Please, use a valid key.\n" % key
-            elif self.getFramework() == 'ProtPred-EDA':
-                if key in self.__protpred_eda_param:
-                    self.__protpred_eda_param[key] = value
-                elif self.getParameterValue("OptimMethod") == 'rw':
-                    self.__rw_param[key] = value
-                elif self.getParameterValue("OptimMethod") == 'mcm':
-                    self.__mcm_param[key] = value
-                elif self.getParameterValue("OptimMethod") == 'eda':
-                    if key in self.__eda_param:
-                        self.__eda_param[key] = value
+            elif self.get_framework() == 'ProtPred-EDA':
+                if key in self.protpred_eda_param:
+                    self.protpred_eda_param[key] = value
+                elif self.get_parameter_value("OptimMethod") == 'rw':
+                    self.rw_param[key] = value
+                elif self.get_parameter_value("OptimMethod") == 'mcm':
+                    self.mcm_param[key] = value
+                elif self.get_parameter_value("OptimMethod") == 'eda':
+                    if key in self.eda_param:
+                        self.eda_param[key] = value
                     elif self.\
-                            getParameterValue("SamplingMode", "eda") == 'fgm':
-                        if key in self.__fgm_param:
-                            self.__fgm_param[key] = value
+                            get_parameter_value("SamplingMode", "eda") == 'fgm':
+                        if key in self.fgm_param:
+                            self.fgm_param[key] = value
                         else:
                             raise "There is no key %s in the parameters list. \
                                     Please, use a valid key.\n" % key
                     else:
                         raise "There is no key %s in the parameters list. \
                                 Please, use a valid key.\n" % key
-                elif self.getParameterValue("OptimMethod") == 'rboa':
-                    self.__rboa_param[key] = value
-                elif self.getParameterValue("OptimMethod") == 'ga':
-                    self.__ga_param[key] = value
-                elif self.getParameterValue("OptimMethod") == 'de':
-                    self.__de_param[key] = value
-                elif self.getParameterValue("OptimMethod") == 'ceda':
-                    if key in self.__ceda_param:
-                        self.__ceda_param[key] = value
+                elif self.get_parameter_value("OptimMethod") == 'rboa':
+                    self.rboa_param[key] = value
+                elif self.get_parameter_value("OptimMethod") == 'ga':
+                    self.ga_param[key] = value
+                elif self.get_parameter_value("OptimMethod") == 'de':
+                    self.de_param[key] = value
+                elif self.get_parameter_value("OptimMethod") == 'ceda':
+                    if key in self.ceda_param:
+                        self.ceda_param[key] = value
                     elif self.\
-                            getParameterValue("SamplingMode", "ceda") == 'fgm':
-                        if key in self.__fgm_param:
-                            self.__fgm_param[key] = value
+                            get_parameter_value("SamplingMode", "ceda") == 'fgm':
+                        if key in self.fgm_param:
+                            self.fgm_param[key] = value
                         else:
                             raise "There is no key %s in the parameters list [SamplingMode](%s)(%s). \
                                     Please, use a valid key.\n" % (
                                         key,
-                                        self.getParameterValue("OptimMethod"),
-                                        self.getParameterValue("SamplingMode"),
+                                        self.get_parameter_value("OptimMethod"),
+                                        self.get_parameter_value("SamplingMode"),
                                         )
                     else:
                         raise "There is no key %s in the parameters list[OptimMethod](%s)(%s). \
                                 Please, use a valid key.\n" % (
                                     key,
-                                    self.getParameterValue("OptimMethod"),
-                                    self.getParameterValue("SamplingMode"),
+                                    self.get_parameter_value("OptimMethod"),
+                                    self.get_parameter_value("SamplingMode"),
                                     )
                 else:
                     raise "There is no key %s in the parameters list. \
                             Please, use a valid key.\n" % key
-            elif self.getFramework() == 'MEAMT':
-                if key in self.__meamt_param:
-                    self.__meamt_param[key] = value
+            elif self.get_framework() == 'MEAMT':
+                if key in self.meamt_param:
+                    self.meamt_param[key] = value
                 else:
                     raise "There is no key %s in the parameters list. \
                                 Please, use a valid key.\n" % key
@@ -361,35 +422,35 @@ class Params(Framework):
 
     def get_parameter_value(self, key, optMethod=None):
         try:
-            if self.getFramework() == '2PG':
-                if key in self.__general_parameters_2pg:
-                    return self.__general_parameters_2pg[key]
-            elif(self.getFramework() == 'ProtPred-EDA'):
-                if key in self.__protpred_eda_param:
-                    return self.__protpred_eda_param[key]
-                elif key in self.__rw_param:
-                    return self.__rw_param[key]
-                elif key in self.__mcm_param:
-                    return self.__mcm_param[key]
-                elif key in self.__eda_param and optMethod == "eda":
-                    return self.__eda_param[key]
-                elif key in self.__fgm_param:
-                    return self.__fgm_param[key]
-                elif key in self.__ga_param:
-                    return self.__ga_param[key]
-                elif key in self.__rboa_param:
-                    return self.__rboa_param[key]
-                elif key in self.__de_param:
-                    return self.__de_param[key]
-                elif key in self.__ceda_param and optMethod == "ceda":
-                    return self.__ceda_param[key]
+            if self.get_framework() == '2PG':
+                if key in self.protpred_param:
+                    return self.protpred_param[key]
+            elif(self.get_framework() == 'ProtPred-EDA'):
+                if key in self.protpred_eda_param:
+                    return self.protpred_eda_param[key]
+                elif key in self.rw_param:
+                    return self.rw_param[key]
+                elif key in self.mcm_param:
+                    return self.mcm_param[key]
+                elif key in self.eda_param and optMethod == "eda":
+                    return self.eda_param[key]
+                elif key in self.fgm_param:
+                    return self.fgm_param[key]
+                elif key in self.ga_param:
+                    return self.ga_param[key]
+                elif key in self.rboa_param:
+                    return self.rboa_param[key]
+                elif key in self.de_param:
+                    return self.de_param[key]
+                elif key in self.ceda_param and optMethod == "ceda":
+                    return self.ceda_param[key]
                 else:
                     raise Exception(
                             "There is no key %s in the parameters list"
                             "Please, use a valid key.\n" % key)
-            elif self.getFramework() == 'MEAMT':
-                if key in self.__meamt_param:
-                    return self.__meamt_param[key]
+            elif self.get_framework() == 'MEAMT':
+                if key in self.meamt_param:
+                    return self.meamt_param[key]
             else:
                 raise Exception("There is no defined framework.\n")
         except Exception, e:

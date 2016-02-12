@@ -3,7 +3,7 @@
 
 import subprocess
 from koala.utils import path
-from koala.utils import ShowErrorMessage
+from koala.utils import show_error_message
 
 # TODO: review exception rules
 # TODO: build a new get_configuration_file method
@@ -31,14 +31,14 @@ class Framework(object):
 
     def set_command(self, algorithm):
         try:
-            if self.getFramework() == '2PG':
+            if self.get_framework() == '2PG':
                 self.command = '/usr/local/bin/%s' % (algorithm)
-            elif self.getFramework() in ['MEAMT', 'i-paes']:
-                self.command = '%s%s' % (path.getPathAlgorithms(self.getFramework()), algorithm)
+            elif self.get_framework() in ('MEAMT', 'i-paes'):
+                self.command = '%s%s' % (path.getPathAlgorithms(self.get_framework()), algorithm)
             else:
                 self.command = '%s%s' % (path.getPathExecute(), algorithm)
         except Exception, e:
-            ShowErrorMessage("Error when set_command\n%s" % e)
+            show_error_message("Error when set_command\n%s" % e)
 
     def get_command(self):
         return self.command
@@ -71,7 +71,7 @@ class Framework(object):
                 path_output,
                 outputID,
                 tool,
-                self.getFramework(),
+                self.get_framework(),
                 email,
                 '&'],
                 stdout=stdout_file, stderr=subprocess.STDOUT, shell=False)
@@ -80,4 +80,4 @@ class Framework(object):
                 pass
 
         except Exception, e:
-            ShowErrorMessage("Error when _execute_program:\n%s" % e)
+            show_error_message("Error when _execute_program:\n%s" % e)
