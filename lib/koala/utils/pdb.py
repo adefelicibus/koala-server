@@ -2,9 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import os
+from koala.utils import show_error_message
 
 
-def parse_PDB(path, pdb_file, maxNumber=None, newName=None):
+def parse_pdb(path, pdb_file, maxNumber=None, newName=None):
     try:
         pdb = file(pdb_file, 'r')
         path_f, name_f = os.path.split(pdb_file)
@@ -41,13 +42,13 @@ def parse_PDB(path, pdb_file, maxNumber=None, newName=None):
         return new_pdbs
 
     except Exception, e:
-        self.ShowErrorMessage("Error when parsePDB:\n%s" % e)
+        show_error_message("Error when parsePDB:\n%s" % e)
 
 
-def mergePDB(path, pdbs):
+def merge_pdb(path, pdbs):
     try:
         if not pdbs:
-            self.ShowErrorMessage("There is no PDB file to merge.")
+            show_error_message("There is no PDB file to merge.")
 
         new_pdb = []
         header = []
@@ -86,4 +87,4 @@ def mergePDB(path, pdbs):
         return pdbf
 
     except Exception, e:
-        self.ShowErrorMessage("Error when mergePDB:\n%s" % e)
+        show_error_message("Error when mergePDB:\n%s" % e)

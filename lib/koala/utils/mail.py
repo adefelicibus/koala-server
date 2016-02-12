@@ -9,33 +9,39 @@ from email.mime.text import MIMEText
 import smtplib
 import datetime
 import os
+from koala.utils import show_error_message
+
+# TODO: take the smtp configuration from galaxy's config.ini file
+# TODO: review exception rules
 
 
-def getMessageEmail(tool_name):
-        try:
-            now = datetime.datetime.now()
-            tupla = now.timetuple()
-            data = str(tupla[2]) + '/' + str(tupla[1]) + '/' + str(tupla[0]) + ' ' + str(tupla[3]) + ':' + str(tupla[4]) + ':' + str(tupla[5])
+def get_message_email(tool_name):
+    try:
+        now = datetime.datetime.now()
+        tupla = now.timetuple()
+        data = str(
+            tupla[2]) + '/' + str(tupla[1]) + '/' + \
+            str(tupla[0]) + ' ' + str(tupla[3]) + ':' + str(tupla[4]) + ':' + str(tupla[5])
 
-            tool_name = tool_name.replace('_', ' ')
+        tool_name = tool_name.replace('_', ' ')
 
-            messageEmail = '''Hi,
+        messageEmail = '''Hi,
 
-            Your simulation has been conclued at ''' + data + '''.
+        Your simulation has been conclued at ''' + data + '''.
 
-            You have to go to your History and download it.
+        You have to go to your History and download it.
 
-            Best Regards.
+        Best Regards.
 
-            %s''' % tool_name
+        %s''' % tool_name
 
-            return messageEmail
+        return messageEmail
 
-        except Exception, e:
-            self.ShowErrorMessage("Error while getMessageEmail email!\n%s" % e)
+    except Exception, e:
+        show_error_message("Error while getMessageEmail email!\n%s" % e)
 
 
-def sendEmail(de, para, assunto, mensagem, arquivos, servidor):
+def send_email(de, para, assunto, mensagem, arquivos, servidor):
 
         try:
             # Cria o objeto da mensagem
@@ -73,4 +79,4 @@ def sendEmail(de, para, assunto, mensagem, arquivos, servidor):
                 # Desconecta do servidor
                 smtp.close()
         except Exception, e:
-            self.ShowErrorMessage("Error when SendEmail:\n%s" % e)
+            show_error_message("Error when SendEmail:\n%s" % e)
