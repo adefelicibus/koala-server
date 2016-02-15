@@ -824,7 +824,7 @@ class CalculateGDTTS(object):
                 for key, value in self.gdt_value.items():
                     self.methods.append(key)
 
-                build_images(self.methods, path_execution)
+                build_images(self.methods, self.path_runs.get_path_execution())
 
                 pdbsToCopy = [os.path.join(
                     self.path_runs.get_path_execution(), method) for method in self.methods]
