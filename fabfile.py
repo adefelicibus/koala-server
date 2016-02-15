@@ -266,7 +266,7 @@ def installVINA_server():
 
 def installMGL_server():
     with cd('~/programs'):
-        sudo('mgltools')
+        sudo('mkdir mgltools')
         with cd('mgltools'):
             sudo('wget http://mgltools.scripps.edu/downloads/downloads/tars/releases/REL1.5.6/mgltools_x86_64Linux2_1.5.6.tar.gz')
             sudo('tar zxvf mgltools_x86_64Linux2_1.5.6.tar.gz')
@@ -701,12 +701,12 @@ def installVINA_local():
                 local('mv * ../')
             local('rm -rf autodock_vina_1_1_2_linux_x86.tgz')
             local('rm -rf autodock_vina_1_1_2_linux')
-            local('sudo echo "export VINA=$HOME/programs/autodock-vina/bin/vina" >> ~.bashrc')
+            local('sudo echo "export VINA=%sprograms/autodock-vina/bin/vina" >> ~/.bashrc' % folder_local)
             local("/bin/bash -l -c 'source ~/.bashrc'")
 
 def installMGL_local():
-    with lcd('~/programs'):
-        local('mgltools')
+    with lcd('%sprograms' % folder_local):
+        local('mkdir mgltools')
         with lcd('mgltools'):
             local('wget http://mgltools.scripps.edu/downloads/downloads/tars/releases/REL1.5.6/mgltools_x86_64Linux2_1.5.6.tar.gz')
             local('tar zxvf mgltools_x86_64Linux2_1.5.6.tar.gz')
@@ -714,15 +714,16 @@ def installMGL_local():
                 local('mv * ../')
             local('rm -rf mgltools_x86_64Linux2_1.5.6.tar.gz')
             local('rm -rf mgltools_x86_64Linux2_1.5.6')
-            local('./install.sh -d ~/programs/mgltools')
-            local('sudo echo "export PATH=~/programs/mgltools/bin:$PATH\n'
-                  'export SCRIPT_LIGAND4=$HOME/programs/mgltools/MGLToolsPckgs/AutoDockTools/Utilities24/prepare_ligand4.py\n'
-                  'export PYTHONSH=$HOME/programs/mgltools/bin/pythonsh\n'
-                  'export SCRIPT_RECEPTOR4=$HOME/programs/mgltools/MGLToolsPckgs/AutoDockTools/Utilities24/prepare_receptor4.py\n'
-                  'alias pmv=\'~/programs/mgltools/bin/pmv\'\n'
-                  'alias adt=\'~/programs/mgltools/bin/adt\'\n'
-                  'alias vision=\'~/programs/mgltools/bin/vision\'\n'
-                  'alias pythonsh=\'~/programs/mgltools/bin/pythonsh\'" >> ~/.bashrc'
+            local('./install.sh -d %sprograms/mgltools' % folder_local)
+            local('sudo echo "export PATH=%sprograms/mgltools/bin:$PATH\n'
+                  'export SCRIPT_LIGAND4=%sprograms/mgltools/MGLToolsPckgs/AutoDockTools/Utilities24/prepare_ligand4.py\n'
+                  'export PYTHONSH=%sprograms/mgltools/bin/pythonsh\n'
+                  'export SCRIPT_RECEPTOR4=%sprograms/mgltools/MGLToolsPckgs/AutoDockTools/Utilities24/prepare_receptor4.py\n'
+                  'alias pmv=\'%sprograms/mgltools/bin/pmv\'\n'
+                  'alias adt=\'%sprograms/mgltools/bin/adt\'\n'
+                  'alias vision=\'%sprograms/mgltools/bin/vision\'\n'
+                  'alias pythonsh=\'%sprograms/mgltools/bin/pythonsh\'" >> ~/.bashrc' %
+                  (folder_local, folder_local, folder_local, folder_local, folder_local, folder_local, folder_local, folder_local)
                 )
             local("/bin/bash -l -c 'source ~/.bashrc'")
 
@@ -857,6 +858,9 @@ def setKoalaLibLinksLocal():
             CURRENT_PATH, folder_local, galaxy_project))
     local(
         'sudo ln -s %s/tools/protpred-eda/ %sprograms/%s/tools/' % (
+            CURRENT_PATH, folder_local, galaxy_project))
+    local(
+        'sudo ln -s %s/tools/autodock-vina/ %sprograms/%s/tools/' % (
             CURRENT_PATH, folder_local, galaxy_project))
     local(
         'sudo ln -s %s/static/Bio-200.png %sprograms/%s/static/' % (

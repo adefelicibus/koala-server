@@ -100,6 +100,7 @@ class DRF(GenericMultiMolFile):
         else:
             return False
 
+
 class PDBQT(GenericMolFile):
     file_ext = "pdbqt"
 
@@ -115,7 +116,6 @@ class PDBQT(GenericMolFile):
                 self.no_mols = commands.getstatusoutput("grep -c ATOM "+filename)
                 if (self.no_mols[0] == 0) & (self.no_mols[1] > 0):
                     return True
-
 
     def set_peek(self, dataset, is_multi_byte=False):
         if not dataset.dataset.purged:
@@ -135,6 +135,7 @@ class LOG(GenericMolFile):
             return True
         else:
             return False
+
 
 class PDB(GenericMolFile):
     file_ext = "pdb"

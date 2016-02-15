@@ -329,6 +329,8 @@
     <sniffer type="galaxy.datatypes.images:Eps"/>
     <sniffer type="galaxy.datatypes.images:Rast"/>
     <sniffer type="galaxy.datatypes.molFiles:PDB"/>
+    <sniffer type="galaxy.datatypes.molFiles:MOL2"/>
+    <sniffer type="galaxy.datatypes.molFiles:PDBQT"/>
     <!-- GRO -->
     <sniffer type="galaxy.datatypes.gromacs_datatype:GRO"/>
     <!-- TOP -->

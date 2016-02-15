@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!-- Tag reservada para a definição da tool -->
-<tool name="Prepare receptor" id="prepare_receptor" require_login="True"  version="1.0.0">
+<tool name="Prepare receptor" id="prepare_receptor" version="1.0.0">
 	<!-- Tag reservada para a descrição da tool -->
 	<description> - Tool to prepare receptor for virtual screening</description>
 	<!-- Tag reservada para a execução do script da tool -->

@@ -64,7 +64,7 @@
     <tool file="gromacs-tools/min_all.xml"/>
     <tool file="gromacs-tools/min_none.xml"/>
   </section>
-  <label id="docking" text="Docking Protein-Compounds">
+  <label id="docking" text="Docking Protein-Compounds" />
   <section id="autodock-vina" name="Autodock Vina Tools">
     <tool file="autodock-vina/prepare_ligand/prepare_ligand.xml" />
     <tool file="autodock-vina/prepare_receptor/prepare_receptor.xml" />

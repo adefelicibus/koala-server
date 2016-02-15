@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!-- Tag reservada para a definição da tool -->
-<tool name="Prepare ligand" id="prepare_ligand" require_login="True"  version="1.0.0">
+<tool name="Prepare ligand" id="prepare_ligand" version="1.0.0">
 	<!-- Tag reservada para a descrição da tool -->
 	<description> - Tool to prepare ligand for virtual screening</description>
 	<!-- Tag reservada para a execução do script da tool -->
