@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# import __main__
+import __main__
 
-# import pymol
+import pymol
 import os
 import urllib2
 import shutil
@@ -11,9 +11,9 @@ import zipfile
 from time import sleep
 from koala.utils import show_error_message, list_directory
 
-# __main__.pymol_argv = ['pymol', '-qc']  # Quiet and no GUI
+__main__.pymol_argv = ['pymol', '-qc']  # Quiet and no GUI
 
-# pymol.finish_launching()
+pymol.finish_launching()
 
 
 # TODO: review exception rules
@@ -263,40 +263,40 @@ def get_result_files(path, tool, fileName=None):
         show_error_message("Error when getResultFiles:\n%s" % e)
 
 
-# def build_images(methods, path_execution):
-#     """
-#     Build images from PDB files using PyMol package.
-#     @type self: koala.CalculateGDTTS.CalculateGDTTS
-#     """
-#     try:
-#         os.chdir(path_execution)
+def build_images(methods, path_execution):
+    """
+    Build images from PDB files using PyMol package.
+    @type self: koala.CalculateGDTTS.CalculateGDTTS
+    """
+    try:
+        os.chdir(path_execution)
 
-#         limit = 20
-#         if len(methods) < 20:
-#             limit = len(methods)
+        limit = 20
+        if len(methods) < 20:
+            limit = len(methods)
 
-#         for i in range(0, limit):
+        for i in range(0, limit):
 
-#             pdb = methods[i]
-#             arq = os.path.join(path_execution, pdb)
+            pdb = methods[i]
+            arq = os.path.join(path_execution, pdb)
 
-#             name, ext = os.path.splitext(pdb)
+            name, ext = os.path.splitext(pdb)
 
-#             # Load Structures
-#             pymol.cmd.load(arq, pdb)
-#             pymol.cmd.disable("all")
-#             pymol.cmd.set('ray_opaque_background', 0)
-#             pymol.cmd.set('antialias', 1)
-#             pymol.cmd.hide("everything")
-#             pymol.cmd.show("cartoon")
-#             pymol.cmd.show("ribbon")
-#             pymol.cmd.enable(pdb)
-#             pymol.cmd.ray()
-#             pymol.cmd.png("%s.png" % name, dpi=300)
+            # Load Structures
+            pymol.cmd.load(arq, pdb)
+            pymol.cmd.disable("all")
+            pymol.cmd.set('ray_opaque_background', 0)
+            pymol.cmd.set('antialias', 1)
+            pymol.cmd.hide("everything")
+            pymol.cmd.show("cartoon")
+            pymol.cmd.show("ribbon")
+            pymol.cmd.enable(pdb)
+            pymol.cmd.ray()
+            pymol.cmd.png("%s.png" % name, dpi=300)
 
-#             sleep(0.25)  # (in seconds)
+            sleep(0.25)  # (in seconds)
 
-#             pymol.cmd.reinitialize()
+            pymol.cmd.reinitialize()
 
-#     except Exception, e:
-#         show_error_message("Erro on build_images method:\n%s" % e)
+    except Exception, e:
+        show_error_message("Erro on build_images method:\n%s" % e)
