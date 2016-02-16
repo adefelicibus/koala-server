@@ -1,17 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import __main__
-__main__.pymol_argv = ['pymol', '-qc']  # Quiet and no GUI
-
-import pymol
 import os
-from koala import classe
 import optparse
 import subprocess
-import time
 import datetime
-import urllib2
 from PyHighcharts.highcharts.chart import Highchart
 from decimal import *
 import zipfile
@@ -19,7 +12,13 @@ import gzip
 import cProfile
 import math
 
-pymol.finish_launching()
+from koala.utils import get_file_size, show_error_message, list_directory, get_logged_user
+from koala.utils import extract_zip_file, extract_gz_file, TimeJobExecution, copy_necessary_files
+from koala.utils.output import send_output_files_html, get_result_files
+from koala.utils.path import PathRuns, clear_path_execute, get_path_gromacs
+from koala.utils.input import copy_pdbs_from_input, create_configuration_file, format_fitness
+from koala.frameworks.params import Params
+from koala.utils.scripts import rename_atoms, check_pdb
 
 
 class SortByFront(object):
@@ -27,7 +26,6 @@ class SortByFront(object):
     Execute the 2PG Sort By Front Dominance algorithm to classify the PSP methods in Pareto fronts
     """
 
-    path_execute = None
     methods = []
     ignoreoutfiles = ['.pdb', '.png']
     initTime = 0
@@ -43,31 +41,9 @@ class SortByFront(object):
         """
         assert opts is not None
         self.opts = opts
-        self.ClassColection = classe.IcmcGalaxy()
-
-    # def getHistoryID(self):
-    #     url = 'http://localhost:8004/api/datasets/%s' % self.opts.datasetID
-
-    #     response = urllib2.urlopen(url)
-
-    #     html = response.read()
-
-    #     html = html.replace(' ', '')
-    #     html = html.replace('\n', '')
-    #     lines = html.split(",")
-
-    #     for line in lines:
-    #         if line.split(':')[0] == '"hid"':
-    #             self.hid = line.split(':')[1]
-    #             break
-
-    def timenow(self):
-        """
-        Return current time as a formmated string
-        @type self: koala.SortByFront.SortByFront
-        """
-
-        return time.strftime('%d/%m/%Y %H:%M:%S', time.localtime(time.time()))
+        self.time_execution = TimeJobExecution()
+        self.path_runs = PathRuns()
+        self.framework = Params('2PG')
 
     def buildHighchart(self):
         """
@@ -77,7 +53,7 @@ class SortByFront(object):
 
         try:
             # Load files
-            files = self.ClassColection.listDirectory(self.path_execute, '*.xvg')
+            files = list_directory(self.path_runs.get_path_execution(), '*.xvg')
 
             methods = self.methods
 
@@ -89,7 +65,7 @@ class SortByFront(object):
             y = [[]]*len(files)
 
             for i, f in enumerate(files):
-                f = os.path.join(self.path_execute, f)
+                f = os.path.join(self.path_runs.get_path_execution(), f)
                 arq = open(f, "r")
 
                 # Loading File
@@ -185,9 +161,7 @@ class SortByFront(object):
             return chart.generate()
 
         except Exception, e:
-            self.ClassColection.ShowErrorMessage(
-                "Error on building highcharts.\n%s" % e)
-            # raise Exception("Error while building the Highchart:\n%s" % e)
+            show_error_message("Error on building highcharts.\n%s" % e)
 
     def makeHtml(self):
         try:
@@ -201,7 +175,7 @@ class SortByFront(object):
             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
             <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
             <head> <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-            <meta name="generator" content="Galaxy %s tool output - see http://g2.trac.bx.psu.edu/" />
+            <meta name="generator" content="Galaxy %s tool output" />
             <title></title>
             <link rel="stylesheet" href="/static/koala.css" type="text/css" />
             <link rel="stylesheet" href="/static/style/base.css" type="text/css" />
@@ -240,7 +214,7 @@ class SortByFront(object):
             if len(flist) > 0:
                 for rownum, fname in enumerate(flist):
                     dname, e = os.path.splitext(fname)
-                    sfsize = self.ClassColection.getFileSize(fname, self.opts.htmlfiledir)
+                    sfsize = get_file_size(fname, self.opts.htmlfiledir)
 
                     if e.lower() == ".front":
                         frontFiles.append(fname)
@@ -254,7 +228,7 @@ class SortByFront(object):
             # Arquivos front
 
             for front in frontFiles:
-                sfsize = self.ClassColection.getFileSize(front, self.opts.htmlfiledir)
+                sfsize = get_file_size(front, self.opts.htmlfiledir)
                 fhtml.append('<tr>')
                 fhtml.append('<td><a href="%s">%s</a></td>' % (front, front))
                 fhtml.append('<td>%s</td>' % (sfsize))
@@ -307,7 +281,7 @@ class SortByFront(object):
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, n):
-                    sfsize = self.ClassColection.getFileSize(
+                    sfsize = get_file_size(
                             listaArquivosPdb[idx],
                             self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
@@ -335,7 +309,7 @@ class SortByFront(object):
                     idx = idx_linha
                     fhtml.append('</tr><tr>')
                     for i in range(start, end):
-                        sfsize = self.ClassColection.getFileSize(
+                        sfsize = get_file_size(
                                 listaArquivosPdb[idx],
                                 self.opts.htmlfiledir)
                         fhtml.append('<td>%s</td>' % (sfsize))
@@ -361,7 +335,7 @@ class SortByFront(object):
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, rest):
-                    sfsize = self.ClassColection.getFileSize(
+                    sfsize = get_file_size(
                             listaArquivosPdb[idx],
                             self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
@@ -406,7 +380,7 @@ class SortByFront(object):
 
             # Outros arquivos de output
             for output in outputfiles:
-                sfsize = self.ClassColection.getFileSize(output, self.opts.htmlfiledir)
+                sfsize = get_file_size(output, self.opts.htmlfiledir)
                 fhtml.append('<tr>')
                 fhtml.append('<td><a href="%s">%s</a></td>' % (output, output))
                 fhtml.append('<td>%s</td>' % (sfsize))
@@ -427,7 +401,7 @@ class SortByFront(object):
 
             # arquivo zipado
             for output in compressedFile:
-                sfsize = self.ClassColection.getFileSize(output, self.opts.htmlfiledir)
+                sfsize = get_file_size(output, self.opts.htmlfiledir)
                 fhtml.append('<tr>')
                 fhtml.append('<td><a href="%s">%s</a></td>' % (output, output))
                 fhtml.append('<td>%s</td>' % (sfsize))
@@ -444,16 +418,16 @@ class SortByFront(object):
                 fhtml.append('</table></div><br>')
                 html += fhtml
 
-            self.ClassColection.setjobEnd(datetime.datetime.now())
+            self.time_execution.set_job_end(datetime.datetime.now())
             self.endTime = datetime.datetime.now()
 
-            dif = self.ClassColection.calcTimeExecution(self.initTime, self.endTime)
+            dif = self.time_execution.calculate_time_execution()
 
             html.append('<div>Time execution:<br>')
             html.append('Start: %s<br>' %
-                        self.ClassColection.getjobStart().strftime("%d/%m/%Y %H:%M:%S"))
+                        self.time_execution.get_job_start().strftime("%d/%m/%Y %H:%M:%S"))
             html.append('End: %s<br>' %
-                        self.ClassColection.getjobEnd().strftime("%d/%m/%Y %H:%M:%S"))
+                        self.time_execution.get_job_end().strftime("%d/%m/%Y %H:%M:%S"))
             html.append('Total time: ~%dh:%dm:%ds' % (dif[0], dif[1], dif[2]))
             html.append('</div>')
 
@@ -463,7 +437,7 @@ class SortByFront(object):
             htmlf.write('\n')
             htmlf.close()
         except Exception, e:
-            self.ClassColection.ShowErrorMessage(
+            show_error_message(
                 "Error on Create HTML output\n%s" % e)
 
     def makeHtmlWithJMol(self, pdbReference):
@@ -477,7 +451,7 @@ class SortByFront(object):
             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
             <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
             <head> <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-            <meta name="generator" content="Galaxy %s tool output - see http://g2.trac.bx.psu.edu/" />
+            <meta name="generator" content="Galaxy %s tool output" />
             <title></title>
             <link rel="stylesheet" href="/static/koala.css" type="text/css" />
             <link rel="stylesheet" href="/static/style/base.css" type="text/css" />
@@ -493,9 +467,9 @@ class SortByFront(object):
 
                     Jmol._isAsync = false;
 
-                    Jmol.getProfile() // records repeat calls to overridden or overloaded Java methods
+                    Jmol.getProfile()
 
-                    var jmolApplet0; // set up in HTML table, below
+                    var jmolApplet0;
 
                     jmol_isReady = function(applet) {
                         document.title = (applet._id + " is ready")
@@ -560,7 +534,7 @@ class SortByFront(object):
             if len(flist) > 0:
                 for rownum, fname in enumerate(flist):
                     dname, e = os.path.splitext(fname)
-                    sfsize = self.ClassColection.getFileSize(fname, self.opts.htmlfiledir)
+                    sfsize = get_file_size(fname, self.opts.htmlfiledir)
 
                     if e.lower() == ".front":
                         frontFiles.append(fname)
@@ -576,7 +550,7 @@ class SortByFront(object):
             # /datasets/%s/display/
 
             for front in frontFiles:
-                sfsize = self.ClassColection.getFileSize(front, self.opts.htmlfiledir)
+                sfsize = get_file_size(front, self.opts.htmlfiledir)
                 fhtml.append('<tr>')
                 fhtml.append(
                     '<td><a href="/datasets/%s/display/%s">%s</a></td>' % (
@@ -632,7 +606,7 @@ class SortByFront(object):
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, n):
-                    sfsize = self.ClassColection.getFileSize(
+                    sfsize = get_file_size(
                             listaArquivosPdb[idx],
                             self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
@@ -643,7 +617,8 @@ class SortByFront(object):
                     fhtml.append(
                         '<td>'
                         '<a href="javascript:Jmol.script(jmolApplet0,'
-                        "'load /datasets/%s/display/%s;cartoons only;color cartoons structure; spin on')"
+                        "'load /datasets/%s/display/%s;cartoons only; \
+                        color cartoons structure; spin on')"
                         '">Load on Jmol</a></td>' % (
                             self.opts.datasetID, listaArquivosPdb[idx]))
                     idx += 1
@@ -665,12 +640,14 @@ class SortByFront(object):
                     for i in range(start, end):
                         fhtml.append(
                             '<td><a href="/datasets/%s/display/%s">%s</a></td>' % (
-                                    self.opts.datasetID, listaArquivosPdb[idx], listaArquivosPdb[idx]))
+                                    self.opts.datasetID,
+                                    listaArquivosPdb[idx],
+                                    listaArquivosPdb[idx]))
                         idx += 1
                     idx = idx_linha
                     fhtml.append('</tr><tr>')
                     for i in range(start, end):
-                        sfsize = self.ClassColection.getFileSize(
+                        sfsize = get_file_size(
                                 listaArquivosPdb[idx],
                                 self.opts.htmlfiledir)
                         fhtml.append('<td>%s</td>' % (sfsize))
@@ -681,7 +658,8 @@ class SortByFront(object):
                         fhtml.append(
                             '<td>'
                             '<a href="javascript:Jmol.script(jmolApplet0,'
-                            "'load /datasets/%s/display/%s;cartoons only;color cartoons structure; spin on')"
+                            "'load /datasets/%s/display/%s;cartoons only; \
+                            color cartoons structure; spin on')"
                             '">Load on Jmol</a></td>' % (
                                 self.opts.datasetID, listaArquivosPdb[idx]))
                         idx += 1
@@ -707,7 +685,7 @@ class SortByFront(object):
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, rest):
-                    sfsize = self.ClassColection.getFileSize(
+                    sfsize = get_file_size(
                             listaArquivosPdb[idx],
                             self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
@@ -718,7 +696,8 @@ class SortByFront(object):
                     fhtml.append(
                         '<td>'
                         '<a href="javascript:Jmol.script(jmolApplet0,'
-                        "'load /datasets/%s/display/%s;cartoons only;color cartoons structure; spin on')"
+                        "'load /datasets/%s/display/%s;cartoons only; \
+                        color cartoons structure; spin on')"
                         '">Load on Jmol</a></td>' % (
                             self.opts.datasetID, listaArquivosPdb[idx]))
                     idx += 1
@@ -760,7 +739,7 @@ class SortByFront(object):
 
             # Outros arquivos de output
             for output in outputfiles:
-                sfsize = self.ClassColection.getFileSize(output, self.opts.htmlfiledir)
+                sfsize = get_file_size(output, self.opts.htmlfiledir)
                 fhtml.append('<tr>')
                 fhtml.append(
                     '<td><a href="/datasets/%s/display/%s">%s</a></td>' % (
@@ -783,7 +762,7 @@ class SortByFront(object):
 
             # arquivo zipado
             for output in compressedFile:
-                sfsize = self.ClassColection.getFileSize(output, self.opts.htmlfiledir)
+                sfsize = get_file_size(output, self.opts.htmlfiledir)
                 fhtml.append('<tr>')
                 fhtml.append(
                     '<td><a href="/datasets/%s/display/%s">%s</a></td>' % (
@@ -802,16 +781,16 @@ class SortByFront(object):
                 fhtml.append('</table></div><br>')
                 html += fhtml
 
-            self.ClassColection.setjobEnd(datetime.datetime.now())
+            self.time_execution.set_job_end(datetime.datetime.now())
             self.endTime = datetime.datetime.now()
 
-            dif = self.ClassColection.calcTimeExecution(self.initTime, self.endTime)
+            dif = self.time_execution.calculate_time_execution()
 
             html.append('<div>Time execution:<br>')
             html.append('Start: %s<br>' %
-                        self.ClassColection.getjobStart().strftime("%d/%m/%Y %H:%M:%S"))
+                        self.time_execution.get_job_start().strftime("%d/%m/%Y %H:%M:%S"))
             html.append('End: %s<br>' %
-                        self.ClassColection.getjobEnd().strftime("%d/%m/%Y %H:%M:%S"))
+                        self.time_execution.get_job_end().strftime("%d/%m/%Y %H:%M:%S"))
             html.append('Total time: ~%dh:%dm:%ds' % (dif[0], dif[1], dif[2]))
             html.append('</div>')
 
@@ -821,68 +800,7 @@ class SortByFront(object):
             htmlf.write('\n')
             htmlf.close()
         except Exception, e:
-            self.ClassColection.ShowErrorMessage(
-                "Error on CreateHTML with Jmol.\n%s" % e)
-
-    def run_renameAtoms(self, path, path_gromacs):
-        """
-        Create a subprocess to rename the missing atoms in a PDB file using pdb2gmx
-        @type self: koala.SortByFront.SortByFront
-        @type path: string
-        @type path_gromacs: string
-        """
-
-        try:
-            cl = [
-                '%s/scripts/rename_atoms.py' % self.opts.galaxyroot,
-                path,
-                path_gromacs,
-                '&']
-
-            retProcess = subprocess.Popen(cl, 0, None, None, None, False)
-            pvalue = retProcess.wait()
-
-            if pvalue != 0:
-                return False
-
-            return True
-        except Exception, e:
-            self.ClassColection.ShowErrorMessage(
-                "Error on Renaming Atoms.\n%s" % e)
-            # raise Exception("Error while renaming atoms.\n%s" % e)
-
-    def run_checkPDB(self, path, path_gromacs):
-        """
-        Create a subprocess to check the PDB structure using pdb2gmx
-        @type self: koala.SortByFront.SortByFront
-        @type path: string
-        @type path_gromacs: string
-        """
-
-        try:
-            cl = [
-                '%s/scripts/check_structures_gromacs.py' % self.opts.galaxyroot,
-                path,
-                path_gromacs,
-                '&']
-
-            retProcess = subprocess.Popen(cl, 0, None, None, None, False)
-            pvalue = retProcess.wait()
-
-            if pvalue != 0:
-                return False
-
-            directory = os.path.join(path, 'no_accepted_by_pdb2gmx')
-            if os.path.exists(directory):
-                pdbs = os.listdir(directory)
-                self.ClassColection.showMessage(
-                    'These files could not be accepted by Gromacs.\n%s\n\n' % pdbs)
-
-            return True
-        except Exception, e:
-            self.ClassColection.ShowErrorMessage(
-                "Error on Checking PDBs.\n%s" % e)
-            # raise Exception("Error while checking PDBs:\n%s" % e)
+            show_error_message("Error on CreateHTML with Jmol.\n%s" % e)
 
     def getBetterPDBs(self, path):
         """
@@ -891,7 +809,7 @@ class SortByFront(object):
         """
 
         try:
-            front = self.ClassColection.listDirectory(path, "*.front")
+            front = list_directory(path, "*.front")
             if len(front) > 1:
                 raise Exception("There is more than one .front file.\n")
 
@@ -906,53 +824,7 @@ class SortByFront(object):
                         self.methods.append(ll[6].strip())  # ll[6] = metodo
 
         except Exception, e:
-            self.ClassColection.ShowErrorMessage(
-                "Error on getBetterPDBs.\n%s" % e)
-            # raise Exception("Error on getBetterPDBs.\n%s" % e)
-
-    def build_images(self):
-        """
-        Build images from PDB files using PyMol package.
-        @type self: koala.SortByFront.SortByFront
-        """
-
-        try:
-            path = self.path_execute
-
-            self.getBetterPDBs(path)
-
-            limit = 20
-            if len(self.methods) < 20:
-                limit = len(self.methods)
-
-            # for pdb in self.methods:
-
-            for i in range(0, limit):
-
-                pdb = self.methods[i]
-                arq = os.path.join(path, pdb)
-
-                name, ext = os.path.splitext(pdb)
-
-                # Load Structures
-                pymol.cmd.load(arq, pdb)
-                pymol.cmd.disable("all")
-                pymol.cmd.set('ray_opaque_background', 0)
-                pymol.cmd.set('antialias', 1)
-                pymol.cmd.hide("everything")
-                pymol.cmd.show("cartoon")
-                pymol.cmd.show("ribbon")
-                pymol.cmd.enable(pdb)
-                pymol.cmd.ray()
-                pymol.cmd.png("%s.png" % name, dpi=300)
-
-                time.sleep(0.25)  # (in seconds)
-
-                pymol.cmd.reinitialize()
-
-        except Exception, e:
-            self.ClassColection.ShowErrorMessage(
-                "Error when build images.\n%s" % e)
+            show_error_message("Error on getBetterPDBs.\n%s" % e)
 
     def run_SortByFront(self):
         """
@@ -960,31 +832,34 @@ class SortByFront(object):
         @type self: koala.SortByFront.SortByFront
         """
 
-        dir_execucao = self.ClassColection.CreateExecutionDirectory()
-        self.path_execute = self.ClassColection.getPathExecute() + dir_execucao
+        self.path_runs.set_path_execute()
+        self.path_runs.set_execution_directory()
 
-        self.ClassColection.CopyNecessaryFiles(self.path_execute)
+        copy_necessary_files(
+            self.path_runs.get_path_execute(),
+            self.path_runs.get_path_execution(),
+            self.framework.get_framework())
 
-        self.ClassColection.setParameter(
+        self.framework.set_parameter(
                 'objective_analisys_dimo_source',
-                '/home/%s/programs/dimo/DIMO2' % self.ClassColection.getLoggedUser())
-        self.ClassColection.setParameter('Local_Execute', self.path_execute)
-        self.ClassColection.setParameter(
+                '/home/%s/programs/dimo/DIMO2' % get_logged_user())
+        self.framework.set_parameter('Local_Execute', self.path_runs.get_path_execution())
+        self.framework.set_parameter(
                 'Path_Gromacs_Programs',
-                '/home/%s/programs/gmx-4.6.5/no_mpi/bin/' % self.ClassColection.getLoggedUser())
-        self.ClassColection.setParameter('NativeProtein', '%s1VII.pdb' % self.path_execute)
-        self.ClassColection.setParameter(
-                'Database',
-                '%sDatabase/' % self.ClassColection.getPathAlgorithms('2pg_build_conformation'))
+                get_path_gromacs())
+        self.framework.set_parameter(
+                'NativeProtein',
+                '%s1VII.pdb' % self.path_runs.get_path_execution())
 
-        NumberObjective, Fitness_Energy = self.ClassColection.format_fitness(self.opts.inputFitness)
+        NumberObjective, Fitness_Energy = format_fitness(self.opts.inputFitness)
 
-        self.ClassColection.setParameter('NumberObjective', NumberObjective)
-        self.ClassColection.setParameter('Fitness_Energy', Fitness_Energy)
+        self.framework.set_parameter('NumberObjective', NumberObjective)
+        self.framework.set_parameter('Fitness_Energy', Fitness_Energy)
 
-        self.ClassColection.CreateConfigurationFile(self.path_execute)
+        create_configuration_file(
+            self.path_runs.get_path_execution(), self.framework)
 
-        config = self.ClassColection.getConfigurationFile('configuration.conf')
+        config = 'configuration.conf'
 
         if self.opts.compressedFile == '1':
 
@@ -992,62 +867,59 @@ class SortByFront(object):
 
             for input_f in inputFiles:
                 if zipfile.is_zipfile(input_f):
-                    self.ClassColection.extractZipFile(input_f, self.path_execute)
+                    extract_zip_file(input_f, self.path_runs.get_path_execution())
                 else:
                     try:
                         inF = gzip.GzipFile(input_f, 'rb')
                         f = inF.read()
                         inF.close()
                         if f:
-                            self.ClassColection.extractGzFile(input_f, self.path_execute)
+                            extract_gz_file(input_f, self.path_runs.get_path_execution())
                     except Exception, e:
                         raise Exception("The input file could not be read.\n%s" % e)
         else:
-                self.ClassColection.copyPDBsFromInput(
-                        self.path_execute,
+                copy_pdbs_from_input(
+                        self.path_runs.get_path_execution(),
                         self.opts.htmlfiledir,
                         self.opts.inputnames,
                         self.opts.inputPDBs)
 
         if(self.opts.renameAtoms == 'true'):
-            if not self.run_renameAtoms(
-                                            self.path_execute,
-                                            self.ClassColection.getParameterValue(
-                                                    'Path_Gromacs_Programs')):
+            if not rename_atoms(
+                    self.path_runs.get_path_execution(),
+                    self.opts.galaxyroot):
                 raise Exception("The script to rename the atoms finished wrong.")
 
         if(self.opts.checkStructures == 'true'):
-            if not self.run_checkPDB(
-                                        self.path_execute,
-                                        self.ClassColection.getParameterValue(
-                                            'Path_Gromacs_Programs')):
+            if not check_pdb(
+                    self.path_runs.get_path_execution(),
+                    self.opts.galaxyroot):
                 raise Exception("The script to check the structure finished wrong.")
 
-        self.ClassColection.setCommand(
-                                            '2pg_cartesian',
-                                            'protpred-Gromacs-Sort_Method_Files_by_Front_Dominance')
+        self.framework.set_command('protpred-Gromacs-Sort_Method_Files_by_Front_Dominance')
 
-        cl = [self.ClassColection.getCommand(), config, '&']
+        cl = [self.framework.get_command(), config, '&']
 
         retProcess = subprocess.Popen(
             cl, 0, stdout=None,  stderr=None, shell=False)
         retCode = retProcess.wait()
         if(retCode != 0):
-            self.ClassColection.ShowErrorMessage(
+            show_error_message(
                 "The 2PG framework finished wrong.\nContact the system administrator.")
 
-        self.build_images()
+        build_images(self.methods, self.path_runs.get_path_execution())
 
-        pdbsToCopy = [os.path.join(self.path_execute, method) for method in self.methods]
+        pdbsToCopy = [os.path.join(
+            self.path_runs.get_path_execution(), method) for method in self.methods]
 
-        self.ClassColection.sendOutputFilesHtml(self.opts.htmlfiledir, pdbsToCopy)
+        send_output_files_html(self.opts.htmlfiledir, pdbsToCopy)
 
-        result, filesHtml = self.ClassColection.getResultFiles(
-                self.path_execute,
+        result, filesHtml = get_result_files(
+                self.path_runs.get_path_execution(),
                 self.opts.toolname)
 
-        self.ClassColection.sendOutputFilesHtml(self.opts.htmlfiledir, filesHtml)
-        self.ClassColection.sendOutputFilesHtml(self.opts.htmlfiledir, [result])
+        send_output_files_html(self.opts.htmlfiledir, filesHtml)
+        send_output_files_html(self.opts.htmlfiledir, [result])
 
         self.makeHtml()
 
@@ -1077,9 +949,9 @@ if __name__ == '__main__':
 
     sort = SortByFront(opts)
 
-    sort.ClassColection.setjobStart(datetime.datetime.now())
+    sort.time_execution.set_job_start(datetime.datetime.now())
     sort.initTime = datetime.datetime.now()
 
     cProfile.run('sort.run_SortByFront()', 'profileout.txt')
 
-    sort.ClassColection.clearPathExecute(sort.path_execute)
+    clear_path_execute(sort.path_runs.get_path_execution())
