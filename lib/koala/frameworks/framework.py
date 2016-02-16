@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import subprocess
-from koala.utils import path
 from koala.utils import show_error_message
 
 # TODO: review exception rules
@@ -29,14 +28,16 @@ class Framework(object):
     def get_configuration_file(self, filename):
         return '%s' % filename
 
-    def set_command(self, algorithm):
+    def set_command(self, path_execution, algorithm):
         try:
             if self.get_framework() == '2PG':
                 self.command = '/usr/local/bin/%s' % (algorithm)
-            elif self.get_framework() in ('MEAMT', 'i-paes'):
-                self.command = '%s%s' % (path.getPathAlgorithms(self.get_framework()), algorithm)
             else:
-                self.command = '%s%s' % (path.getPathExecute(), algorithm)
+                self.command = '%s%s' % (path_execution, algorithm)
+            # elif self.get_framework() in ('MEAMT', 'i-paes'):
+            #     self.command = '%s%s' % (get_path_algorithms(self.get_framework()), algorithm)
+            # else:
+            #     self.command = '%s%s' % (path_execution, algorithm)
         except Exception, e:
             show_error_message("Error when set_command\n%s" % e)
 
@@ -51,6 +52,7 @@ class Framework(object):
 
     def execute_program(
             self,
+            path_execution,
             program,
             config,
             path_output,
@@ -59,14 +61,14 @@ class Framework(object):
             galaxydir="None",
             outputID="None"):
         try:
-            stdout_file = open("%sstdout.txt" % path.getPathExecution(), "wr")
+            stdout_file = open("%sstdout.txt" % path_execution, "wr")
             retProcess = None
             retProcess = subprocess.Popen([
                 'nohup',
                 program,
                 self.getCommand(),
                 config,
-                path.getPathExecution(),
+                path_execution,
                 galaxydir,
                 path_output,
                 outputID,

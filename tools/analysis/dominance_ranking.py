@@ -13,7 +13,7 @@ import cProfile
 
 from koala.utils import get_file_size, show_error_message, list_directory, get_logged_user
 from koala.utils import extract_zip_file, extract_gz_file, TimeJobExecution, copy_necessary_files
-from koala.utils.output import send_output_files_html, get_result_files
+from koala.utils.output import send_output_files_html, get_result_files, build_images
 from koala.utils.path import PathRuns, clear_path_execute, get_path_gromacs
 from koala.utils.input import copy_pdbs_from_input, create_configuration_file, format_fitness
 from koala.frameworks.params import Params
@@ -910,7 +910,9 @@ class DominanceRanking(object):
                     self.opts.galaxyroot):
                 raise Exception("The script to check the structure finished wrong.")
 
-        self.framework.set_command('protpred-Gromacs-Sort_Method_Files_by_Front_Dominance')
+        self.framework.set_command(
+            self.path_runs.get_path_execution(),
+            'protpred-Gromacs-Sort_Method_Files_by_Front_Dominance')
 
         for fit in self.combinations:
             self.run_SortByFront(fit)
