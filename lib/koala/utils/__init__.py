@@ -30,23 +30,23 @@ def validate_email(email):
         show_error_message("Error when ValidateEmail\n%s" % e)
 
 
-def copy_necessary_files(new_path, framework):
+def copy_necessary_files(source, destiny, framework):
     try:
-        os.chdir(new_path)
+        os.chdir(destiny)
         fileList = [os.path.normcase(f)
-                    for f in os.listdir(path.getPathExecute())]
-        fileList = [os.path.join(path.getPathExecute(), f)
+                    for f in os.listdir(source)]
+        fileList = [os.path.join(source, f)
                     for f in fileList]
         for arquivo in fileList:
             if not os.path.isdir(arquivo):
                 if(framework == 'MEAMT'):
-                    shutil.copy(arquivo, new_path)
+                    shutil.copy(arquivo, destiny)
                 else:
                     if(os.path.splitext(arquivo.split('/')[-1])[1] != '.txt'):
-                        shutil.copy(arquivo, new_path)
+                        shutil.copy(arquivo, destiny)
             else:
                 if not(re.search(r'\w+@\w+', arquivo)) and not(re.search(r'\d+_', arquivo)):
-                    shutil.copytree(arquivo, os.path.join(new_path, arquivo.split('/')[-1]))
+                    shutil.copytree(arquivo, os.path.join(destiny, arquivo.split('/')[-1]))
     except Exception, e:
         show_error_message("Error when CopyNecessaryFiles:\n%s" % e)
 

@@ -286,8 +286,9 @@ class Params(Framework):
         ('ClusteringType', 'dihedral'),
     ]
 
-    def __init__(self):
+    def __init__(self, framework):
         super(Params, self).__init__()
+        Framework.__init__(self, framework)
 
         self.protpred_param = []
         self.protpred_eda_param = []

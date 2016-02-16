@@ -731,7 +731,7 @@ def buildEnvGalaxyLocal():
 
 def setKoalaLibLinksLocal():
     local(
-        'sudo ln -s %s/lib/koala/ %senvs/%s/lib/python2.7/site-packages/koala' % (
+        'sudo ln -s %s/lib/koala/ %senvs/%s/lib/python2.7/site-packages/' % (
             CURRENT_PATH, folder_local, galaxy_project))
     local(
         'sudo ln -s %s/config/datatypes_conf.xml %sprograms/%s/config/' % (

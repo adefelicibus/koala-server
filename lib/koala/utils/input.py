@@ -5,8 +5,7 @@ import os
 import string
 import shutil
 from koala.utils import show_error_message
-from koala.frameworks import framework, params
-from koala.utils.path import PathRuns
+from koala.frameworks.params import Params
 
 # TODO: review exception rules
 
@@ -108,8 +107,12 @@ def format_fitness(fitness, tool=None):
 
 
 def create_local_pop_file(path, pop_file, framework):
+
+    if not isinstance(framework, Params):
+        show_error_message("The variable is not a Params class.")
+
     try:
-        if(framework == '2PG'):
+        if(framework.get_framework() == '2PG'):
             arq_pop = open(path + "pop_0.pdb", "wr")
             models = 0
 
@@ -138,7 +141,11 @@ def create_local_pop_file(path, pop_file, framework):
         show_error_message("Error when CreateLocalPopFile\n%s" % e)
 
 
-def create_local_fasta_file(path, type_input, fasta_file, tool):
+def create_local_fasta_file(path, type_input, fasta_file, tool, framework):
+
+    if not isinstance(framework, Params):
+        show_error_message("The variable is not a Params class.")
+
     try:
         arq_fasta = open(path + "fasta.txt", "wr")
         caption = ''
@@ -159,7 +166,7 @@ def create_local_fasta_file(path, type_input, fasta_file, tool):
                     arq_fasta.write(line)
 
         elif tool == '2PG_BuildConformation_Tool':
-            if(params.get_parameter_value('force_field') == 'amber99sb-ildn'):
+            if(framework.get_parameter_value('force_field') == 'amber99sb-ildn'):
                 linha = ''
                 if type_input == '0':
                     header = "none:A|PDBID|CHAIN|SEQUENCE"+'\n'
@@ -170,17 +177,17 @@ def create_local_fasta_file(path, type_input, fasta_file, tool):
                     header = lines[0]
                     linha = lines[1]
 
-                if(params.get_parameter_value('c_terminal_charge') == 'none' and
-                        params.get_parameter_value('n_terminal_charge') == 'none'):
+                if(framework.get_parameter_value('c_terminal_charge') == 'none' and
+                        framework.get_parameter_value('n_terminal_charge') == 'none'):
                     arq_fasta.write(header)
                     arq_fasta.write(linha)
-                elif(params.get_parameter_value('c_terminal_charge') == 'ACE' and
-                        params.get_parameter_value('n_terminal_charge') == 'none'):
+                elif(framework.get_parameter_value('c_terminal_charge') == 'ACE' and
+                        framework.get_parameter_value('n_terminal_charge') == 'none'):
                     arq_fasta.write('X')
                     arq_fasta.write(linha)
                 else:
-                    if(params.get_parameter_value('n_terminal_charge') == 'NME' and
-                            params.get_parameter_value('c_terminal_charge') == 'none'):
+                    if(framework.get_parameter_value('n_terminal_charge') == 'NME' and
+                            framework.get_parameter_value('c_terminal_charge') == 'none'):
                         linha = string.replace(linha, '\n', 'X')
                         a = list(linha)
                         linha = ''.join(a)
@@ -261,21 +268,28 @@ def create_local_seq_file(path, type_input, seq_file, tool):
         show_error_message("Error when CreateLocalSeqFile\n%s" % e)
 
 
-def create_configuration_file(path):
+def create_configuration_file(path, framework):
+
+    if not isinstance(framework, Params):
+        show_error_message("The variable is not a Params class.")
+
     try:
         if(framework.get_framework() == '2PG'):
             arq = file(path + 'configuration.conf', "wr")
-            parameters = params.protpred_param.items()
+            parameters = framework.protpred_param.items()
 
             for par in parameters:
-                arq.write("%s = %s\n" % (par[0], par[1]))
+                if not isinstance(par[1], (int, basestring)):
+                    arq.write("%s = %s\n" % (par[0], par[1][0]))
+                else:
+                    arq.write("%s = %s\n" % (par[0], par[1]))
 
             arq.close()
 
         elif(framework.get_framework() == 'ProtPred-EDA'):
             arq = file(path + 'input.ini', "wr")
 
-            parameters = params.protpred_eda_param.items()
+            parameters = framework.protpred_eda_param.items()
             param_extra = []
 
             for i, par in enumerate(parameters):
@@ -289,24 +303,24 @@ def create_configuration_file(path):
                 else:
                     arq.write("%s = %s\n" % (par[0], par[1]))
 
-            if(params.get_parameter_value("OptimMethod") == 'rw'):
-                parameters = params.rw_param.items()
-            elif(params.get_parameter_value("OptimMethod") == 'mcm'):
-                parameters = params.mcm_param.items()
-            elif(params.get_parameter_value("OptimMethod") == 'eda'):
-                parameters = params.eda_param.items()
-                if(params.get_parameter_value("SamplingMode", "eda") == 'fgm'):
-                    param_extra = params.fgm_param.items()
-            elif(params.get_parameter_value("OptimMethod") == 'rboa'):
-                parameters = params.rboa_param.items()
-            elif(params.get_parameter_value("OptimMethod") == 'ga'):
-                parameters = params.ga_param.items()
-            elif(params.get_parameter_value("OptimMethod") == 'de'):
-                parameters = params.de_param.items()
-            elif(params.get_parameter_value("OptimMethod") == 'ceda'):
-                parameters = params.ceda_param.items()
-                if(params.get_parameter_value("SamplingMode", "ceda") == 'fgm'):
-                    param_extra = params.fgm_param.items()
+            if(framework.get_parameter_value("OptimMethod") == 'rw'):
+                parameters = framework.rw_param.items()
+            elif(framework.get_parameter_value("OptimMethod") == 'mcm'):
+                parameters = framework.mcm_param.items()
+            elif(framework.get_parameter_value("OptimMethod") == 'eda'):
+                parameters = framework.eda_param.items()
+                if(framework.get_parameter_value("SamplingMode", "eda") == 'fgm'):
+                    param_extra = framework.fgm_param.items()
+            elif(framework.get_parameter_value("OptimMethod") == 'rboa'):
+                parameters = framework.rboa_param.items()
+            elif(framework.get_parameter_value("OptimMethod") == 'ga'):
+                parameters = framework.ga_param.items()
+            elif(framework.get_parameter_value("OptimMethod") == 'de'):
+                parameters = framework.de_param.items()
+            elif(framework.get_parameter_value("OptimMethod") == 'ceda'):
+                parameters = framework.ceda_param.items()
+                if(framework.get_parameter_value("SamplingMode", "ceda") == 'fgm'):
+                    param_extra = framework.fgm_param.items()
 
             for i, par in enumerate(parameters):
                 if((par[0].find("[")) != -1):
@@ -335,7 +349,7 @@ def create_configuration_file(path):
 
         elif(framework.get_framework() == 'MEAMT'):
             arq = file(path + 'parameters.txt', "wr")
-            parameters = params.meamt_param.items()
+            parameters = framework.meamt_param.items()
 
             for i, par in enumerate(parameters):
                 if((par[0].find("[")) != -1):
