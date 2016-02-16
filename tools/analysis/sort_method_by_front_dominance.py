@@ -1,22 +1,20 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import __main__
-__main__.pymol_argv = ['pymol', '-qc']  # Quiet and no GUI
-
-import pymol
 import os
-from koala import classe
 import optparse
 import subprocess
-import time
 import datetime
-import urllib2
 from PyHighcharts.highcharts.chart import Highchart
 from decimal import *
 import cProfile
 
-pymol.finish_launching()
+from koala.utils import get_file_size, show_error_message, list_directory, get_logged_user
+from koala.utils import TimeJobExecution, copy_necessary_files
+from koala.utils.output import send_output_files_html, get_result_files
+from koala.utils.path import PathRuns, clear_path_execute, get_path_gromacs
+from koala.utils.input import create_configuration_file
+from koala.frameworks.params import Params
 
 
 class SortMethodByFront(object):
@@ -24,7 +22,6 @@ class SortMethodByFront(object):
     Execute the 2PG Sort Method By Front Dominance algorithm without evaluate objectivies
     """
 
-    path_execute = None
     methods = []
     ignoreoutfiles = ['.pdb']
     initTime = 0
@@ -40,36 +37,10 @@ class SortMethodByFront(object):
         """
         assert opts is not None
         self.opts = opts
-        self.ClassColection = classe.IcmcGalaxy()
 
-    def timenow(self):
-        """
-        Return current time as a formmated string
-        @type self: koala.SortMethodByFront.SortMethodByFront
-        """
-
-        return time.strftime('%d/%m/%Y %H:%M:%S', time.localtime(time.time()))
-
-    def getfSize(self, fpath, outpath):
-        """
-        Get the file size and return as string
-        @type self: koala.SortMethodByFront.SortMethodByFront
-        @type fpath: string
-        @type outpath: string
-        """
-
-        size = ''
-        fp = os.path.join(outpath, fpath)
-        if os.path.isfile(fp):
-            size = '0 B'
-            n = float(os.path.getsize(fp))
-            if n > 2**20:
-                size = '%1.1f MB' % (n/2**20)
-            elif n > 2**10:
-                size = '%1.1f KB' % (n/2**10)
-            elif n > 0:
-                size = '%d B' % (int(n))
-        return size
+        self.time_execution = TimeJobExecution()
+        self.path_runs = PathRuns()
+        self.framework = Params('2PG')
 
     def buildHighchart(self):
         """
@@ -79,7 +50,7 @@ class SortMethodByFront(object):
 
         try:
             # Load files
-            files = self.ClassColection.listDirectory(self.path_execute, '*.xvg')
+            files = list_directory(self.path_runs.get_path_execution(), '*.xvg')
 
             methods = self.methods
 
@@ -91,7 +62,7 @@ class SortMethodByFront(object):
             y = [[]]*len(files)
 
             for i, f in enumerate(files):
-                f = os.path.join(self.path_execute, f)
+                f = os.path.join(self.path_runs.get_path_execution(), f)
                 arq = open(f, "r")
 
                 # Loading File
@@ -180,7 +151,7 @@ class SortMethodByFront(object):
             return chart.generate()
 
         except Exception, e:
-            raise Exception("Error while building the Highchart:\n%s" % e)
+            show_error_message("Error while building the Highchart:\n%s" % e)
 
     def makeHtml(self):
         """
@@ -231,7 +202,7 @@ class SortMethodByFront(object):
         if len(flist) > 0:
             for rownum, fname in enumerate(flist):
                 dname, e = os.path.splitext(fname)
-                sfsize = self.ClassColection.getFileSize(fname, self.opts.htmlfiledir)
+                sfsize = get_file_size(fname, self.opts.htmlfiledir)
 
                 if e.lower() == ".front":
                     frontFiles.append(fname)
@@ -242,7 +213,7 @@ class SortMethodByFront(object):
 
         # Arquivos front
         for front in frontFiles:
-            sfsize = self.ClassColection.getFileSize(front, self.opts.htmlfiledir)
+            sfsize = get_file_size(front, self.opts.htmlfiledir)
             fhtml.append('<tr>')
             fhtml.append('<td><a href="%s">%s</a></td>' % (front, front))
             fhtml.append('<td>%s</td>' % (sfsize))
@@ -263,7 +234,7 @@ class SortMethodByFront(object):
 
         # Outros arquivos de output
         for output in outputfiles:
-            sfsize = self.ClassColection.getFileSize(output, self.opts.htmlfiledir)
+            sfsize = get_file_size(output, self.opts.htmlfiledir)
             fhtml.append('<tr>')
             fhtml.append('<td><a href="%s">%s</a></td>' % (output, output))
             fhtml.append('<td>%s</td>' % (sfsize))
@@ -284,7 +255,7 @@ class SortMethodByFront(object):
 
         # arquivo zipado
         for output in compressedFile:
-            sfsize = self.ClassColection.getFileSize(output, self.opts.htmlfiledir)
+            sfsize = get_file_size(output, self.opts.htmlfiledir)
             fhtml.append('<tr>')
             fhtml.append('<td><a href="%s">%s</a></td>' % (output, output))
             fhtml.append('<td>%s</td>' % (sfsize))
@@ -301,16 +272,16 @@ class SortMethodByFront(object):
             fhtml.append('</table></div><br>')
             html += fhtml
 
-        self.ClassColection.setjobEnd(datetime.datetime.now())
+        self.time_execution.set_job_end(datetime.datetime.now())
         self.endTime = datetime.datetime.now()
 
-        dif = self.ClassColection.calcTimeExecution(self.initTime, self.endTime)
+        dif = self.time_execution.calculate_time_execution()
 
         html.append('<div>Time execution:<br>')
         html.append('Start: %s<br>' %
-                    self.ClassColection.getjobStart().strftime("%d/%m/%Y %H:%M:%S"))
+                    self.time_execution.get_job_start().strftime("%d/%m/%Y %H:%M:%S"))
         html.append('End: %s<br>' %
-                    self.ClassColection.getjobEnd().strftime("%d/%m/%Y %H:%M:%S"))
+                    self.time_execution.get_job_end().strftime("%d/%m/%Y %H:%M:%S"))
         html.append('Total time: ~%dh:%dm:%ds' % (dif[0], dif[1], dif[2]))
         html.append('</div>')
 
@@ -327,7 +298,7 @@ class SortMethodByFront(object):
         """
 
         try:
-            front = self.ClassColection.listDirectory(path, "*.front")
+            front = list_directory(path, "*.front")
             if len(front) > 1:
                 raise Exception("There is more than one .front file.\n")
 
@@ -342,14 +313,14 @@ class SortMethodByFront(object):
                         self.methods.append(ll[6].strip())  # ll[6] = metodo
 
         except Exception, e:
-            raise Exception("Error on getBetterPDBs.\n%s" % e)
+            show_error_message("Error on getBetterPDBs.\n%s" % e)
 
     def loadMatrixFile(self, matrix):
         """
         Read the input matrix file with the objectivies values
         """
         try:
-            newResultFiles = open(self.path_execute + "objectivies.txt", "wr")
+            newResultFiles = open(self.path_runs.get_path_execution() + "objectivies.txt", "wr")
 
             for line in file(matrix, "r"):
                 newResultFiles.write(line)
@@ -357,7 +328,7 @@ class SortMethodByFront(object):
             newResultFiles.close()
 
         except Exception, e:
-            raise Exception("Error on loadMatrixFile.\n%s" % e)
+            show_error_message("Error on loadMatrixFile.\n%s" % e)
 
     def run_SortByFront(self):
         """
@@ -365,46 +336,47 @@ class SortMethodByFront(object):
         @type self: koala.SortByFront.SortByFront
         """
 
-        dir_execucao = self.ClassColection.CreateExecutionDirectory()
-        self.path_execute = self.ClassColection.getPathExecute() + dir_execucao
+        self.path_runs.set_path_execute()
+        self.path_runs.set_execution_directory()
 
-        self.ClassColection.CopyNecessaryFiles(self.path_execute)
+        copy_necessary_files(
+            self.path_runs.get_path_execute(),
+            self.path_runs.get_path_execution(),
+            self.framework.get_framework())
 
-        self.ClassColection.setParameter(
+        self.framework.set_parameter(
                 'objective_analisys_dimo_source',
-                '/home/%s/programs/dimo/DIMO2' % self.ClassColection.getLoggedUser())
-        self.ClassColection.setParameter('Local_Execute', self.path_execute)
-        self.ClassColection.setParameter(
+                '/home/%s/programs/dimo/DIMO2' % get_logged_user())
+        self.framework.set_parameter('Local_Execute', self.path_runs.get_path_execution())
+        self.framework.set_parameter(
                 'Path_Gromacs_Programs',
-                '/home/%s/programs/gmx-4.6.5/no_mpi/bin/' % self.ClassColection.getLoggedUser())
-        self.ClassColection.setParameter('NativeProtein', '%s1VII.pdb' % self.path_execute)
-        self.ClassColection.setParameter(
-                'Database',
-                '%sDatabase/' % self.ClassColection.getPathAlgorithms('2pg_build_conformation'))
+                get_path_gromacs())
+        self.framework.set_parameter(
+                'NativeProtein',
+                '%s1VII.pdb' % self.path_runs.get_path_execution())
 
-        self.ClassColection.CreateConfigurationFile(self.path_execute)
+        create_configuration_file(
+            self.path_runs.get_path_execution(), self.framework)
 
         self.loadMatrixFile(self.opts.inputTxt)
 
-        objFile = os.path.join(self.path_execute, 'objectivies.txt')
+        objFile = os.path.join(self.path_runs.get_path_execution(), 'objectivies.txt')
 
-        self.ClassColection.setCommand(
-                '2pg_cartesian',
-                'protpred-Gromacs-Sort_Method_by_Front_Dominance')
+        self.framework.set_command('protpred-Gromacs-Sort_Method_by_Front_Dominance')
 
-        cl = ['nohup', self.ClassColection.getCommand(), objFile, '&']
+        cl = ['nohup', self.framework.get_command(), objFile, '&']
 
         retProcess = subprocess.Popen(cl, 0, None, None, None, False)
         retProcess.wait()
 
-        self.getBetterPDBs(self.path_execute)
+        self.getBetterPDBs(self.path_runs.get_path_execution())
 
-        result, filesHtml = self.ClassColection.getResultFiles(
-                self.path_execute,
+        result, filesHtml = get_result_files(
+                self.path_runs.get_path_execution(),
                 self.opts.toolname)
 
-        self.ClassColection.sendOutputFilesHtml(self.opts.htmlfiledir, filesHtml)
-        self.ClassColection.sendOutputFilesHtml(self.opts.htmlfiledir, [result])
+        send_output_files_html(self.opts.htmlfiledir, filesHtml)
+        send_output_files_html(self.opts.htmlfiledir, [result])
 
         self.makeHtml()
 
@@ -421,9 +393,9 @@ if __name__ == '__main__':
 
     sort = SortMethodByFront(opts)
 
-    sort.ClassColection.setjobStart(datetime.datetime.now())
+    sort.time_execution.set_job_start(datetime.datetime.now())
     sort.initTime = datetime.datetime.now()
 
     cProfile.run('sort.run_SortByFront()', 'profileout.txt')
 
-    sort.ClassColection.clearPathExecute(sort.path_execute)
+    clear_path_execute(sort.path_runs.get_path_execution())
