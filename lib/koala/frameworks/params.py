@@ -50,62 +50,6 @@ class Params(Framework):
             ('meat', '1vii_meat.txt'),
     ]
 
-    # __general_parameters_2pg = {
-    #     'gromacs_energy_min': 'ener_implicit',
-    #     'NumberProcessor': '8',
-    #     'NumberObjective': '1',
-    #     'NumberGeration': '1',
-    #     'SizePopulation': '1',
-    #     'MonteCarloSteps': '50',
-    #     'FrequencyMC': '5',
-    #     'TemperatureMC': '370',
-    #     'Fitness_Energy': 'Potential',
-    #     'NativeProtein': '/home/faccioli/Execute/1VII_teste_1_1/1VII.pdb',
-    #     'SequenceAminoAcidsPathFileName':
-    #         '/home/faccioli/Execute/1VII_teste_1_1/1VII.fasta.txt',
-    #     'NameExecutation': '1VII_teste_1',
-    #     'Local_Execute': '/home/faccioli/Execute/1VII_teste_1_1/',
-    #     'Database':
-    #         '/home/faccioli/workspace/2pg_build_conformation/Database/',
-    #     'rotamer_library': 'cad_tuffery',
-    #     'top_file': 'top_protein.top',
-    #     'IniPopFileName': 'pop_0.pdb',
-    #     'Started_Generation': '-1',
-    #     'z_matrix_fileName': 'z_matrix',
-    #     'Path_Gromacs_Programs':
-    #         '/home/faccioli/programs/gmx-4.6.5/no_mpi/bin/',
-    #     'Computed_Energies_Gromacs_File':
-    #         'file_energy_computed.ener.edr',
-    #     'Energy_File_xvg': 'energy.xvg',
-    #     'Computed_Areas_g_sas_File': 'file_g_sas_areas.xvg',
-    #     'Computed_Energy_Value_File': 'energy_computed.xvg',
-    #     'Computed_Radius_g_gyrate_File': 'file_g_gyrate_radius.xvg',
-    #     'Computed_g_hbond_File': 'file_g_hbond.xvg',
-    #     'How_Many_Rotation': '1',
-    #     'min_angle_mutation_phi': '-10',
-    #     'max_angle_mutation_phi': '10',
-    #     'min_angle_mutation_psi': '-10',
-    #     'max_angle_mutation_psi': '10',
-    #     'min_angle_mutation_omega': '-10',
-    #     'max_angle_mutation_omega': '10',
-    #     'min_angle_mutation_side_chain': '-10',
-    #     'max_angle_mutation_side_chain': '10',
-    #     'apply_crossover': 'yes',
-    #     'Individual_Mutation_Rate': '0.60',
-    #     'mdp_file_min': 'energy_minimization_implicit.mdp',
-    #     'mdp_file_name': 'compute_energy_implicit.mdp',
-    #     'c_terminal_charge': 'none',
-    #     'n_terminal_charge': 'none',
-    #     'force_field': 'amber99sb-ildn',
-    #     'objective_analisys': 'none',
-    #     'objective_analisys_dimo_source':
-    #         '/home/faccioli/workspace/dimo/DIMO2',
-    #     'Program_Run_GreedyTreeGenerator2PG':
-    #         '/2pg_cartesian/scripts/dimo/call_GreedyTreeGenerator2PG.sh',
-    #     '1_point_cros_Rate': '0.80',
-    #     'StepNumber': '100',
-    # }
-
     __general_parameters_protpred = [
         ('gromacs_energy_min', 'ener_implicit'),
         ('NumberProcessor', '8'),
@@ -286,10 +230,11 @@ class Params(Framework):
         ('ClusteringType', 'dihedral'),
     ]
 
-    def __init__(self, framework):
+    def __init__(self, framework, method=None):
         super(Params, self).__init__()
         Framework.__init__(self, framework)
 
+        self.method = method
         self.protpred_param = []
         self.protpred_eda_param = []
         self.meamt_param = []
@@ -313,38 +258,38 @@ class Params(Framework):
             self.meamt_param = DefaultOrderedDict(list)
             for k, v in self.__general_parametersMEAMT:
                 self.meamt_param[k].append(v)
-        elif self.get_framework() == 'EDA':
+        elif self.get_framework() == 'ProtPred-EDA':
             self.protpred_eda_param = DefaultOrderedDict(list)
             for k, v in self.__general_parameters_eda:
                 self.protpred_eda_param[k].append(v)
-            if self.get_parameter_value("OptimMethod") == 'rw':
+            if self.method == 'rw':
                 self.rw_param = DefaultOrderedDict(list)
                 for k, v in self.__l_rw_param:
                     self.rw_param[k].append(v)
-            elif self.get_parameter_value("OptimMethod") == 'mcm':
+            if self.method == 'mcm':
                 self.mcm_param = DefaultOrderedDict(list)
                 for k, v in self.__l_mcm_param:
                     self.mcm_param[k].append(v)
-            elif self.get_parameter_value("OptimMethod") == 'ga':
+            if self.method == 'ga':
                 self.ga_param = DefaultOrderedDict(list)
                 for k, v in self.__l_ga_param:
                     self.ga_param[k].append(v)
-            elif self.get_parameter_value("OptimMethod") == 'rboa':
+            if self.method == 'rboa':
                 self.rboa_param = DefaultOrderedDict(list)
                 for k, v in self.__l_rboa_param:
                     self.rboa_param[k].append(v)
-            elif self.get_parameter_value("OptimMethod") == 'de':
+            if self.method == 'de':
                 self.de_param = DefaultOrderedDict(list)
                 for k, v in self.__l_de_param:
                     self.de_param[k].append(v)
-            elif self.get_parameter_value("OptimMethod") == 'eda':
+            if self.method == 'eda':
                 self.eda_param = DefaultOrderedDict(list)
                 for k, v in self.__l_eda_param:
                     self.eda_param[k].append(v)
                 self.fgm_param = DefaultOrderedDict(list)
                 for k, v in self.__l_fgm_param:
                     self.fgm_param[k].append(v)
-            elif self.get_parameter_value("OptimMethod") == 'ceda':
+            if self.method == 'ceda':
                 self.ceda_param = DefaultOrderedDict(list)
                 for k, v in self.__l_ceda_param:
                     self.ceda_param[k].append(v)

@@ -231,3 +231,10 @@ class TimeJobExecution(object):
             dif.seconds / 3600,
             minutes,
             dif.seconds - ((dif.seconds / 60) * 60)]
+
+
+class ArgsParse(object):
+    """
+    Parse the args passed by the Galaxy tool
+    """
+    pass
