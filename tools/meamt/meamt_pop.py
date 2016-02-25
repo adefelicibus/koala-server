@@ -2,10 +2,15 @@
 # -*- coding: utf-8 -*-
 
 import os
-from koala import classe
 import optparse
 import subprocess
 import cProfile
+
+from koala.utils import TimeJobExecution, copy_necessary_files, show_error_message
+from koala.utils.output import get_result_files, send_output_results
+from koala.utils.path import PathRuns, clear_path_execute
+from koala.utils.input import create_local_fasta_file
+from koala.frameworks.params import Params
 
 
 class BuildPopulationMEAMT(object):
@@ -24,8 +29,9 @@ class BuildPopulationMEAMT(object):
         """
         assert opts is not None
         self.opts = opts
-        self.ClassColection = classe.IcmcGalaxy()
-        self.ClassColection.setFramework("MEAMT")
+        self.time_execution = TimeJobExecution()
+        self.path_runs = PathRuns()
+        self.framework = Params('MEAMT')
 
     def main(self):
         """
@@ -35,60 +41,37 @@ class BuildPopulationMEAMT(object):
         @type self: koala.BuildPopulationMEAMT.BuildPopulationMEAMT
         """
         try:
-            dir_execucao = self.ClassColection.CreateExecutionDirectory()
-            self.path_execute = self.ClassColection.getPathExecute() + dir_execucao
+            self.path_runs.set_path_execute()
+            self.path_runs.set_execution_directory()
 
-            self.sequence = self.ClassColection.CreateLocalFastaFile(
-                    self.path_execute,
+            print 'create dirs'
+
+            self.sequence = create_local_fasta_file(
+                    self.path_runs.get_path_execution(),
                     self.opts.fromFasta,
                     self.opts.inputFasta,
-                    self.opts.toolname)
+                    self.opts.toolname,
+                    self.framework)
 
-            self.ClassColection.CopyNecessaryFiles(self.path_execute)
+            print 'create fasta'
 
-            # self.ClassColection.setParameter('tam_population', self.opts.sizePopulation)
+            copy_necessary_files(
+                self.path_runs.get_path_execute(),
+                self.path_runs.get_path_execution(),
+                self.framework.get_framework())
 
-            # self.ClassColection.setParameter('pop_vdw', str(size))
-            # self.ClassColection.setParameter('pop_charge', str(size))
-            # self.ClassColection.setParameter('pop_solv', str(size))
-            # self.ClassColection.setParameter('pop_hbond', str(size))
-            # self.ClassColection.setParameter('pop_nondom', str(size))
-            # self.ClassColection.setParameter('pop_pond1', str(size))
-            # self.ClassColection.setParameter('pop_pond2', str(size))
-            # self.ClassColection.setParameter('pop_pond3', str(size))
-            # self.ClassColection.setParameter('pop_pond4', str(size))
-            # self.ClassColection.setParameter('pop_pond5', str(size))
-            # self.ClassColection.setParameter('pop_pond6', str(size))
-            # self.ClassColection.setParameter('pop_pond7', str(size))
-            # self.ClassColection.setParameter('pop_pond8', str(size))
-            # self.ClassColection.setParameter('pop_pond9', str(size))
-            # self.ClassColection.setParameter('pop_pond10', str(size))
-            # self.ClassColection.setParameter('pop_pond11', str(size))
-            # self.ClassColection.setParameter('vdw_w', self.opts.VanderWaalsWeight)
-            # self.ClassColection.setParameter('charge_w', self.opts.ChargeWeight)
-            # self.ClassColection.setParameter('solv_w', self.opts.SolvWeight)
-            # self.ClassColection.setParameter('hbond_w', self.opts.HbondWeight)
-            # self.ClassColection.setParameter(
-            #         'inputfasta', os.path.join(self.path_execute, "fasta.txt"))
-            # self.ClassColection.setParameter(
-            #         'resultTxt', os.path.join(self.path_execute, "result.txt"))
-            # self.ClassColection.setParameter(
-            #         'inputPop', os.path.join(self.path_execute, "pop_meamt.txt"))
-            # self.ClassColection.setParameter(
-            #         'inputPDB', os.path.join(self.path_execute, "protein.pdb"))
-            # self.ClassColection.setParameter(
-            #         'saida1', os.path.join(self.path_execute, "saida1.txt"))
-            # self.ClassColection.setParameter(
-            #         'angles', os.path.join(self.path_execute, "angles.txt"))
-            # self.ClassColection.setParameter(
-            #         'meat', os.path.join(self.path_execute, "meat.txt"))
+            print 'copy files'
 
-            self.ClassColection.setCommand('meamt', 'aemt-pop-up2')
+            self.framework.set_command(
+                self.path_runs.get_path_execution(),
+                'aemt-pop-up2')
+
+            print 'set command'
 
             size = int(self.opts.sizePopulation) / 15
 
             cl = [
-                self.ClassColection.getCommand(),
+                self.framework.get_command(),
                 str(0),
                 self.opts.sizePopulation,
                 str(size),
@@ -118,27 +101,30 @@ class BuildPopulationMEAMT(object):
                 str(0),
                 self.opts.SolvWeight,
                 self.opts.HbondWeight,
-                os.path.join(self.path_execute, "fasta.txt"),
-                os.path.join(self.path_execute, "result.txt"),
-                os.path.join(self.path_execute, "pop_meamt.txt"),
-                os.path.join(self.path_execute, "protein.pdb"),
-                os.path.join(self.path_execute, "saida1.txt"),
-                os.path.join(self.path_execute, "angles.txt"),
+                os.path.join(self.path_runs.get_path_execution(), "fasta.txt"),
+                os.path.join(self.path_runs.get_path_execution(), "result.txt"),
+                os.path.join(self.path_runs.get_path_execution(), "pop_meamt.txt"),
+                os.path.join(self.path_runs.get_path_execution(), "protein.pdb"),
+                os.path.join(self.path_runs.get_path_execution(), "saida1.txt"),
+                os.path.join(self.path_runs.get_path_execution(), "angles.txt"),
                 str(0),
-                os.path.join(self.path_execute, "meat.txt"),
+                os.path.join(self.path_runs.get_path_execution(), "meat.txt"),
                 '&']
+
+            print cl
 
             retProcess = subprocess.Popen(cl, 0, None, None, None, False)
             retProcess.wait()
 
             path_output, file_output = os.path.split(self.opts.output)
 
-            result, html = self.ClassColection.getResultFiles(self.path_execute, self.opts.toolname)
+            result, html = get_result_files(
+                self.path_runs.get_path_execution(), self.opts.toolname)
 
-            self.ClassColection.sendOutputResults(path_output, file_output, result)
+            send_output_results(path_output, file_output, result)
 
         except Exception, e:
-            self.ClassColection.ShowErrorMessage(str(e))
+            show_error_message(str(e))
 
 if __name__ == '__main__':
     op = optparse.OptionParser()
@@ -162,4 +148,4 @@ if __name__ == '__main__':
     bp = BuildPopulationMEAMT(opts)
     cProfile.run('bp.main()', 'profileout.txt')
 
-    bp.ClassColection.clearPathExecute(bp.path_execute)
+    clear_path_execute(bp.path_runs.get_path_execution())

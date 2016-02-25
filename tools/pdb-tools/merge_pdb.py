@@ -2,14 +2,17 @@
 # -*- coding: utf-8 -*-
 
 import os
-from koala import classe
 import optparse
 from decimal import *
 import zipfile
 import gzip
 import cProfile
 
-progname = "MergePDB"
+from koala.utils import extract_zip_file, extract_gz_file, list_directory
+from koala.utils.output import send_output_results
+from koala.utils.path import PathRuns, clear_path_execute
+from koala.utils.input import copy_pdbs_from_input
+from koala.utils.pdb import merge_pdb
 
 
 class MergePDB(object):
@@ -17,7 +20,6 @@ class MergePDB(object):
     Merge a set of PDB files into models on a single PDB file
     """
 
-    path_execute = None
     methods = []
     ignoreoutfiles = ['.pdb']
 
@@ -28,7 +30,7 @@ class MergePDB(object):
         """
         assert opts is not None
         self.opts = opts
-        self.ClassColection = classe.IcmcGalaxy()
+        self.path_runs = PathRuns()
 
     def run_MergePDB(self):
         """
@@ -36,35 +38,35 @@ class MergePDB(object):
         @type self: koala.MergePDB.MergePDB
         """
 
-        dir_execucao = self.ClassColection.CreateExecutionDirectory()
-        self.path_execute = self.ClassColection.getPathExecute() + dir_execucao
+        self.path_runs.set_path_execute()
+        self.path_runs.set_execution_directory()
 
         if self.opts.compressedFile == '1':
             if zipfile.is_zipfile(opts.inputPDBs):
-                self.ClassColection.extractZipFile(opts.inputPDBs, self.path_execute)
+                extract_zip_file(opts.inputPDBs, self.path_runs.get_path_execution())
             else:
                 try:
                     inF = gzip.GzipFile(opts.inputPDBs, 'rb')
                     f = inF.read()
                     inF.close()
                     if f:
-                        self.ClassColection.extractGzFile(opts.inputPDBs, self.path_execute)
+                        extract_gz_file(opts.inputPDBs, self.path_runs.get_path_execution())
                 except Exception, e:
                     raise Exception("The input file could not be read.\n%s" % e)
         else:
-                self.ClassColection.copyPDBsFromInput(
-                        self.path_execute,
+                copy_pdbs_from_input(
+                        self.path_runs.get_path_execution(),
                         self.opts.outputdir,
                         self.opts.inputnames,
                         self.opts.inputPDBs)
 
-        pdbs = self.ClassColection.listDirectory(self.path_execute, "*.pdb")
+        pdbs = list_directory(self.path_runs.get_path_execution(), "*.pdb")
 
-        newpdb = self.ClassColection.mergePDB(self.path_execute, pdbs)
+        newpdb = merge_pdb(self.path_runs.get_path_execution(), pdbs)
 
         path_output, file_output = os.path.split(self.opts.fileoutput)
 
-        self.ClassColection.sendOutputResults(path_output, file_output, newpdb)
+        send_output_results(path_output, file_output, newpdb)
 
 if __name__ == '__main__':
     op = optparse.OptionParser()
@@ -85,4 +87,4 @@ if __name__ == '__main__':
 
     cProfile.run('merge.run_MergePDB()', 'profileout.txt')
 
-    self.ClassColection.clearPathExecute(merge.path_execute)
+    clear_path_execute(merge.path_runs.get_path_execution())

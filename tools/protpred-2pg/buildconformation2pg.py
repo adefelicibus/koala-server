@@ -2,10 +2,15 @@
 # -*- coding: utf-8 -*-
 
 import os
-from koala import classe
 import optparse
 import subprocess
 import cProfile
+
+from koala.utils import copy_necessary_files, show_error_message
+from koala.utils.output import get_result_files, send_output_results
+from koala.utils.path import PathRuns, clear_path_execute, get_path_gromacs, get_path_algorithms
+from koala.utils.input import create_configuration_file, create_local_fasta_file
+from koala.frameworks.params import Params
 
 
 class BuildConformation2PG(object):
@@ -13,7 +18,6 @@ class BuildConformation2PG(object):
     Execute the 2PG Build Conformation algorithm.
     """
 
-    path_execute = None
     os.environ["GMX_MAXBACKUP"] = "-1"
 
     def __init__(self, opts=None):
@@ -23,7 +27,8 @@ class BuildConformation2PG(object):
         """
         assert opts is not None
         self.opts = opts
-        self.ClassColection = classe.IcmcGalaxy()
+        self.path_runs = PathRuns()
+        self.framework = Params('2PG')
 
     def run_Build_Conformation(self):
         """
@@ -33,62 +38,78 @@ class BuildConformation2PG(object):
         @type self: koala.BuildConformation2PG.BuildConformation2PG
         """
         try:
-            dir_execucao = self.ClassColection.CreateExecutionDirectory()
-            self.path_execute = self.ClassColection.getPathExecute() + dir_execucao
+            self.path_runs.set_path_execute()
+            self.path_runs.set_execution_directory()
 
-            self.ClassColection.CreateLocalFastaFile(
-                    self.path_execute,
+            self.sequence = create_local_fasta_file(
+                    self.path_runs.get_path_execution(),
                     self.opts.fromFasta,
                     self.opts.inputFasta,
-                    self.opts.toolname)
+                    self.opts.toolname,
+                    self.framework)
 
-            self.ClassColection.CopyNecessaryFiles(self.path_execute)
+            copy_necessary_files(
+                self.path_runs.get_path_execute(),
+                self.path_runs.get_path_execution(),
+                self.framework.get_framework())
 
-            self.ClassColection.setParameter('gromacs_energy_min', self.opts.gromacsEnergyMin)
-            self.ClassColection.setParameter('SizePopulation', self.opts.sizePopulation)
-            self.ClassColection.setParameter('force_field', self.opts.forceField)
-            self.ClassColection.setParameter('rotamer_library', self.opts.rotamerLibrary)
+            self.framework.set_parameter(
+                'gromacs_energy_min', self.opts.gromacsEnergyMin)
+            self.framework.set_parameter(
+                'SizePopulation', self.opts.sizePopulation)
+            self.framework.set_parameter(
+                'force_field', self.opts.forceField)
+            self.framework.set_parameter(
+                'rotamer_library', self.opts.rotamerLibrary)
+
             if(self.opts.forceField == 'amber99sb-ildn'):
-                self.ClassColection.setParameter('c_terminal_charge', self.opts.cTerminal)
-                self.ClassColection.setParameter('n_terminal_charge', self.opts.nTerminal)
-            self.ClassColection.setParameter(
-                    'objective_analisys_dimo_source',
-                    '/home/%s/programs/dimo/DIMO2' % self.ClassColection.getLoggedUser())
-            self.ClassColection.setParameter(
+                self.framework.set_parameter(
+                    'c_terminal_charge', self.opts.cTerminal)
+                self.framework.set_parameter(
+                    'n_terminal_charge', self.opts.nTerminal)
+
+            self.framework.set_parameter(
                     'SequenceAminoAcidsPathFileName',
-                    self.path_execute + 'fasta.txt')
-            self.ClassColection.setParameter('Local_Execute', self.path_execute)
-            self.ClassColection.setParameter(
+                    self.path_runs.get_path_execution() + 'fasta.txt')
+            self.framework.set_parameter(
+                'Local_Execute',
+                self.path_runs.get_path_execution())
+            self.framework.set_parameter(
                     'Path_Gromacs_Programs',
-                    '/home/%s/programs/gmx-4.6.5/no_mpi/bin/' % self.ClassColection.getLoggedUser())
-            self.ClassColection.setParameter('NativeProtein', '%s1VII.pdb' % self.path_execute)
-            self.ClassColection.setParameter(
+                    get_path_gromacs())
+            self.framework.set_parameter(
+                'NativeProtein',
+                '%s1VII.pdb' % self.path_runs.get_path_execution())
+            self.framework.set_parameter(
                     'Database',
-                    '%sDatabase/' % self.ClassColection.getPathAlgorithms('2pg_build_conformation'))
+                    '%sDatabase/' % get_path_algorithms('2pg_build_conformation'))
 
-            self.ClassColection.CreateConfigurationFile(self.path_execute)
+            create_configuration_file(
+                self.path_runs.get_path_execution(), self.framework)
 
-            self.ClassColection.setCommand('2pg_build_conformation', 'protpred-Gromacs_pop_initial')
+            self.framework.set_command(
+                self.path_runs.get_path_execution(),
+                'protpred-Gromacs_pop_initial')
 
-            config = self.ClassColection.getConfigurationFile('configuration.conf')
+            config = 'configuration.conf'
 
-            cl = [self.ClassColection.getCommand(), config, '&']
+            cl = [self.framework.get_command(), config, '&']
 
             retProcess = subprocess.Popen(
                 cl, 0, stdout=None,  stderr=subprocess.STDOUT, shell=False)
             retCode = retProcess.wait()
             if(retCode != 0):
-                self.ClassColection.ShowErrorMessage(
+                show_error_message(
                     "The 2PG framework finished wrong.\nContact the system administrator.")
 
             path_output, file_output = os.path.split(self.opts.output)
 
-            result, html = self.ClassColection.getResultFiles(self.path_execute, self.opts.toolname)
+            result, html = get_result_files(self.path_runs.get_path_execution(), self.opts.toolname)
 
-            self.ClassColection.sendOutputResults(path_output, file_output, result)
+            send_output_results(path_output, file_output, result)
 
         except Exception, e:
-            self.ClassColection.ShowErrorMessage(str(e))
+            show_error_message(str(e))
 
 if __name__ == '__main__':
     op = optparse.OptionParser()
@@ -112,4 +133,4 @@ if __name__ == '__main__':
     bc = BuildConformation2PG(opts)
     cProfile.run('bc.run_Build_Conformation()', 'profileout.txt')
 
-    bc.ClassColection.clearPathExecute(bc.path_execute)
+    clear_path_execute(bc.path_runs.get_path_execution())
