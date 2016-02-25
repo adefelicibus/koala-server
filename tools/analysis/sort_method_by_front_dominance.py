@@ -362,7 +362,9 @@ class SortMethodByFront(object):
 
         objFile = os.path.join(self.path_runs.get_path_execution(), 'objectivies.txt')
 
-        self.framework.set_command('protpred-Gromacs-Sort_Method_by_Front_Dominance')
+        self.framework.set_command(
+            self.path_runs.get_path_execution(),
+            'protpred-Gromacs-Sort_Method_by_Front_Dominance')
 
         cl = ['nohup', self.framework.get_command(), objFile, '&']
 

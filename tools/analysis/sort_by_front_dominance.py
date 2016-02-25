@@ -896,7 +896,9 @@ class SortByFront(object):
                     self.opts.galaxyroot):
                 raise Exception("The script to check the structure finished wrong.")
 
-        self.framework.set_command('protpred-Gromacs-Sort_Method_Files_by_Front_Dominance')
+        self.framework.set_command(
+            self.path_runs.get_path_execution(),
+            'protpred-Gromacs-Sort_Method_Files_by_Front_Dominance')
 
         cl = [self.framework.get_command(), config, '&']
 
