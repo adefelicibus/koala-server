@@ -1,20 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import __main__
-
-import pymol
 import os
 import urllib2
 import shutil
 import zipfile
 from time import sleep
 from koala.utils import show_error_message, list_directory
-
-__main__.pymol_argv = ['pymol', '-qc']  # Quiet and no GUI
-
-pymol.finish_launching()
-
 
 # TODO: review exception rules
 # TODO: use shutil.copy instead os.system
@@ -268,6 +260,12 @@ def build_images(methods, path_execution):
     Build images from PDB files using PyMol package.
     @type self: koala.CalculateGDTTS.CalculateGDTTS
     """
+    import __main__
+    __main__.pymol_argv = ['pymol', '-qc']
+    import pymol
+    __main__.pymol = pymol
+    pymol.finish_launching()
+
     try:
         os.chdir(path_execution)
 
