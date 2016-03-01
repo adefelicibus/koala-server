@@ -645,14 +645,18 @@ def installGROMACSlocal():
 
 
 def setVirtualenvlocal():
-    local('echo "export WORKON_HOME=%senvs" >> ~/.bashrc' % folder_local)
-    local('echo "source /usr/local/bin/virtualenvwrapper.sh" >> ~/.bashrc')
+    local('echo "export WORKON_HOME=%senvs" >> /home/%s/.bashrc'
+        % (folder_local,  user))
+    local('echo "source /usr/local/bin/virtualenvwrapper.sh" >> /home/%s/.bashrc'
+        % user)
 
-    local('echo "export WORKON_HOME=%senvs" >> ~/.profile' % folder_local)
-    local('echo "source /usr/local/bin/virtualenvwrapper.sh" >> ~/.profile')
+    local('echo "export WORKON_HOME=%senvs" >> /home/%s/.profile'
+        % (folder_local, user))
+    local('echo "source /usr/local/bin/virtualenvwrapper.sh" >> /home/%s/.profile'
+        % user)
 
-    local("/bin/bash -l -c 'source ~/.bashrc'")
-    local("/bin/bash -l -c 'source ~/.profile'")
+    local("/bin/bash -l -c 'source /home/%s/.bashrc'" % user)
+    local("/bin/bash -l -c 'source /home/%s/.profile'" % user)
 
 
 def setPythonPathLocal():
@@ -663,7 +667,8 @@ def setPythonPathLocal():
         'export PYTHONPATH=/usr/local/bin/pymol/modules:$PYTHONPATH\n'
         'export MPI_DIR=/lib/openmpi\n'
         'export PATH=/lib/openmpi/bin:$PATH\n'
-        'export LD_LIBRARY_PATH=/lib/openmpi/lib:$LD_LIBRARY_PATH" >> ~/.bashrc')
+        'export LD_LIBRARY_PATH=/lib/openmpi/lib:$LD_LIBRARY_PATH" >> /home/%s/.bashrc'
+        % user)
 
     local("/bin/bash -l -c 'source ~/.bashrc'")
 
@@ -711,22 +716,22 @@ def cloneGalaxyLocal():
     with lcd('%sprograms' % folder_local):
         local('git clone %s' % galaxy_repository)
         with lcd('%s' % galaxy_project):
-            local("sudo /bin/bash -l -c 'mkvirtualenv %s'" % galaxy_project)
-            local("sudo chown -R %s:%s %senvs/%s" % (user, user, folder_local, galaxy_project))
+            # local("sudo /bin/bash -l -c 'mkvirtualenv %s'" % galaxy_project)
+            # local("sudo chown -R %s:%s %senvs/%s" % (user, user, folder_local, galaxy_project))
             local('sudo pip install -r requirements.txt')
 
 
-def buildEnvGalaxyLocal():
-    local("sudo /bin/bash -l -c 'workon %s'" % galaxy_project)
-    local('sudo pip install -U distribute')
-    local('sudo pip install pycrypto')
-    local('sudo pip install natsort')
-    local('sudo pip install beautifulsoup4')
-    local('sudo pip install certifi')
-    local('sudo pip install pyopenssl ndg-httpsclient pyasn1')
-    local('sudo pip install pycurl')
-    local('sudo pip install fabric')
-    local("sudo /bin/bash -l -c 'deactivate'")
+# def buildEnvGalaxyLocal():
+#     local("/bin/bash -l -c 'workon %s'" % galaxy_project)
+#     local('pip install -U distribute')
+#     local('pip install pycrypto')
+#     local('pip install natsort')
+#     local('pip install beautifulsoup4')
+#     local('pip install certifi')
+#     local('pip install pyopenssl ndg-httpsclient pyasn1')
+#     local('pip install pycurl')
+#     local('pip install fabric')
+#     local("/bin/bash -l -c 'deactivate'")
 
 
 def setKoalaLibLinksLocal():
@@ -830,7 +835,7 @@ def createDBKoalaLocal():
         "echo 'CREATE USER %s SUPERUSER INHERIT CREATEDB CREATEROLE;' |"
         " sudo -u postgres psql" % user_db)
     local(
-        'echo "ALTER USER %s PASSWORD \'koalaa\';" |'
+        'echo "ALTER USER %s PASSWORD \'koala\';" |'
         ' sudo -u postgres psql' % user_db)
     local(
         "echo 'CREATE DATABASE %s --OWNER %s;' |"
