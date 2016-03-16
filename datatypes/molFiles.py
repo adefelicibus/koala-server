@@ -28,6 +28,14 @@ class GenericMolFile(data.Text):
         if (self.no_mols[0] == 0) & (self.no_mols[1] > 0):
             self.file_ext = "pdb"
             return True
+        self.no_mols = commands.getstatusoutput("grep -c COMPND "+filename)
+        if (self.no_mols[0] == 0) & (self.no_mols[1] > 0):
+            self.file_ext = "pdbqt"
+            return True
+        self.no_mols = commands.getstatusoutput("grep -c # DOI 10.1002/jcc.21334"+filename)
+        if (self.no_mols[0] == 0) & (self.no_mols[1] > 0):
+            self.file_ext = "log"
+            return True
         return False
 
     def set_peek(self, dataset, is_multi_byte=False):
@@ -87,6 +95,42 @@ class DRF(GenericMultiMolFile):
 
     def sniff(self, filename):
         self.no_mols = commands.getstatusoutput("grep -c \"ligand id\" "+filename)
+        if (self.no_mols[0] == 0) & (self.no_mols[1] > 0):
+            return True
+        else:
+            return False
+
+
+class PDBQT(GenericMolFile):
+    file_ext = "pdbqt"
+
+    def sniff(self, filename):
+        self.no_mols = commands.getstatusoutput("grep -c COMPND "+filename)
+        if (self.no_mols[0] == 0) & (self.no_mols[1] > 0):
+            return True
+        else:
+            self.no_mols = commands.getstatusoutput("grep -c REMARK "+filename)
+            if (self.no_mols[0] == 0) & (self.no_mols[1] > 0):
+                return True
+            else:
+                self.no_mols = commands.getstatusoutput("grep -c ATOM "+filename)
+                if (self.no_mols[0] == 0) & (self.no_mols[1] > 0):
+                    return True
+
+    def set_peek(self, dataset, is_multi_byte=False):
+        if not dataset.dataset.purged:
+            self.sniff(dataset.file_name)
+            dataset.blurb = "protein structure file used by autodock vina"
+        else:
+            dataset.peek = "file does not exist"
+            dataset.blurb = "file purged from disk"
+
+
+class LOG(GenericMolFile):
+    file_ext = "log"
+
+    def sniff(self, filename):
+        self.no_mols = commands.getstatusoutput("grep -c # DOI 10.1002/jcc.21334 "+filename)
         if (self.no_mols[0] == 0) & (self.no_mols[1] > 0):
             return True
         else:

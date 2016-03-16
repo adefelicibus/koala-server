@@ -2,9 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import os
-from koala import classe
 import optparse
 import cProfile
+
+from koala.utils.output import open_url, send_multiple_outputs
+from koala.utils import show_error_message
 
 
 class PDBDownload(object):
@@ -19,7 +21,6 @@ class PDBDownload(object):
         """
         assert opts is not None
         self.opts = opts
-        self.ClassColection = classe.IcmcGalaxy()
 
     def getPDB(self):
         """
@@ -44,17 +45,17 @@ class PDBDownload(object):
             pdb_files = []
             for i, pdbid in enumerate(pdbs):
                 url = "%s%s.pdb" % (pdb_org,  pdbid)
-                self.ClassColection.openURL(url, path_output, "%s.pdb" % pdbid)
+                open_url(url, path_output, "%s.pdb" % pdbid)
                 pdb_files.append(os.path.join(path_output, "%s.pdb" % pdbid))
 
-            self.ClassColection.sendMultipleOutputs(
+            send_multiple_outputs(
                     path_output,
                     pdb_files,
                     self.opts.galaxydir,
                     self.opts.outputID)
 
         except Exception, e:
-            self.ClassColection.ShowErrorMessage(str(e))
+            show_error_message(str(e))
 
 if __name__ == '__main__':
     op = optparse.OptionParser()

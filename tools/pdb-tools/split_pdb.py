@@ -2,9 +2,13 @@
 # -*- coding: utf-8 -*-
 
 import os
-from koala import classe
 import optparse
 import cProfile
+
+from koala.utils import show_error_message, compress_files
+from koala.utils.output import send_multiple_outputs, send_output_results
+from koala.utils.path import PathRuns, clear_path_execute
+from koala.utils.pdb import parse_pdb
 
 
 class SplitPDB(object):
@@ -19,7 +23,7 @@ class SplitPDB(object):
         """
         assert opts is not None
         self.opts = opts
-        self.ClassColection = classe.IcmcGalaxy()
+        self.path_runs = PathRuns()
 
     def run_SplitPDB(self):
         """
@@ -27,35 +31,36 @@ class SplitPDB(object):
         @type self: koala.SplitPDB.SplitPDB
         """
         try:
-            dir_execucao = self.ClassColection.CreateExecutionDirectory()
-            self.path_execute = self.ClassColection.getPathExecute() + dir_execucao
+            self.path_runs.set_path_execute()
+            self.path_runs.set_execution_directory()
 
             link_name = os.path.join(self.opts.outputdir, os.path.basename(self.opts.pdbName))
             if not os.path.exists(link_name):
                 os.symlink(self.opts.inputPDB, link_name)
-                os.system("cp %s %s" % (link_name, self.path_execute))
+                os.system("cp %s %s" % (link_name, self.path_runs.get_path_execution()))
 
-            pdbs = self.ClassColection.parse_PDB(
-                    self.path_execute,
-                    os.path.join(self.path_execute, self.opts.pdbName))
+            pdbs = parse_pdb(
+                    self.path_runs.get_path_execution(),
+                    os.path.join(self.path_runs.get_path_execution(), self.opts.pdbName))
 
             path_output, file_output = os.path.split(self.opts.output)
 
-            self.ClassColection.sendMultipleOutputs(
-                    self.path_execute,
+            send_multiple_outputs(
+                    self.path_runs.get_path_execution(),
                     pdbs, self.opts.galaxydir,
                     self.opts.outputID)
 
             if self.opts.createCompressFile == "True":
-                if self.ClassColection.compressFiles(pdbs, self.path_execute, self.opts.toolname):
+                if compress_files(pdbs, self.path_runs.get_path_execution(), self.opts.toolname):
                     path_output, file_output = os.path.split(self.opts.outputZip)
-                    self.ClassColection.sendOutputResults(
+                    send_output_results(
                             path_output,
                             file_output,
-                            os.path.join(self.path_execute, '%s.zip' % self.opts.toolname))
+                            os.path.join(
+                                self.path_runs.get_path_execution(), '%s.zip' % self.opts.toolname))
 
         except Exception, e:
-            self.ClassColection.ShowErrorMessage(str(e))
+            show_error_message(str(e))
 
 if __name__ == '__main__':
     op = optparse.OptionParser()
@@ -78,4 +83,4 @@ if __name__ == '__main__':
 
     cProfile.run('splitpdb.run_SplitPDB()', 'profileout.txt')
 
-    splitpdb.ClassColection.clearPathExecute(splitpdb.path_execute)
+    clear_path_execute(splitpdb.path_runs.get_path_execution())

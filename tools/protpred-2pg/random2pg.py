@@ -1,20 +1,23 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import __main__
-__main__.pymol_argv = ['pymol', '-qc']  # Quiet and no GUI
-
 import os
-from koala import classe
 import optparse
 import subprocess
 import datetime
-import time
 import cProfile
-import pymol
-import shutil
 
-pymol.finish_launching()
+from koala.utils import get_file_size, show_error_message, list_directory, compress_files
+from koala.utils import TimeJobExecution, copy_necessary_files, validate_email
+from koala.utils.output import send_output_files_html, get_result_files, build_images
+from koala.utils.output import send_output_results
+from koala.utils.path import PathRuns, clear_path_execute, get_path_gromacs, get_path_algorithms
+from koala.utils.input import create_local_fasta_file, create_local_pop_file
+from koala.utils.input import create_configuration_file
+from koala.frameworks.params import Params
+from koala.utils.scripts import check_pdb, prepare_pdb, residue_renumber, minimization
+from koala.utils.mail import send_email, get_message_email
+from koala.utils.pdb import parse_pdb
 
 
 class Random2PG(object):
@@ -24,7 +27,6 @@ class Random2PG(object):
 
     progname = "2PG Random"
     opts = None
-    path_execute = None
     sequence = None
     initTime = 0
     endTime = 0
@@ -38,10 +40,11 @@ class Random2PG(object):
         @type opts: OptionParser parameters
         """
         assert opts is not None
-        super(Random2PG, self).__init__()
         self.opts = opts
-        self.ClassColection = classe.IcmcGalaxy()
-        self.ClassColection.setFramework("2PG")
+
+        self.time_execution = TimeJobExecution()
+        self.path_runs = PathRuns()
+        self.framework = Params('2PG')
 
     def makeHtml(self):
         """ Create an HTML file content to list all the artifacts found in the html_dir
@@ -52,7 +55,7 @@ class Random2PG(object):
             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
             <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
             <head> <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-            <meta name="generator" content="Galaxy %s tool output - see http://g2.trac.bx.psu.edu/" />
+            <meta name="generator" content="Galaxy %s tool output" />
             <title></title>
             <link rel="stylesheet" href="/static/koala.css" type="text/css" />
             <link rel="stylesheet" href="/static/style/base.css" type="text/css" />
@@ -89,7 +92,7 @@ class Random2PG(object):
             if len(flist) > 0:
                 for rownum, fname in enumerate(flist):
                     dname, e = os.path.splitext(fname)
-                    sfsize = self.ClassColection.getFileSize(fname, self.opts.htmlfiledir)
+                    sfsize = get_file_size(fname, self.opts.htmlfiledir)
 
                     if e.lower() == ".fit":
                         fitFiles.append(fname)
@@ -102,7 +105,7 @@ class Random2PG(object):
 
             # Arquivos fit
             for fit in fitFiles:
-                sfsize = self.ClassColection.getFileSize(fit, self.opts.htmlfiledir)
+                sfsize = get_file_size(fit, self.opts.htmlfiledir)
                 fhtml.append('<tr>')
                 fhtml.append('<td><a href="%s">%s</a></td>' % (fit, fit))
                 fhtml.append('<td>%s</td>' % (sfsize))
@@ -122,8 +125,8 @@ class Random2PG(object):
             fhtml = []
 
             # images (e depois models)
-            listaArquivosPdb = self.ClassColection.listDirectory(
-                        self.path_execute,
+            listaArquivosPdb = list_directory(
+                        self.path_runs.get_path_execution(),
                         'randomSolution-M*.pdb')
 
             if len(listaArquivosPdb) <= 20:
@@ -157,7 +160,7 @@ class Random2PG(object):
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, n):
-                    sfsize = self.ClassColection.getFileSize(
+                    sfsize = get_file_size(
                             listaArquivosPdb[idx],
                             self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
@@ -185,7 +188,7 @@ class Random2PG(object):
                     idx = idx_linha
                     fhtml.append('</tr><tr>')
                     for i in range(start, end):
-                        sfsize = self.ClassColection.getFileSize(
+                        sfsize = get_file_size(
                                 listaArquivosPdb[idx],
                                 self.opts.htmlfiledir)
                         fhtml.append('<td>%s</td>' % (sfsize))
@@ -211,7 +214,7 @@ class Random2PG(object):
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, rest):
-                    sfsize = self.ClassColection.getFileSize(
+                    sfsize = get_file_size(
                             listaArquivosPdb[idx],
                             self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
@@ -256,7 +259,7 @@ class Random2PG(object):
 
             # Outros arquivos de output
             for output in outputfiles:
-                sfsize = self.ClassColection.getFileSize(output, self.opts.htmlfiledir)
+                sfsize = get_file_size(output, self.opts.htmlfiledir)
                 fhtml.append('<tr>')
                 fhtml.append('<td><a href="%s">%s</a></td>' % (output, output))
                 fhtml.append('<td>%s</td>' % (sfsize))
@@ -277,7 +280,7 @@ class Random2PG(object):
 
             # arquivo zipado
             for output in compressedFile:
-                sfsize = self.ClassColection.getFileSize(output, self.opts.htmlfiledir)
+                sfsize = get_file_size(output, self.opts.htmlfiledir)
                 fhtml.append('<tr>')
                 fhtml.append('<td><a href="%s">%s</a></td>' % (output, output))
                 fhtml.append('<td>%s</td>' % (sfsize))
@@ -294,16 +297,16 @@ class Random2PG(object):
                 fhtml.append('</table></div><br>')
                 html += fhtml
 
-            self.ClassColection.setjobEnd(datetime.datetime.now())
+            self.time_execution.set_job_end(datetime.datetime.now())
             self.endTime = datetime.datetime.now()
 
-            dif = self.ClassColection.calcTimeExecution(self.initTime, self.endTime)
+            dif = self.time_execution.calculate_time_execution()
 
             html.append('<div>Time execution:<br>')
             html.append('Start: %s<br>' %
-                        self.ClassColection.getjobStart().strftime("%d/%m/%Y %H:%M:%S"))
+                        self.time_execution.get_job_start().strftime("%d/%m/%Y %H:%M:%S"))
             html.append('End: %s<br>' %
-                        self.ClassColection.getjobEnd().strftime("%d/%m/%Y %H:%M:%S"))
+                        self.time_execution.get_job_end().strftime("%d/%m/%Y %H:%M:%S"))
             html.append('Total time: ~%dh:%dm:%ds' % (dif[0], dif[1], dif[2]))
             html.append('</div>')
 
@@ -320,7 +323,7 @@ class Random2PG(object):
             htmlf.close()
 
         except Exception, e:
-            self.ClassColection.ShowErrorMessage("Error on makeHtml:\n%s" % str(e))
+            show_error_message("Error on makeHtml:\n%s" % str(e))
 
     def makeHtmlWithJMol(self, pdbReference):
         """
@@ -332,7 +335,7 @@ class Random2PG(object):
             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
             <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
             <head> <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-            <meta name="generator" content="Galaxy %s tool output - see http://g2.trac.bx.psu.edu/" />
+            <meta name="generator" content="Galaxy %s tool output" />
             <title></title>
             <link rel="stylesheet" href="/static/koala.css" type="text/css" />
             <link rel="stylesheet" href="/static/style/base.css" type="text/css" />
@@ -348,9 +351,9 @@ class Random2PG(object):
 
                     Jmol._isAsync = false;
 
-                    Jmol.getProfile() // records repeat calls to overridden or overloaded Java methods
+                    Jmol.getProfile()
 
-                    var jmolApplet0; // set up in HTML table, below
+                    var jmolApplet0;
 
                     jmol_isReady = function(applet) {
                         document.title = (applet._id + " is ready")
@@ -413,7 +416,7 @@ class Random2PG(object):
             if len(flist) > 0:
                 for rownum, fname in enumerate(flist):
                     dname, e = os.path.splitext(fname)
-                    sfsize = self.ClassColection.getFileSize(fname, self.opts.htmlfiledir)
+                    sfsize = get_file_size(fname, self.opts.htmlfiledir)
 
                     if e.lower() == ".fit":
                         fitFiles.append(fname)
@@ -426,7 +429,7 @@ class Random2PG(object):
 
             # Arquivos fit
             for fit in fitFiles:
-                sfsize = self.ClassColection.getFileSize(fit, self.opts.htmlfiledir)
+                sfsize = get_file_size(fit, self.opts.htmlfiledir)
                 fhtml.append('<tr>')
                 fhtml.append('<td><a href="%s">%s</a></td>' % (fit, fit))
                 fhtml.append('<td>%s</td>' % (sfsize))
@@ -446,8 +449,8 @@ class Random2PG(object):
             fhtml = []
 
             # images (e depois models)
-            listaArquivosPdb = self.ClassColection.listDirectory(
-                        self.path_execute,
+            listaArquivosPdb = list_directory(
+                        self.path_runs.get_path_execution(),
                         'randomSolution-M*.pdb')
 
             if len(listaArquivosPdb) <= 20:
@@ -482,7 +485,7 @@ class Random2PG(object):
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, n):
-                    sfsize = self.ClassColection.getFileSize(
+                    sfsize = get_file_size(
                             listaArquivosPdb[idx],
                             self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
@@ -493,7 +496,8 @@ class Random2PG(object):
                     fhtml.append(
                         '<td>'
                         '<a href="javascript:Jmol.script(jmolApplet0,'
-                        "'load /datasets/%s/display/%s;cartoons only;color  cartoons structure; spin on')"
+                        "'load /datasets/%s/display/%s;cartoons only; \
+                        color  cartoons structure; spin on')"
                         '">Load on Jmol</a></td>' % (
                             self.opts.datasetID, listaArquivosPdb[idx]))
                     idx += 1
@@ -521,7 +525,7 @@ class Random2PG(object):
                     idx = idx_linha
                     fhtml.append('</tr><tr>')
                     for i in range(start, end):
-                        sfsize = self.ClassColection.getFileSize(
+                        sfsize = get_file_size(
                                 listaArquivosPdb[idx],
                                 self.opts.htmlfiledir)
                         fhtml.append('<td>%s</td>' % (sfsize))
@@ -532,7 +536,8 @@ class Random2PG(object):
                         fhtml.append(
                             '<td>'
                             '<a href="javascript:Jmol.script(jmolApplet0,'
-                            "'load /datasets/%s/display/%s;cartoons only;color cartoons structure; spin on')"
+                            "'load /datasets/%s/display/%s;cartoons only; \
+                            color cartoons structure; spin on')"
                             '">Load on Jmol</a></td>' % (
                                 self.opts.datasetID, listaArquivosPdb[idx]))
                         idx += 1
@@ -557,7 +562,7 @@ class Random2PG(object):
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, rest):
-                    sfsize = self.ClassColection.getFileSize(
+                    sfsize = get_file_size(
                             listaArquivosPdb[idx],
                             self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
@@ -568,7 +573,8 @@ class Random2PG(object):
                     fhtml.append(
                         '<td>'
                         '<a href="javascript:Jmol.script(jmolApplet0,'
-                        "'load /datasets/%s/display/%s;cartoons only;color cartoons structure; spin on')"
+                        "'load /datasets/%s/display/%s;cartoons only; \
+                        color cartoons structure; spin on')"
                         '">Load on Jmol</a></td>' % (
                             self.opts.datasetID, listaArquivosPdb[idx]))
                     idx += 1
@@ -610,7 +616,7 @@ class Random2PG(object):
 
             # Outros arquivos de output
             for output in outputfiles:
-                sfsize = self.ClassColection.getFileSize(output, self.opts.htmlfiledir)
+                sfsize = get_file_size(output, self.opts.htmlfiledir)
                 fhtml.append('<tr>')
                 fhtml.append('<td><a href="%s">%s</a></td>' % (output, output))
                 fhtml.append('<td>%s</td>' % (sfsize))
@@ -631,7 +637,7 @@ class Random2PG(object):
 
             # arquivo zipado
             for output in compressedFile:
-                sfsize = self.ClassColection.getFileSize(output, self.opts.htmlfiledir)
+                sfsize = get_file_size(output, self.opts.htmlfiledir)
                 fhtml.append('<tr>')
                 fhtml.append('<td><a href="%s">%s</a></td>' % (output, output))
                 fhtml.append('<td>%s</td>' % (sfsize))
@@ -648,16 +654,16 @@ class Random2PG(object):
                 fhtml.append('</table></div><br>')
                 html += fhtml
 
-            self.ClassColection.setjobEnd(datetime.datetime.now())
+            self.time_execution.set_job_end(datetime.datetime.now())
             self.endTime = datetime.datetime.now()
 
-            dif = self.ClassColection.calcTimeExecution(self.initTime, self.endTime)
+            dif = self.time_execution.calculate_time_execution()
 
             html.append('<div>Time execution:<br>')
             html.append('Start: %s<br>' %
-                        self.ClassColection.getjobStart().strftime("%d/%m/%Y %H:%M:%S"))
+                        self.time_execution.get_job_start().strftime("%d/%m/%Y %H:%M:%S"))
             html.append('End: %s<br>' %
-                        self.ClassColection.getjobEnd().strftime("%d/%m/%Y %H:%M:%S"))
+                        self.time_execution.get_job_end().strftime("%d/%m/%Y %H:%M:%S"))
             html.append('Total time: ~%dh:%dm:%ds' % (dif[0], dif[1], dif[2]))
             html.append('</div>')
 
@@ -674,137 +680,21 @@ class Random2PG(object):
             htmlf.close()
 
         except Exception, e:
-            self.ClassColection.ShowErrorMessage("Error on makeHtmlWithJMol:\n%s" % str(e))
+            show_error_message("Error on makeHtmlWithJMol:\n%s" % str(e))
 
-    def build_images(self):
-        """
-        Build images from PDB files using PyMol package.
-        @type self: koala.Random2PG.Random2PG
-        """
-        try:
-            listaArquivosPdb = self.ClassColection.listDirectory(
-                    self.path_execute,
-                    'randomSolution-M*.pdb')
-
-            os.chdir(self.path_execute)
-
-            limit = 20
-            if len(listaArquivosPdb) < 20:
-                limit = len(listaArquivosPdb)
-            for i in range(0, limit):
-
-                pdb = listaArquivosPdb[i]
-                arq = os.path.join(self.path_execute, pdb)
-
-                name, ext = os.path.splitext(pdb)
-
-                # Load Structures
-                pymol.cmd.load(arq, pdb)
-                pymol.cmd.disable("all")
-                pymol.cmd.set('ray_opaque_background', 0)
-                pymol.cmd.set('antialias', 1)
-                pymol.cmd.hide("everything")
-                pymol.cmd.show("cartoon")
-                pymol.cmd.show("ribbon")
-                pymol.cmd.enable(pdb)
-                pymol.cmd.ray()
-                pymol.cmd.png("%s.png" % name, dpi=300)
-
-                pymol.cmd.save("%s.pdb" % os.path.join(self.path_execute, name), name)
-
-                time.sleep(0.25)  # (in seconds)
-
-                pymol.cmd.reinitialize()
-
-            return True
-
-        except Exception, e:
-            self.ClassColection.ShowErrorMessage("Error on build_images:\n%s" % str(e))
-
-    def runCheckPDB(self, path, path_gromacs):
-        try:
-            cl = [
-                '%s/scripts/check_structures_gromacs.py' %
-                self.opts.galaxyroot, path, path_gromacs, '&']
-
-            retProcess = subprocess.Popen(cl, 0, None, None, None, False)
-            pvalue = retProcess.wait()
-
-            if pvalue != 0:
-                return False
-
-            directory = os.path.join(path, 'no_accepted_by_pdb2gmx')
-            if os.path.exists(directory):
-                pdbs = os.listdir(directory)
-                self.ClassColection.showMessage(
-                    'These files could not be accepted by Gromacs.\n%s\n\n' % pdbs)
-
-            return True
-        except Exception, e:
-            self.ClassColection.ShowErrorMessage("Error while checking PDBs:\n%s" % e)
-
-    def runPreparePDB(self, path, path_gromacs):
-        try:
-            cl = [
-                '%s/scripts/prepare_structures.py' %
-                self.opts.galaxyroot, path, '&']
-
-            retProcess = subprocess.Popen(cl, 0, None, None, None, False)
-            pvalue = retProcess.wait()
-
-            if pvalue != 0:
-                return False
-
-            return True
-        except Exception, e:
-            self.ClassColection.ShowErrorMessage("Error while preparing PDBs:\n%s" % e)
-
-    def runResidueRenumber(self, path, path_gromacs):
-        try:
-            cl = [
-                '%s/scripts/residue_renumber_all_pdbs.py' %
-                self.opts.galaxyroot, path, path_gromacs, '&']
-
-            retProcess = subprocess.Popen(cl, 0, None, None, None, False)
-            pvalue = retProcess.wait()
-
-            if pvalue != 0:
-                return False
-
-            return True
-        except Exception, e:
-            self.ClassColection.ShowErrorMessage("Error while renumbering PDBs:\n%s" % e)
-
-    def runMinimization(self, path, path_gromacs, pdbPrefix=None):
-        try:
-            cl = ['%s/min.sh' % path, path, path_gromacs, pdbPrefix, '&']
-
-            shutil.copy(
-                os.path.join(
-                    '%s/scripts/%s' % (self.opts.galaxyroot, 'min.sh')),
-                self.path_execute)
-
-            retProcess = subprocess.Popen(cl, 0, None, None, None, False)
-            pvalue = retProcess.wait()
-
-            if pvalue != 0:
-                return False
-
-            return True
-        except Exception, e:
-            self.ClassColection.ShowErrorMessage("Error while minimization PDBs:\n%s" % e)
-
-    def minimization(self, path, path_gromacs, pdbPrefix=None):
-        if not self.runCheckPDB(path, path_gromacs):
+    def do_minimization(self, pdbPrefix=''):
+        if not check_pdb(self.path_runs.get_path_execution(), self.opts.galaxyroot):
             raise Exception("The script to check the PDBs finished wrong.")
 
-        if not self.runPreparePDB(path, path_gromacs):
+        if not prepare_pdb(self.path_runs.get_path_execution(), self.opts.galaxyroot):
             raise Exception("The script to prepare the PDBs finished wrong.")
 
-        if not self.runResidueRenumber(path, path_gromacs):
+        if not residue_renumber(
+                self.path_runs.get_path_execution(), self.opts.galaxyroot):
             raise Exception("The script to renumber the residues finished wrong.")
 
-        if not self.runMinimization(path, path_gromacs, pdbPrefix):
+        if not minimization(
+                self.path_runs.get_path_execution(), self.opts.galaxyroot, pdbPrefix):
             raise Exception("The script of minimization finished wrong.")
 
     def run_Random(self):
@@ -815,77 +705,88 @@ class Random2PG(object):
         """
 
         try:
-            if(self.opts.inputEmail):
-                email = self.ClassColection.ValidateEmail(self.opts.inputEmail)
-                dir_execucao = self.ClassColection.CreateExecutionDirectory(email)
+            self.path_runs.set_path_execute()
+            if self.opts.inputEmail:
+                email = validate_email(self.opts.inputEmail)
+                self.path_runs.set_execution_directory(email)
             else:
-                dir_execucao = self.ClassColection.CreateExecutionDirectory()
+                self.path_runs.set_execution_directory()
 
-            self.path_execute = self.ClassColection.getPathExecute() + dir_execucao
+            self.sequence = create_local_fasta_file(
+                    self.path_runs.get_path_execution(),
+                    self.opts.fromFasta,
+                    self.opts.inputFasta,
+                    self.opts.toolname,
+                    self.framework)
 
-            self.sequence = self.ClassColection.CreateLocalFastaFile(
-                        self.path_execute,
-                        self.opts.fromFasta,
-                        self.opts.inputFasta,
-                        self.opts.toolname)
-
-            SizePopulation = self.ClassColection.CreateLocalPopFile(
-                    self.path_execute, self.opts.inputPop)
+            SizePopulation = create_local_pop_file(
+                    self.path_runs.get_path_execution(),
+                    self.opts.inputPop,
+                    self.framework)
 
             if SizePopulation > 1:
-                self.ClassColection.ShowErrorMessage(
+                show_error_message(
                     "Error: The population file must contain only one model")
 
-            self.ClassColection.CopyNecessaryFiles(self.path_execute)
+            copy_necessary_files(
+                self.path_runs.get_path_execute(),
+                self.path_runs.get_path_execution(),
+                self.framework.get_framework())
 
-            self.ClassColection.setParameter(
-                    'objective_analisys_dimo_source',
-                    '/home/%s/programs/dimo/DIMO2' % self.ClassColection.getLoggedUser())
-            self.ClassColection.setParameter('rotamer_library', self.opts.rotamerLibrary)
-            self.ClassColection.setParameter('StepNumber', self.opts.stepNumber)
-            self.ClassColection.setParameter('How_Many_Rotation', self.opts.howManyRotation)
-            self.ClassColection.setParameter('force_field', self.opts.forceField)
-            self.ClassColection.setParameter(
+            self.framework.set_parameter(
+                'rotamer_library', self.opts.rotamerLibrary)
+            self.framework.set_parameter(
+                'StepNumber', self.opts.stepNumber)
+            self.framework.set_parameter(
+                'How_Many_Rotation', self.opts.howManyRotation)
+            self.framework.set_parameter(
+                'force_field', self.opts.forceField)
+            self.framework.set_parameter(
                     'SequenceAminoAcidsPathFileName',
-                    self.path_execute + 'fasta.txt')
-            self.ClassColection.setParameter('Local_Execute', self.path_execute)
-            self.ClassColection.setParameter(
+                    self.path_runs.get_path_execution() + 'fasta.txt')
+            self.framework.set_parameter(
+                'Local_Execute', self.path_runs.get_path_execution())
+            self.framework.set_parameter(
                     'Path_Gromacs_Programs',
-                    '/home/%s/programs/gmx-4.6.5/no_mpi/bin/' % self.ClassColection.getLoggedUser())
-            self.ClassColection.setParameter('NativeProtein', '%s1VII.pdb' % self.path_execute)
-            self.ClassColection.setParameter(
+                    get_path_gromacs())
+            self.framework.set_parameter(
+                'NativeProtein', '%s1VII.pdb' % self.path_runs.get_path_execution())
+            self.framework.set_parameter(
                     'Database',
                     '%s/Database/' %
-                    self.ClassColection.getPathAlgorithms('2pg_build_conformation'))
+                    get_path_algorithms('2pg_build_conformation'))
 
-            self.ClassColection.CreateConfigurationFile(self.path_execute)
+            create_configuration_file(
+                self.path_runs.get_path_execution(), self.framework)
 
-            self.ClassColection.setCommand('2pg_cartesian', 'protpred-Gromacs-Random_Algorithm')
+            self.framework.set_command(
+                self.path_runs.get_path_execution(),
+                'protpred-Gromacs-Random_Algorithm')
 
-            config = self.ClassColection.getConfigurationFile('configuration.conf')
+            config = 'configuration.conf'
 
-            cl = [self.ClassColection.getCommand(), config, '&']
+            cl = [self.framework.get_command(), config, '&']
 
             retProcess = subprocess.Popen(
                 cl, 0, stdout=None,  stderr=subprocess.STDOUT, shell=False)
             retCode = retProcess.wait()
             if(retCode != 0):
-                self.ClassColection.ShowErrorMessage(
+                show_error_message(
                     "The 2PG framework finished wrong.\nContact the system administrator.")
 
-            self.ClassColection.parse_PDB(
-                    self.path_execute,
+            parse_pdb(
+                    self.path_runs.get_path_execution(),
                     'random_algorithm_solutions.pdb',
                     20,
                     'randomSolution')
 
             if(self.opts.runMinimization == 'true'):
-                self.minimization(
-                    self.path_execute,
-                    self.ClassColection.getPathGromacs(),
-                    "randomSolution")
+                self.do_minimization("randomSolution")
 
-            self.build_images()
+            pdbs = list_directory(
+                self.path_runs.get_path_execution(), 'randomSolution-M*.pdb')
+
+            build_images(pdbs, self.path_runs.get_path_execution())
 
             path_output, file_output = os.path.split(self.opts.filehtml)
 
@@ -898,23 +799,21 @@ class Random2PG(object):
 
             self.opts.htmlfiledir = htmldir
 
-            result, filesHtml = self.ClassColection.getResultFiles(
-                    self.path_execute,
+            result, filesHtml = get_result_files(
+                    self.path_runs.get_path_execution(),
                     self.opts.toolname,
                     'randomSolution-M')
 
-            self.ClassColection.sendOutputFilesHtml(self.opts.htmlfiledir, filesHtml)
-            self.ClassColection.sendOutputFilesHtml(self.opts.htmlfiledir, [result])
-
-            pdbs = self.ClassColection.listDirectory(self.path_execute, 'randomSolution-M*.pdb')
+            send_output_files_html(self.opts.htmlfiledir, filesHtml)
+            send_output_files_html(self.opts.htmlfiledir, [result])
 
             if self.opts.createCompressFile == "True":
-                if self.ClassColection.compressFiles(pdbs, self.path_execute, "2PGRandom"):
+                if compress_files(pdbs, self.path_runs.get_path_execution(), "2PGRandom"):
                     path_output, file_output = os.path.split(self.opts.outputZip)
-                    self.ClassColection.sendOutputResults(
+                    send_output_results(
                             path_output,
                             file_output,
-                            os.path.join(self.path_execute, '2PGRandom.zip'))
+                            os.path.join(self.path_runs.get_path_execution(), '2PGRandom.zip'))
 
             self.makeHtml()
 
@@ -922,17 +821,16 @@ class Random2PG(object):
                 self.makeHtmlWithJMol(pdbs[0])
 
             if(self.opts.inputEmail):
-                self.ClassColection.SendEmail(
+                send_email(
                         'adefelicibus@gmail.com',
                         email,
                         '%s Execution on Galaxy - Cloud USP' % self.opts.toolname,
-                        self.ClassColection.getMessageEmail(self.opts.toolname),
+                        get_message_email(self.opts.toolname),
                         [],
                         'smtp.gmail.com')
 
         except Exception, e:
-            self.ClassColection.ShowErrorMessage(str(e))
-
+            show_error_message(str(e))
 
 if __name__ == '__main__':
     op = optparse.OptionParser()
@@ -958,9 +856,9 @@ if __name__ == '__main__':
 
     random = Random2PG(opts)
 
-    random.ClassColection.setjobStart(datetime.datetime.now())
+    random.time_execution.set_job_start(datetime.datetime.now())
     random.initTime = datetime.datetime.now()
 
     cProfile.run('random.run_Random()', 'profileout.txt')
 
-    random.ClassColection.clearPathExecute(random.path_execute)
+    clear_path_execute(random.path_runs.get_path_execution())

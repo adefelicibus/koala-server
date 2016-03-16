@@ -2,23 +2,27 @@
 # -*- coding: utf-8 -*-
 
 import __main__
-__main__.pymol_argv = ['pymol', '-qc']  # Quiet and no GUI
 
 import pymol
 from time import sleep
 import os
-from koala import classe
 import optparse
-import subprocess
-import time
 import datetime
 from decimal import *
 from collections import OrderedDict
 import zipfile
 import gzip
 import cProfile
-import shutil
-import math
+
+from koala.utils import get_file_size, show_error_message, list_directory
+from koala.utils import extract_zip_file, extract_gz_file, TimeJobExecution
+from koala.utils.input import copy_pdb_reference
+from koala.utils.output import send_output_files_html, get_result_files
+from koala.utils.path import PathRuns, clear_path_execute
+from koala.utils.input import copy_pdbs_from_input
+from koala.utils.scripts import rename_atoms, check_pdb
+
+__main__.pymol_argv = ['pymol', '-qc']  # Quiet and no GUI
 
 pymol.finish_launching()
 
@@ -28,7 +32,6 @@ class CalculateRMSD(object):
     Calculate the RMSD value from a set of PDB files using GROMACS
     """
 
-    path_execute = None
     methods = []
     ignoreoutfiles = ['.pdb']
     initTime = 0
@@ -46,89 +49,12 @@ class CalculateRMSD(object):
         """
         assert opts is not None
         self.opts = opts
-        self.ClassColection = classe.IcmcGalaxy()
-        self.command = 'echo C-alpha C-alpha | @PATH_GROMACS@./g_rms -f @PROT@ -s @NATIVE@ -o temporary_rmsd.xvg 2>/dev/null'
 
-    def timenow(self):
-        """
-        Return current time as a formmated string
-        @type self: koala.CalculateRMSD.CalculateRMSD
-        """
+        self.time_execution = TimeJobExecution()
+        self.path_runs = PathRuns()
 
-        return time.strftime('%d/%m/%Y %H:%M:%S', time.localtime(time.time()))
-
-    def getfSize(self, fpath, outpath):
-        """
-        Get the file size and return as string
-        @type self: koala.CalculateRMSD.CalculateRMSD
-        @type fpath: string
-        @type outpath: string
-        """
-
-        size = ''
-        fp = os.path.join(outpath, fpath)
-        if os.path.isfile(fp):
-            size = '0 B'
-            n = float(os.path.getsize(fp))
-            if n > 2**20:
-                size = '%1.1f MB' % (n/2**20)
-            elif n > 2**10:
-                size = '%1.1f KB' % (n/2**10)
-            elif n > 0:
-                size = '%d B' % (int(n))
-        return size
-
-    def run_renameAtoms(self, path, path_gromacs):
-        """
-        Create a subprocess to rename the missing atoms in a PDB file using pdb2gmx
-        @type self: koala.CalculateRMSD.CalculateRMSD
-        @type path: string
-        @type path_gromacs: string
-        """
-
-        try:
-            cl = [
-                '%s/scripts/rename_atoms.py' %
-                self.opts.galaxyroot, path, path_gromacs, '&']
-
-            retProcess = subprocess.Popen(cl, 0, None, None, None, False)
-            pvalue = retProcess.wait()
-
-            if pvalue != 0:
-                return False
-
-            return True
-        except Exception, e:
-            self.ClassColection.ShowErrorMessage("Error while renaming atoms.\n%s" % e)
-
-    def run_checkPDB(self, path, path_gromacs):
-        """
-        Create a subprocess to check the PDB structure using pdb2gmx
-        @type self: koala.CalculateRMSD.CalculateRMSD
-        @type path: string
-        @type path_gromacs: string
-        """
-
-        try:
-            cl = [
-                '%s/scripts/check_structures_gromacs.py' %
-                self.opts.galaxyroot, path, path_gromacs, '&']
-
-            retProcess = subprocess.Popen(cl, 0, None, None, None, False)
-            pvalue = retProcess.wait()
-
-            if pvalue != 0:
-                return False
-
-            directory = os.path.join(path, 'no_accepted_by_pdb2gmx')
-            if os.path.exists(directory):
-                pdbs = os.listdir(directory)
-                self.ClassColection.showMessage(
-                    'These files could not be accepted by Gromacs.\n%s\n\n' % pdbs)
-
-            return True
-        except Exception, e:
-            self.ClassColection.ShowErrorMessage("Error while checking PDBs:\n%s" % e)
+        self.command = "echo C-alpha C-alpha | @PATH_GROMACS@./g_rms \
+            -f @PROT@ -s @NATIVE@ -o temporary_rmsd.xvg 2>/dev/null"
 
     def buildRMSDTable(self):
         """
@@ -148,7 +74,7 @@ class CalculateRMSD(object):
                 html += '</tr>'
             return html
         except Exception, e:
-            self.ClassColection.ShowErrorMessage("Error while buildRMSDTable:\n%s" % e)
+            show_error_message("Error while buildRMSDTable:\n%s" % e)
 
     def makeHtml(self):
         """
@@ -199,7 +125,7 @@ class CalculateRMSD(object):
             if len(flist) > 0:
                 for rownum, fname in enumerate(flist):
                     dname, e = os.path.splitext(fname)
-                    sfsize = self.ClassColection.getFileSize(fname, self.opts.htmlfiledir)
+                    sfsize = get_file_size(fname, self.opts.htmlfiledir)
 
                     if e.lower() == ".front":
                         frontFiles.append(fname)
@@ -212,7 +138,7 @@ class CalculateRMSD(object):
 
             # Arquivos front
             for front in frontFiles:
-                sfsize = self.ClassColection.getFileSize(front, self.opts.htmlfiledir)
+                sfsize = get_file_size(front, self.opts.htmlfiledir)
                 fhtml.append('<tr>')
                 fhtml.append('<td><a href="%s">%s</a></td>' % (front, front))
                 fhtml.append('<td>%s</td>' % (sfsize))
@@ -264,7 +190,7 @@ class CalculateRMSD(object):
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, n):
-                    sfsize = self.ClassColection.getFileSize(
+                    sfsize = get_file_size(
                             listaArquivosPdb[idx],
                             self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
@@ -291,7 +217,7 @@ class CalculateRMSD(object):
                     idx = idx_linha
                     fhtml.append('</tr><tr>')
                     for i in range(start, end):
-                        sfsize = self.ClassColection.getFileSize(
+                        sfsize = get_file_size(
                                 listaArquivosPdb[idx],
                                 self.opts.htmlfiledir)
                         fhtml.append('<td>%s</td>' % (sfsize))
@@ -316,7 +242,7 @@ class CalculateRMSD(object):
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, rest):
-                    sfsize = self.ClassColection.getFileSize(
+                    sfsize = get_file_size(
                             listaArquivosPdb[idx],
                             self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
@@ -361,7 +287,7 @@ class CalculateRMSD(object):
 
             # Outros arquivos de output
             for output in outputfiles:
-                sfsize = self.ClassColection.getFileSize(output, self.opts.htmlfiledir)
+                sfsize = get_file_size(output, self.opts.htmlfiledir)
                 fhtml.append('<tr>')
                 fhtml.append('<td><a href="%s">%s</a></td>' % (output, output))
                 fhtml.append('<td>%s</td>' % (sfsize))
@@ -382,7 +308,7 @@ class CalculateRMSD(object):
 
             # arquivo zipado
             for output in compressedFile:
-                sfsize = self.ClassColection.getFileSize(output, self.opts.htmlfiledir)
+                sfsize = get_file_size(output, self.opts.htmlfiledir)
                 fhtml.append('<tr>')
                 fhtml.append('<td><a href="%s">%s</a></td>' % (output, output))
                 fhtml.append('<td>%s</td>' % (sfsize))
@@ -399,16 +325,16 @@ class CalculateRMSD(object):
                 fhtml.append('</table></div><br>')
                 html += fhtml
 
-            self.ClassColection.setjobEnd(datetime.datetime.now())
+            self.time_execution.set_job_end(datetime.datetime.now())
             self.endTime = datetime.datetime.now()
 
-            dif = self.ClassColection.calcTimeExecution(self.initTime, self.endTime)
+            dif = self.time_execution.calculate_time_execution()
 
             html.append('<div>Time execution:<br>')
             html.append('Start: %s<br>' %
-                        self.ClassColection.getjobStart().strftime("%d/%m/%Y %H:%M:%S"))
+                        self.time_execution.get_job_start().strftime("%d/%m/%Y %H:%M:%S"))
             html.append('End: %s<br>' %
-                        self.ClassColection.getjobEnd().strftime("%d/%m/%Y %H:%M:%S"))
+                        self.time_execution.get_job_end().strftime("%d/%m/%Y %H:%M:%S"))
             html.append('Total time: ~%dh:%dm:%ds' % (dif[0], dif[1], dif[2]))
             html.append('</div>')
 
@@ -428,7 +354,7 @@ class CalculateRMSD(object):
             htmlf.close()
 
         except Exception, e:
-            self.ClassColection.ShowErrorMessage("Error on makeHtml: \n%s" % e)
+            show_error_message("Error on makeHtml: \n%s" % e)
 
     def makeHtmlWithJMol(self, pdbReference):
         """
@@ -457,9 +383,8 @@ class CalculateRMSD(object):
 
                     Jmol._isAsync = false;
 
-                    Jmol.getProfile() // records repeat calls to overridden or overloaded Java methods
-
-                    var jmolApplet0; // set up in HTML table, below
+                    Jmol.getProfile()
+                    var jmolApplet0;
 
                     jmol_isReady = function(applet) {
                         document.title = (applet._id + " is ready")
@@ -524,7 +449,7 @@ class CalculateRMSD(object):
             if len(flist) > 0:
                 for rownum, fname in enumerate(flist):
                     dname, e = os.path.splitext(fname)
-                    sfsize = self.ClassColection.getFileSize(fname, self.opts.htmlfiledir)
+                    sfsize = get_file_size(fname, self.opts.htmlfiledir)
 
                     if e.lower() == ".front":
                         frontFiles.append(fname)
@@ -537,7 +462,7 @@ class CalculateRMSD(object):
 
             # Arquivos front
             for front in frontFiles:
-                sfsize = self.ClassColection.getFileSize(front, self.opts.htmlfiledir)
+                sfsize = get_file_size(front, self.opts.htmlfiledir)
                 fhtml.append('<tr>')
                 fhtml.append('<td><a href="%s">%s</a></td>' % (front, front))
                 fhtml.append('<td>%s</td>' % (sfsize))
@@ -591,7 +516,7 @@ class CalculateRMSD(object):
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, n):
-                    sfsize = self.ClassColection.getFileSize(
+                    sfsize = get_file_size(
                             listaArquivosPdb[idx],
                             self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
@@ -629,7 +554,7 @@ class CalculateRMSD(object):
                     idx = idx_linha
                     fhtml.append('</tr><tr>')
                     for i in range(start, end):
-                        sfsize = self.ClassColection.getFileSize(
+                        sfsize = get_file_size(
                                 listaArquivosPdb[idx],
                                 self.opts.htmlfiledir)
                         fhtml.append('<td>%s</td>' % (sfsize))
@@ -666,7 +591,7 @@ class CalculateRMSD(object):
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, rest):
-                    sfsize = self.ClassColection.getFileSize(
+                    sfsize = get_file_size(
                             listaArquivosPdb[idx],
                             self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
@@ -719,7 +644,7 @@ class CalculateRMSD(object):
 
             # Outros arquivos de output
             for output in outputfiles:
-                sfsize = self.ClassColection.getFileSize(output, self.opts.htmlfiledir)
+                sfsize = get_file_size(output, self.opts.htmlfiledir)
                 fhtml.append('<tr>')
                 fhtml.append(
                     '<td><a href="/datasets/%s/display/%s">%s</a></td>' % (
@@ -742,7 +667,7 @@ class CalculateRMSD(object):
 
             # arquivo zipado
             for output in compressedFile:
-                sfsize = self.ClassColection.getFileSize(output, self.opts.htmlfiledir)
+                sfsize = get_file_size(output, self.opts.htmlfiledir)
                 fhtml.append('<tr>')
                 fhtml.append(
                     '<td><a href="/datasets/%s/display/%s">%s</a></td>' % (
@@ -761,16 +686,16 @@ class CalculateRMSD(object):
                 fhtml.append('</table></div><br>')
                 html += fhtml
 
-            self.ClassColection.setjobEnd(datetime.datetime.now())
+            self.time_execution.set_job_end(datetime.datetime.now())
             self.endTime = datetime.datetime.now()
 
-            dif = self.ClassColection.calcTimeExecution(self.initTime, self.endTime)
+            dif = self.time_execution.calculate_time_execution()
 
             html.append('<div>Time execution:<br>')
             html.append('Start: %s<br>' %
-                        self.ClassColection.getjobStart().strftime("%d/%m/%Y %H:%M:%S"))
+                        self.time_execution.get_job_start().strftime("%d/%m/%Y %H:%M:%S"))
             html.append('End: %s<br>' %
-                        self.ClassColection.getjobEnd().strftime("%d/%m/%Y %H:%M:%S"))
+                        self.time_execution.get_job_end().strftime("%d/%m/%Y %H:%M:%S"))
             html.append('Total time: ~%dh:%dm:%ds' % (dif[0], dif[1], dif[2]))
             html.append('</div>')
 
@@ -789,65 +714,7 @@ class CalculateRMSD(object):
             htmlf.write('\n')
             htmlf.close()
         except Exception, e:
-            self.ClassColection.ShowErrorMessage("Error on makeHtmlWithJMol: \n%s" % e)
-
-    def copyPDBReference(self):
-        """
-        Copy the input PDB referente to the execute path
-        @type self: koala.CalculateRMSD.CalculateRMSD
-        """
-        try:
-            self.opts.inputPDBRefName = self.opts.inputPDBRefName.replace(
-                '(', '_').replace(
-                        ')', '').replace(
-                            " ", "").strip()
-            link_name = os.path.join(
-                    self.opts.htmlfiledir, os.path.basename(self.opts.inputPDBRefName))
-            if not os.path.exists(link_name):
-                os.symlink(self.opts.inputPDBRef, link_name)
-                # os.system("cp %s %s" % (link_name, self.path_execute))
-                shutil.copy(link_name, self.path_execute)
-        except Exception, e:
-            self.ClassColection.ShowErrorMessage("Erro on copyPDBReference method:\n%s" % e)
-
-    def build_images(self):
-        """
-        Build images from PDB files using PyMol package.
-        @type self: koala.CalculateRMSD.CalculateRMSD
-        """
-
-        try:
-            os.chdir(self.path_execute)
-
-            limit = 20
-            if len(self.methods) < 20:
-                limit = len(self.methods)
-
-            for i in range(0, limit):
-
-                pdb = self.methods[i]
-                arq = os.path.join(self.path_execute, pdb)
-
-                name, ext = os.path.splitext(pdb)
-
-                # Load Structures
-                pymol.cmd.load(arq, pdb)
-                pymol.cmd.disable("all")
-                pymol.cmd.set('ray_opaque_background', 0)
-                pymol.cmd.set('antialias', 1)
-                pymol.cmd.hide("everything")
-                pymol.cmd.show("cartoon")
-                pymol.cmd.show("ribbon")
-                pymol.cmd.enable(pdb)
-                pymol.cmd.ray()
-                pymol.cmd.png("%s.png" % name, dpi=300)
-
-                sleep(0.25)  # (in seconds)
-
-                pymol.cmd.reinitialize()
-
-        except Exception, e:
-            self.ClassColection.ShowErrorMessage("Erro on build_images method:\n%s" % e)
+            show_error_message("Error on makeHtmlWithJMol: \n%s" % e)
 
     def getRMSDValues(self):
         """
@@ -855,7 +722,7 @@ class CalculateRMSD(object):
         @type self: koala.CalculateRMSD.CalculateRMSD
         """
         try:
-            pdbs = self.ClassColection.listDirectory(self.path_execute, "*.pdb")
+            pdbs = list_directory(self.path_runs.get_path_execution(), "*.pdb")
 
             if not pdbs:
                 raise Exception("getRMSDValues: No PDB file found.\n")
@@ -868,9 +735,9 @@ class CalculateRMSD(object):
                     #     "@PATH_GROMACS@",
                     #     self.ClassColection.getPathGromacs()).replace(
                     #         "@PROT@",
-                    #         (os.path.join(self.path_execute,  pdb))).replace(
+                    #         (os.path.join(self.path_runs.get_path_execution(),  pdb))).replace(
                     #             "@NATIVE@",
-                    #             (os.path.join(self.path_execute, self.opts.inputPDBRefName)))
+                    #             (os.path.join(self.path_runs.get_path_execution(), self.opts.inputPDBRefName)))
 
                     # os.system(aux_command)
 
@@ -884,9 +751,9 @@ class CalculateRMSD(object):
                     # os.remove("temporary_rmsd.xvg")
 
                     # Load Structures
-                    a = os.path.join(self.path_execute,  pdb)
+                    a = os.path.join(self.path_runs.get_path_execution(),  pdb)
                     aname, ext = os.path.splitext(pdb)
-                    b = os.path.join(self.path_execute, self.opts.inputPDBRefName)
+                    b = os.path.join(self.path_runs.get_path_execution(), self.opts.inputPDBRefName)
                     bname, ext = os.path.splitext(self.opts.inputPDBRefName)
                     pymol.cmd.load(a, aname)
                     pymol.cmd.load(b, bname)
@@ -902,7 +769,7 @@ class CalculateRMSD(object):
             return OrderedDict(sorted(dict_rmsd.items(), key=lambda x: x[1]))
 
         except Exception, e:
-            self.ClassColection.ShowErrorMessage("Erro on getRMSDValues method:\n%s" % e)
+            show_error_message("Erro on getRMSDValues method:\n%s" % e)
 
     def run_CalculateRMSD(self):
         """
@@ -910,8 +777,8 @@ class CalculateRMSD(object):
         @type self: koala.CalculateRMSD.CalculateRMSD
         """
         try:
-            dir_execucao = self.ClassColection.CreateExecutionDirectory()
-            self.path_execute = self.ClassColection.getPathExecute() + dir_execucao
+            self.path_runs.set_path_execute()
+            self.path_runs.set_execution_directory()
 
             if self.opts.compressedFile == '1':
 
@@ -919,32 +786,36 @@ class CalculateRMSD(object):
 
                 for input_f in inputFiles:
                     if zipfile.is_zipfile(input_f):
-                        self.ClassColection.extractZipFile(input_f, self.path_execute)
+                        extract_zip_file(input_f, self.path_runs.get_path_execution())
                     else:
                         try:
                             inF = gzip.GzipFile(input_f, 'rb')
                             f = inF.read()
                             inF.close()
                             if f:
-                                self.ClassColection.extractGzFile(input_f, self.path_execute)
+                                extract_gz_file(input_f, self.path_runs.get_path_execution())
                         except Exception, e:
                             raise Exception("The input file could not be read.\n%s" % e)
             else:
-                    self.ClassColection.copyPDBsFromInput(
-                            self.path_execute,
+                    copy_pdbs_from_input(
+                            self.path_runs.get_path_execution(),
                             self.opts.htmlfiledir,
                             self.opts.inputnames,
                             self.opts.inputPdbs)
 
-            self.copyPDBReference()
+            copy_pdb_reference(
+                self.opts.htmlfiledir,
+                self.path_runs.get_path_execution(),
+                self.opts.inputPDBRefName,
+                self.opts.inputPDBRef
+                )
 
             if(self.opts.renameAtoms == 'true'):
-                if not self.run_renameAtoms(
-                        self.path_execute, self.ClassColection.getPathGromacs()):
+                if not rename_atoms(self.path_runs.get_path_execution(), self.opts.galaxyroot):
                     raise Exception("The script to rename the atoms finished wrong.")
 
             if(self.opts.checkStructures == 'true'):
-                if not self.run_checkPDB(self.path_execute, self.ClassColection.getPathGromacs()):
+                if not check_pdb(self.path_runs.get_path_execution(), self.opts.galaxyroot):
                     raise Exception("The script to check the structure finished wrong.")
 
             self.rmsd_values = self.getRMSDValues()
@@ -952,17 +823,18 @@ class CalculateRMSD(object):
             for key, value in self.rmsd_values.items():
                 self.methods.append(key)
 
-            self.build_images()
+            build_images(self.methods, self.path_runs.get_path_execution())
 
-            pdbsToCopy = [os.path.join(self.path_execute, method) for method in self.methods]
-            self.ClassColection.sendOutputFilesHtml(self.opts.htmlfiledir, pdbsToCopy)
+            pdbsToCopy = [os.path.join(
+                self.path_runs.get_path_execution(), method) for method in self.methods]
+            send_output_files_html(self.opts.htmlfiledir, pdbsToCopy)
 
-            result, filesHtml = self.ClassColection.getResultFiles(
-                    self.path_execute,
+            result, filesHtml = get_result_files(
+                    self.path_runs.get_path_execution(),
                     self.opts.toolname)
 
-            self.ClassColection.sendOutputFilesHtml(self.opts.htmlfiledir, filesHtml)
-            self.ClassColection.sendOutputFilesHtml(self.opts.htmlfiledir, [result])
+            send_output_files_html(self.opts.htmlfiledir, filesHtml)
+            send_output_files_html(self.opts.htmlfiledir, [result])
 
             self.makeHtml()
 
@@ -970,7 +842,7 @@ class CalculateRMSD(object):
                 self.makeHtmlWithJMol(pdbsToCopy[0].split('/')[-1])
 
         except Exception, e:
-            self.ClassColection.ShowErrorMessage("Erro on run_CalculateRMSD method:\n%s" % e)
+            show_error_message("Erro on run_CalculateRMSD method:\n%s" % e)
 
 if __name__ == '__main__':
     op = optparse.OptionParser()
@@ -995,9 +867,9 @@ if __name__ == '__main__':
 
     calcrmsd = CalculateRMSD(opts)
 
-    calcrmsd.ClassColection.setjobStart(datetime.datetime.now())
+    calcrmsd.time_execution.set_job_start(datetime.datetime.now())
     calcrmsd.initTime = datetime.datetime.now()
 
     cProfile.run('calcrmsd.run_CalculateRMSD()', 'profileout.txt')
 
-    calcrmsd.ClassColection.clearPathExecute(calcrmsd.path_execute)
+    clear_path_execute(calcrmsd.path_runs.get_path_execution())

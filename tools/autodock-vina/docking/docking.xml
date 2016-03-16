@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!-- Tag reservada para a definição da tool -->
+<tool name="Virtual Screening" id="virtual_screening" version="1.0.0">
+	<!-- Tag reservada para a descrição da tool -->
+	<description> - Tool to run virtual screening</description>
+	<!-- Tag reservada para a execução do script da tool -->
+	<command interpreter="python">
+		docking.py -l $ligand
+												 -r $receptor
+												 -b $box
+												 -p "$file_output1.files_path"
+												 -f $file_output1
+												 -g $file_output2
+	</command>
+	<!-- Tag reservada para a entrada de dados -->
+	<inputs>
+		<!-- Tag reservada para receber os valores dos parâmetros no script -->
+		<param format="pdbqt" name="receptor" type="data" label="Receptor: " help="No data? See tip below" />
+		<param format="pdbqt" name="ligand"   type="data" label="Ligands: " help="No data? See tip below" />
+		<param format="text"  name="box"      type="data" label="Binding site coord.: " help="No data? See tip below" />
+	</inputs>
+	<!-- Tag reservada para a saída de dados do script -->
+	<outputs>
+		<data name="file_output1" format="pdbqt" label="#echo (os.path.splitext (str($ligand.name))[0]) + '_-_' + (os.path.splitext (str($receptor.name))[0])#.pdbqt" />
+		<data name="file_output2" format="log" label="#echo (os.path.splitext (str($ligand.name))[0]) + '_-_' + (os.path.splitext (str($receptor.name))[0])#.log" />
+	</outputs>
+	<!-- Tag reservada para a área de ajuda da tool -->
+	<help>
+	</help>
+</tool>

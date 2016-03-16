@@ -1,39 +1,32 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import __main__
-__main__.pymol_argv = ['pymol', '-qc']  # Quiet and no GUI
-
-import pymol
 import os
-from koala import classe
 import argparse
 import subprocess
 import datetime
-import time
 import cProfile
-import shutil
 
-pymol.finish_launching()
-
-
-class ArgsParse(object):
-    """
-    Parse the args passed by the Galaxy tool
-    """
-    pass
+from koala.utils import get_file_size, show_error_message, list_directory, compress_files
+from koala.utils import TimeJobExecution, copy_necessary_files, validate_email, ArgsParse
+from koala.utils.output import send_output_files_html, get_result_files, build_images
+from koala.utils.output import send_output_results
+from koala.utils.path import PathRuns, clear_path_execute
+from koala.utils.input import create_local_fasta_file
+from koala.utils.input import create_configuration_file, copy_files_to_execute_folder
+from koala.frameworks.params import Params
+from koala.utils.scripts import check_pdb, prepare_pdb, residue_renumber, minimization
+from koala.utils.mail import send_email, get_message_email
 
 
 class ProtPredEDADE(object):
     """
     Execute the ProtPred-EDA Deviation Estimation evolutionary algorithm.
     """
-    path_execute = None
     sequence = None
     initTime = 0
     endTime = 0
     ignoreoutfiles = ['.pdb']
-
     progname = "ProtPredEDA-DE"
 
     def __init__(self, opts=None):
@@ -43,8 +36,9 @@ class ProtPredEDADE(object):
         """
         assert opts is not None
         self.opts = opts
-        self.ClassColection = classe.IcmcGalaxy()
-        self.ClassColection.setFramework("ProtPred-EDA")
+        self.time_execution = TimeJobExecution()
+        self.path_runs = PathRuns()
+        self.framework = Params('ProtPred-EDA', 'de')
 
     def makeHtml(self):
         """ Create an HTML file content to list all the artifacts found in the html_dir
@@ -55,7 +49,7 @@ class ProtPredEDADE(object):
             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
             <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
             <head> <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-            <meta name="generator" content="Galaxy %s tool output - see http://g2.trac.bx.psu.edu/" />
+            <meta name="generator" content="Galaxy %s tool output" />
             <title></title>
             <link rel="stylesheet" href="/static/koala.css" type="text/css" />
             <link rel="stylesheet" href="/static/style/base.css" type="text/css" />
@@ -75,7 +69,8 @@ class ProtPredEDADE(object):
             html.append(galhtmlprefix % self.progname)
             html.append('<div class="sucessmessage">')
             html.append('<br>')
-            html.append('<h1 align="center">%s Ab Initio Algorithm results</h1><br></div>' % self.progname)
+            html.append(
+                '<h1 align="center">%s Ab Initio Algorithm results</h1><br></div>' % self.progname)
 
             html.append('<br>')
             html.append('<div class="sectionmessage">')
@@ -83,9 +78,6 @@ class ProtPredEDADE(object):
             html.append('<div class="code">')
             html.append('Length: %s<br>' % len(self.sequence))
             html.append('%s<br></div>' % self.sequence)
-
-            # Dowload arquivos pop_X.pdb
-            # mostrar artigo do 2PG, com link da publicação
 
             fhtml = []
             fitFiles = []
@@ -96,7 +88,7 @@ class ProtPredEDADE(object):
             if len(flist) > 0:
                 for rownum, fname in enumerate(flist):
                     dname, e = os.path.splitext(fname)
-                    sfsize = self.ClassColection.getFileSize(fname, self.opts.htmlfiledir)
+                    sfsize = get_file_size(fname, self.opts.htmlfiledir)
 
                     if e.lower() == ".fit":
                         fitFiles.append(fname)
@@ -109,7 +101,7 @@ class ProtPredEDADE(object):
 
             # Arquivos fit
             for fit in fitFiles:
-                sfsize = self.ClassColection.getFileSize(fit, self.opts.htmlfiledir)
+                sfsize = get_file_size(fit, self.opts.htmlfiledir)
                 fhtml.append('<tr>')
                 fhtml.append('<td><a href="%s">%s</a></td>' % (fit, fit))
                 fhtml.append('<td>%s</td>' % (sfsize))
@@ -129,8 +121,8 @@ class ProtPredEDADE(object):
             fhtml = []
 
             # images (e depois models)
-            listaArquivosPdb = self.ClassColection.listDirectory(
-                self.path_execute, '*.pdb')
+            listaArquivosPdb = list_directory(
+                self.path_runs.get_path_execution(), '*.pdb')
 
             if len(listaArquivosPdb) <= 20:
                 size = int(len(listaArquivosPdb) / 5)
@@ -162,7 +154,7 @@ class ProtPredEDADE(object):
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, n):
-                    sfsize = self.ClassColection.getFileSize(
+                    sfsize = get_file_size(
                         listaArquivosPdb[idx], self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
                     idx += 1
@@ -188,7 +180,7 @@ class ProtPredEDADE(object):
                     idx = idx_linha
                     fhtml.append('</tr><tr>')
                     for i in range(start, end):
-                        sfsize = self.ClassColection.getFileSize(
+                        sfsize = get_file_size(
                                 listaArquivosPdb[idx],
                                 self.opts.htmlfiledir)
                         fhtml.append('<td>%s</td>' % (sfsize))
@@ -213,7 +205,7 @@ class ProtPredEDADE(object):
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, rest):
-                    sfsize = self.ClassColection.getFileSize(
+                    sfsize = get_file_size(
                         listaArquivosPdb[idx], self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
                     idx += 1
@@ -257,7 +249,7 @@ class ProtPredEDADE(object):
 
             # Outros arquivos de output
             for output in outputfiles:
-                sfsize = self.ClassColection.getFileSize(output, self.opts.htmlfiledir)
+                sfsize = get_file_size(output, self.opts.htmlfiledir)
                 fhtml.append('<tr>')
                 fhtml.append('<td><a href="%s">%s</a></td>' % (output, output))
                 fhtml.append('<td>%s</td>' % (sfsize))
@@ -278,7 +270,7 @@ class ProtPredEDADE(object):
 
             # arquivo zipado
             for output in compressedFile:
-                sfsize = self.ClassColection.getFileSize(output, self.opts.htmlfiledir)
+                sfsize = get_file_size(output, self.opts.htmlfiledir)
                 fhtml.append('<tr>')
                 fhtml.append('<td><a href="%s">%s</a></td>' % (output, output))
                 fhtml.append('<td>%s</td>' % (sfsize))
@@ -295,15 +287,16 @@ class ProtPredEDADE(object):
                 fhtml.append('</table></div><br>')
                 html += fhtml
 
-            self.ClassColection.setjobEnd(datetime.datetime.now())
+            self.time_execution.set_job_end(datetime.datetime.now())
             self.endTime = datetime.datetime.now()
 
-            dif = self.ClassColection.calcTimeExecution(self.initTime, self.endTime)
+            dif = self.time_execution.calculate_time_execution()
 
             html.append('<div>Time execution:<br>')
             html.append('Start: %s<br>' %
-                        self.ClassColection.getjobStart().strftime("%d/%m/%Y %H:%M:%S"))
-            html.append('End: %s<br>' % self.ClassColection.getjobEnd().strftime("%d/%m/%Y %H:%M:%S"))
+                        self.time_execution.get_job_start().strftime("%d/%m/%Y %H:%M:%S"))
+            html.append('End: %s<br>' %
+                        self.time_execution.get_job_end().strftime("%d/%m/%Y %H:%M:%S"))
             html.append('Total time: ~%dh:%dm:%ds' % (dif[0], dif[1], dif[2]))
             html.append('</div>')
 
@@ -322,7 +315,7 @@ class ProtPredEDADE(object):
             htmlf.close()
 
         except Exception, e:
-            self.ClassColection.ShowErrorMessage("Error on makeHtml:\n%s" % e)
+            show_error_message("Error on makeHtml:\n%s" % e)
 
     def makeHtmlWithJMol(self, pdbReference):
         """
@@ -334,7 +327,7 @@ class ProtPredEDADE(object):
             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
             <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
             <head> <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-            <meta name="generator" content="Galaxy %s tool output - see http://g2.trac.bx.psu.edu/" />
+            <meta name="generator" content="Galaxy %s tool output" />
             <title></title>
             <link rel="stylesheet" href="/static/koala.css" type="text/css" />
             <link rel="stylesheet" href="/static/style/base.css" type="text/css" />
@@ -350,9 +343,9 @@ class ProtPredEDADE(object):
 
                     Jmol._isAsync = false;
 
-                    Jmol.getProfile() // records repeat calls to overridden or overloaded Java methods
+                    Jmol.getProfile()
 
-                    var jmolApplet0; // set up in HTML table, below
+                    var jmolApplet0;
 
                     jmol_isReady = function(applet) {
                         document.title = (applet._id + " is ready")
@@ -377,12 +370,15 @@ class ProtPredEDADE(object):
                         disableInitialConsole: false,
                         readyFunction: jmol_isReady,
                         allowjavascript: true,
-                        script: "set antialiasDisplay;set showtiming;load async /datasets/%s/display/%s;cartoons only;color  cartoons structure; spin on"
+                        script: "set antialiasDisplay;set showtiming; \
+                        load async /datasets/%s/display/%s;cartoons only; \
+                        color  cartoons structure; spin on"
                         //,defaultModel: ":dopamine"
                         //,noscript: true
                         //console: "none", // default will be jmolApplet0_infodiv
                         //script: "set antialiasDisplay;background white;load data/caffeine.mol;"
-                        //delay 3;background yellow;delay 0.1;background white;for (var i = 0; i < 10; i+=1){rotate y 3;delay 0.01}"
+                        //delay 3;background yellow;delay 0.1;background white; \
+                        for (var i = 0; i < 10; i+=1){rotate y 3;delay 0.01}"
                     }
 
             </script>
@@ -398,7 +394,8 @@ class ProtPredEDADE(object):
             html.append(galhtmlprefix % (self.progname, self.opts.datasetID, pdbReference))
             html.append('<div class="sucessmessage">')
             html.append('<br>')
-            html.append('<h1 align="center">%s Ab Initio Algorithm results</h1><br></div>' % self.progname)
+            html.append(
+                '<h1 align="center">%s Ab Initio Algorithm results</h1><br></div>' % self.progname)
 
             html.append('<br>')
             html.append('<div class="sectionmessage">')
@@ -415,7 +412,7 @@ class ProtPredEDADE(object):
             if len(flist) > 0:
                 for rownum, fname in enumerate(flist):
                     dname, e = os.path.splitext(fname)
-                    sfsize = self.ClassColection.getFileSize(fname, self.opts.htmlfiledir)
+                    sfsize = get_file_size(fname, self.opts.htmlfiledir)
 
                     if e.lower() == ".fit":
                         fitFiles.append(fname)
@@ -428,7 +425,7 @@ class ProtPredEDADE(object):
 
             # Arquivos fit
             for fit in fitFiles:
-                sfsize = self.ClassColection.getFileSize(fit, self.opts.htmlfiledir)
+                sfsize = get_file_size(fit, self.opts.htmlfiledir)
                 fhtml.append('<tr>')
                 fhtml.append('<td><a href="%s">%s</a></td>' % (fit, fit))
                 fhtml.append('<td>%s</td>' % (sfsize))
@@ -448,8 +445,8 @@ class ProtPredEDADE(object):
             fhtml = []
 
             # images (e depois models)
-            listaArquivosPdb = self.ClassColection.listDirectory(
-                self.path_execute, '*.pdb')
+            listaArquivosPdb = list_directory(
+                self.path_runs.get_path_execution(), '*.pdb')
 
             if len(listaArquivosPdb) <= 20:
                 size = int(len(listaArquivosPdb) / 5)
@@ -483,7 +480,7 @@ class ProtPredEDADE(object):
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, n):
-                    sfsize = self.ClassColection.getFileSize(
+                    sfsize = get_file_size(
                             listaArquivosPdb[idx],
                             self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
@@ -494,7 +491,8 @@ class ProtPredEDADE(object):
                     fhtml.append(
                         '<td>'
                         '<a href="javascript:Jmol.script(jmolApplet0,'
-                        "'load /datasets/%s/display/%s;cartoons only;color  cartoons structure; spin on')"
+                        "'load /datasets/%s/display/%s;cartoons only; \
+                        color  cartoons structure; spin on')"
                         '">Load on Jmol</a></td>' % (
                             self.opts.datasetID, listaArquivosPdb[idx]))
                     idx += 1
@@ -522,7 +520,7 @@ class ProtPredEDADE(object):
                     idx = idx_linha
                     fhtml.append('</tr><tr>')
                     for i in range(start, end):
-                        sfsize = self.ClassColection.getFileSize(
+                        sfsize = get_file_size(
                                 listaArquivosPdb[idx],
                                 self.opts.htmlfiledir)
                         fhtml.append('<td>%s</td>' % (sfsize))
@@ -533,7 +531,8 @@ class ProtPredEDADE(object):
                         fhtml.append(
                             '<td>'
                             '<a href="javascript:Jmol.script(jmolApplet0,'
-                            "'load /datasets/%s/display/%s;cartoons only;color cartoons structure; spin on')"
+                            "'load /datasets/%s/display/%s;cartoons only; \
+                            color cartoons structure; spin on')"
                             '">Load on Jmol</a></td>' % (
                                 self.opts.datasetID, listaArquivosPdb[idx]))
                         idx += 1
@@ -558,7 +557,7 @@ class ProtPredEDADE(object):
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, rest):
-                    sfsize = self.ClassColection.getFileSize(
+                    sfsize = get_file_size(
                             listaArquivosPdb[idx],
                             self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
@@ -569,7 +568,8 @@ class ProtPredEDADE(object):
                     fhtml.append(
                         '<td>'
                         '<a href="javascript:Jmol.script(jmolApplet0,'
-                        "'load /datasets/%s/display/%s;cartoons only;color cartoons structure; spin on')"
+                        "'load /datasets/%s/display/%s;cartoons only; \
+                        color cartoons structure; spin on')"
                         '">Load on Jmol</a></td>' % (
                             self.opts.datasetID, listaArquivosPdb[idx]))
                     idx += 1
@@ -611,7 +611,7 @@ class ProtPredEDADE(object):
 
             # Outros arquivos de output
             for output in outputfiles:
-                sfsize = self.ClassColection.getFileSize(output, self.opts.htmlfiledir)
+                sfsize = get_file_size(output, self.opts.htmlfiledir)
                 fhtml.append('<tr>')
                 fhtml.append('<td><a href="%s">%s</a></td>' % (output, output))
                 fhtml.append('<td>%s</td>' % (sfsize))
@@ -632,7 +632,7 @@ class ProtPredEDADE(object):
 
             # arquivo zipado
             for output in compressedFile:
-                sfsize = self.ClassColection.getFileSize(output, self.opts.htmlfiledir)
+                sfsize = get_file_size(output, self.opts.htmlfiledir)
                 fhtml.append('<tr>')
                 fhtml.append('<td><a href="%s">%s</a></td>' % (output, output))
                 fhtml.append('<td>%s</td>' % (sfsize))
@@ -649,16 +649,16 @@ class ProtPredEDADE(object):
                 fhtml.append('</table></div><br>')
                 html += fhtml
 
-            self.ClassColection.setjobEnd(datetime.datetime.now())
+            self.time_execution.set_job_end(datetime.datetime.now())
             self.endTime = datetime.datetime.now()
 
-            dif = self.ClassColection.calcTimeExecution(self.initTime, self.endTime)
+            dif = self.time_execution.calculate_time_execution()
 
             html.append('<div>Time execution:<br>')
             html.append('Start: %s<br>' %
-                        self.ClassColection.getjobStart().strftime("%d/%m/%Y %H:%M:%S"))
+                        self.time_execution.get_job_start().strftime("%d/%m/%Y %H:%M:%S"))
             html.append('End: %s<br>' %
-                        self.ClassColection.getjobEnd().strftime("%d/%m/%Y %H:%M:%S"))
+                        self.time_execution.get_job_end().strftime("%d/%m/%Y %H:%M:%S"))
             html.append('Total time: ~%dh:%dm:%ds' % (dif[0], dif[1], dif[2]))
             html.append('</div>')
 
@@ -677,133 +677,21 @@ class ProtPredEDADE(object):
             htmlf.close()
 
         except Exception, e:
-            self.ClassColection.ShowErrorMessage("Error on makeHtmlWithJMol:\n%s" % str(e))
+            show_error_message("Error on makeHtmlWithJMol:\n%s" % str(e))
 
-    def build_images(self):
-        """
-        Build images from PDB files using PyMol package.
-
-        @type self: koala.NSGAII2PG.NSGAII2PG
-        """
-        try:
-            listaArquivosPdb = sorted(self.ClassColection.listDirectory(
-                    self.path_execute, '*.pdb'))
-
-            os.chdir(self.path_execute)
-
-            limit = 20
-            if len(listaArquivosPdb) < 20:
-                limit = len(listaArquivosPdb)
-            for i in range(0, limit):
-
-                pdb = listaArquivosPdb[i]
-                arq = os.path.join(self.path_execute, pdb)
-
-                name, ext = os.path.splitext(pdb)
-
-                # Load Structures
-                pymol.cmd.load(arq, pdb)
-                pymol.cmd.disable("all")
-                pymol.cmd.set('ray_opaque_background', 0)
-                pymol.cmd.set('antialias', 1)
-                pymol.cmd.hide("everything")
-                pymol.cmd.show("cartoon")
-                pymol.cmd.show("ribbon")
-                pymol.cmd.enable(pdb)
-                pymol.cmd.ray()
-                pymol.cmd.png("%s.png" % name, dpi=300)
-
-                time.sleep(0.25)  # (in seconds)
-
-                pymol.cmd.reinitialize()
-
-        except Exception, e:
-            self.ClassColection.ShowErrorMessage(str(e))
-
-    def runCheckPDB(self, path, path_gromacs):
-        try:
-            cl = [
-                '%s/scripts/check_structures_gromacs.py' %
-                self.opts.galaxyroot, path, path_gromacs, '&']
-
-            retProcess = subprocess.Popen(cl, 0, None, None, None, False)
-            pvalue = retProcess.wait()
-
-            if pvalue != 0:
-                return False
-
-            directory = os.path.join(path, 'no_accepted_by_pdb2gmx')
-            if os.path.exists(directory):
-                pdbs = os.listdir(directory)
-                self.ClassColection.showMessage(
-                    'These files could not be accepted by Gromacs.\n%s\n\n' % pdbs)
-
-            return True
-        except Exception, e:
-            self.ClassColection.ShowErrorMessage("Error while checking PDBs:\n%s" % e)
-
-    def runPreparePDB(self, path, path_gromacs):
-        try:
-            cl = [
-                '%s/scripts/prepare_structures.py' %
-                self.opts.galaxyroot, path, '&']
-
-            retProcess = subprocess.Popen(cl, 0, None, None, None, False)
-            pvalue = retProcess.wait()
-
-            if pvalue != 0:
-                return False
-
-            return True
-        except Exception, e:
-            self.ClassColection.ShowErrorMessage("Error while preparing PDBs:\n%s" % e)
-
-    def runResidueRenumber(self, path, path_gromacs):
-        try:
-            cl = [
-                '%s/scripts/residue_renumber_all_pdbs.py' %
-                self.opts.galaxyroot, path, path_gromacs, '&']
-
-            retProcess = subprocess.Popen(cl, 0, None, None, None, False)
-            pvalue = retProcess.wait()
-
-            if pvalue != 0:
-                return False
-
-            return True
-        except Exception, e:
-            self.ClassColection.ShowErrorMessage("Error while renumbering PDBs:\n%s" % e)
-
-    def runMinimization(self, path, path_gromacs, pdbPrefix=None):
-        try:
-            cl = ['%s/min.sh' % path, path, path_gromacs, pdbPrefix, '&']
-
-            shutil.copy(
-                os.path.join(
-                    '%s/scripts/%s' % (self.opts.galaxyroot, 'min.sh')),
-                self.path_execute)
-
-            retProcess = subprocess.Popen(cl, 0, None, None, None, False)
-            pvalue = retProcess.wait()
-
-            if pvalue != 0:
-                return False
-
-            return True
-        except Exception, e:
-            self.ClassColection.ShowErrorMessage("Error while minimization PDBs:\n%s" % e)
-
-    def minimization(self, path, path_gromacs, pdbPrefix=None):
-        if not self.runCheckPDB(path, path_gromacs):
+    def do_minimization(self, pdbPrefix=''):
+        if not check_pdb(self.path_runs.get_path_execution(), self.opts.galaxyroot):
             raise Exception("The script to check the PDBs finished wrong.")
 
-        if not self.runPreparePDB(path, path_gromacs):
+        if not prepare_pdb(self.path_runs.get_path_execution(), self.opts.galaxyroot):
             raise Exception("The script to prepare the PDBs finished wrong.")
 
-        if not self.runResidueRenumber(path, path_gromacs):
+        if not residue_renumber(
+                self.path_runs.get_path_execution(), self.opts.galaxyroot):
             raise Exception("The script to renumber the residues finished wrong.")
 
-        if not self.runMinimization(path, path_gromacs, pdbPrefix):
+        if not minimization(
+                self.path_runs.get_path_execution(), self.opts.galaxyroot, pdbPrefix):
             raise Exception("The script of minimization finished wrong.")
 
     def main(self):
@@ -813,72 +701,79 @@ class ProtPredEDADE(object):
         @type self: koala.ProtPredEDA.ProtPredEDA
         """
         try:
-            if(self.opts.inputEmail):
-                email = self.ClassColection.ValidateEmail(self.opts.inputEmail)
-                dir_execucao = self.ClassColection.CreateExecutionDirectory(email)
+            self.path_runs.set_path_execute()
+            if self.opts.inputEmail:
+                email = validate_email(self.opts.inputEmail)
+                self.path_runs.set_execution_directory(email)
             else:
-                dir_execucao = self.ClassColection.CreateExecutionDirectory()
+                self.path_runs.set_execution_directory()
 
-            self.path_execute = self.ClassColection.getPathExecute() + dir_execucao
-
-            self.sequence = self.ClassColection.CreateLocalFastaFile(
-                    self.path_execute,
+            self.sequence = create_local_fasta_file(
+                    self.path_runs.get_path_execution(),
                     self.opts.fromFasta,
                     self.opts.SequenceFile,
-                    self.opts.toolname)
+                    self.opts.toolname,
+                    self.framework)
 
-            self.ClassColection.CopyNecessaryFiles(self.path_execute)
+            copy_necessary_files(
+                self.path_runs.get_path_execute(),
+                self.path_runs.get_path_execution(),
+                self.framework.get_framework())
 
             # Config
-            self.ClassColection.setParameter('OptimMethod', 'de')
-            self.ClassColection.setParameter('MaxEval', self.opts.MaxEval)
-            self.ClassColection.setParameter('Threshold', self.opts.Threshold)
+            self.framework.set_parameter('OptimMethod', 'de')
+            self.framework.set_parameter('MaxEval', self.opts.MaxEval)
+            self.framework.set_parameter('Threshold', self.opts.Threshold)
 
             # FitnessPSP
-            self.ClassColection.setParameter('VanderWaals', self.opts.VanderWaals)
+            self.framework.set_parameter('VanderWaals', self.opts.VanderWaals)
             # ClassColection.setParameter('SASA', self.opts.SASA)
-            self.ClassColection.setParameter('Coulomb', self.opts.Coulomb)
-            self.ClassColection.setParameter('Solvatation', self.opts.Solvatation)
-            self.ClassColection.setParameter('HydrogenBond', self.opts.HydrogenBond)
-            self.ClassColection.setParameter('Torsion', self.opts.Torsion)
-            self.ClassColection.setParameter('UseAngleDB', self.opts.UseAngleDB)
-            self.ClassColection.setParameter('AminoAcidL', self.opts.AminoAcidL)
+            self.framework.set_parameter('Coulomb', self.opts.Coulomb)
+            self.framework.set_parameter('Solvatation', self.opts.Solvatation)
+            self.framework.set_parameter('HydrogenBond', self.opts.HydrogenBond)
+            self.framework.set_parameter('Torsion', self.opts.Torsion)
+            self.framework.set_parameter('UseAngleDB', self.opts.UseAngleDB)
+            self.framework.set_parameter('AminoAcidL', self.opts.AminoAcidL)
 
             # DE
-            self.ClassColection.setParameter('PopSize', self.opts.PopSize)
-            self.ClassColection.setParameter('OffSize', self.opts.OffSize)
-            self.ClassColection.setParameter('CrossoverRate', self.opts.CrossoverRate)
-            self.ClassColection.setParameter('FRate', self.opts.FRate)
+            self.framework.set_parameter('PopSize', self.opts.PopSize)
+            self.framework.set_parameter('OffSize', self.opts.OffSize)
+            self.framework.set_parameter('CrossoverRate', self.opts.CrossoverRate)
+            self.framework.set_parameter('FRate', self.opts.FRate)
 
             # SelectionConfig
-            self.ClassColection.setParameter('SelSize', self.opts.SelSize)
-            self.ClassColection.setParameter('TouSize', self.opts.TouSize)
-            self.ClassColection.setParameter('SelMethod', self.opts.SelMethod)
+            self.framework.set_parameter('SelSize', self.opts.SelSize)
+            self.framework.set_parameter('TouSize', self.opts.TouSize)
+            self.framework.set_parameter('SelMethod', self.opts.SelMethod)
 
-            self.ClassColection.CreateConfigurationFile(self.path_execute)
+            create_configuration_file(
+                self.path_runs.get_path_execution(), self.framework)
 
-            self.ClassColection.setCommand('ProtPredEDA', 'protpred')
+            self.framework.set_command(
+                self.path_runs.get_path_execution(),
+                'protpred')
 
-            config = self.ClassColection.getConfigurationFile('input.ini')
+            config = 'input.ini'
 
-            cl = [self.ClassColection.getCommand(), config, '&']
+            cl = [self.framework.get_command(), config, '&']
 
             retProcess = subprocess.Popen(
                 cl, 0, stdout=None,  stderr=None, shell=False)
             retCode = retProcess.wait()
             if(retCode != 0):
-                self.ClassColection.ShowErrorMessage(
+                show_error_message(
                     "The ProtPred-EDA framework finished wrong.\nContact the system administrator.")
 
-            self.ClassColection.copyFilesToExecuteFolder(self.path_execute, 'ProtPredEDA_DE')
+            copy_files_to_execute_folder(
+                self.path_runs.get_path_execution(),
+                'ProtPredEDA_DE')
 
             if(self.opts.runMinimization == 'true'):
-                self.minimization(
-                    self.path_execute,
-                    self.ClassColection.getPathGromacs(),
-                    "ProtPredEDA_DE")
+                self.do_minimization("ProtPredEDA_DE")
 
-            self.build_images()
+            pdbs = sorted(list_directory(self.path_runs.get_path_execution(), '*.pdb'))
+
+            build_images(pdbs, self.path_runs.get_path_execution())
 
             path_output, file_output = os.path.split(self.opts.filehtml)
 
@@ -891,23 +786,22 @@ class ProtPredEDADE(object):
 
             self.opts.htmlfiledir = htmldir
 
-            result, filesHtml = self.ClassColection.getResultFiles(
-                self.path_execute, self.opts.toolname)
+            result, filesHtml = get_result_files(
+                self.path_runs.get_path_execution(),
+                self.opts.toolname)
 
-            self.ClassColection.sendOutputResults(path_output, file_output, result)
+            send_output_results(path_output, file_output, result)
 
-            self.ClassColection.sendOutputFilesHtml(self.opts.htmlfiledir, filesHtml)
-            self.ClassColection.sendOutputFilesHtml(self.opts.htmlfiledir, [result])
-
-            pdbs = sorted(self.ClassColection.listDirectory(self.path_execute, '*.pdb'))
+            send_output_files_html(self.opts.htmlfiledir, filesHtml)
+            send_output_files_html(self.opts.htmlfiledir, [result])
 
             if self.opts.createCompressFile == "True":
-                if self.ClassColection.compressFiles(pdbs, self.path_execute, "ProtPredEDA-DE"):
+                if compress_files(pdbs, self.path_runs.get_path_execution(), "ProtPredEDA-DE"):
                     path_output, file_output = os.path.split(self.opts.outputZip)
-                    self.ClassColection.sendOutputResults(
+                    send_output_results(
                             path_output,
                             file_output,
-                            os.path.join(self.path_execute, 'ProtPredEDA-DE.zip'))
+                            os.path.join(self.path_runs.get_path_execution(), 'ProtPredEDA-DE.zip'))
 
             self.makeHtml()
 
@@ -915,16 +809,16 @@ class ProtPredEDADE(object):
                 self.makeHtmlWithJMol(pdbs[0])
 
             if(self.opts.inputEmail):
-                self.ClassColection.SendEmail(
+                send_email(
                         'adefelicibus@gmail.com',
                         email,
                         '%s Execution on Galaxy - Cloud USP' % self.opts.toolname,
-                        self.ClassColection.getMessageEmail(self.opts.toolname),
+                        get_message_email(self.opts.toolname),
                         [],
                         'smtp.gmail.com')
 
         except Exception, e:
-            self.ClassColection.ShowErrorMessage(str(e))
+            show_error_message(str(e))
 
 if __name__ == '__main__':
 
@@ -950,8 +844,6 @@ if __name__ == '__main__':
     parser.add_argument('SelMethod')
     parser.add_argument('CrossoverRate')
     parser.add_argument('FRate')
-    # parser.add_argument('output')
-    # parser.add_argument('outputdir')
     parser.add_argument('filehtml')
     parser.add_argument('htmlfiledir')
     parser.add_argument('createCompressFile')
@@ -966,9 +858,9 @@ if __name__ == '__main__':
 
     protpred_eda = ProtPredEDADE(ap)
 
-    protpred_eda.ClassColection.setjobStart(datetime.datetime.now())
+    protpred_eda.time_execution.set_job_start(datetime.datetime.now())
     protpred_eda.initTime = datetime.datetime.now()
 
     cProfile.run('protpred_eda.main()', 'profileout.txt')
 
-    protpred_eda.ClassColection.clearPathExecute(protpred_eda.path_execute)
+    clear_path_execute(protpred_eda.path_runs.get_path_execution())
