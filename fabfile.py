@@ -9,24 +9,6 @@ CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
 
 LOGGED_USER = getpass.getuser()
 
-# Configurações para o Cloud USP - Ribeirão
-
-# IP Externo 200.144.255.35
-
-# VM                 (22)     (80)
-# docking01     2221    8084
-# docking02     2227    8085
-# docking03     2228    8086
-# docking04     2229    8087
-# docking05     2230    8088
-# docking06     2231    8089
-# docking07     2232    8090
-# docking08     2233    8091
-# docking09     2234    8092
-# docking10     2235    8093
-# docking11     2236    8094
-# docking12     2224    8095
-
 # USER THAT WILL EXECUTE THE KOALA SERVER
 user = 'alexandre'
 
@@ -38,10 +20,15 @@ passwd_db = 'koala'
 # IP SERVER
 ip_server = "200.144.255.35"
 
-#  LOCAL
-folder_local = '/home/%s/koala-test/' % user
-galaxy_path = '/home/%s/koala-test/galaxy/' % user
-data_path = '/home/%s/koala-test/dados/' % user
+#  LOCAL PATH
+folder_local = '/home/%s/koala/' % user
+galaxy_path = '/home/%s/koala/galaxy/' % user
+data_path = '/home/%s/koala/dados/' % user
+
+#  SERVER PATH
+folder_local = '/home/%s/koala/' % user
+galaxy_path = '/home/%s/koala/galaxy/' % user
+data_path = '/home/%s/koala/dados/' % user
 
 # GALAXY
 galaxy_user = 'galaxyproject'
@@ -61,64 +48,14 @@ koala_repository = 'git@github.com:%s/%s.git' % (koala_user, koala_project)
 # koala server
 username = 'koala'
 port = 2221
-port_http = 8084
+port_http = 8080
 koala_server = '%s@%s -p %s' % (username, ip_server, port)
 env_path = '/home/%s/env/bin/activate' % username
-
-# # pulsar server 1, docking03
-# username = 'koala'
-# port_http = 8086
-# pulsar_server_1 = '%s@%s' % (username, ip_server)
-
-# # pulsar server 2, docking04
-# username = 'koala'
-# port_http = 8087
-# pulsar_server_2 = '%s@%s' % (username, ip_server)
-
-# # pulsar server 3, docking05
-# username = 'koala'
-# port_http = 8088
-# pulsar_server_3 = '%s@%s' % (username, ip_server)
-
-# # pulsar server 4, docking06
-# username = 'koala'
-# port_http = 8089
-# pulsar_server_4 = '%s@%s' % (username, ip_server)
-
-# pulsar server 5, docking07
-# username = 'koala'
-# port_http = 8090
-# pulsar_server_5 = '%s@%s' % (username, ip_server)
-
-# # pulsar server 6, docking08
-# username = 'koala'
-# port_http = 8091
-# pulsar_server_6 = '%s@%s' % (username, ip_server)
 
 # # pulsar server 7, docking09
 username = 'koala'
 port_http = 8092
 pulsar_server_7 = '%s@%s' % (username, ip_server)
-
-# # pulsar server 8, docking10
-# username = 'koala'
-# port_http = 8093
-# pulsar_server_8 = '%s@%s' % (username, ip_server)
-
-# # pulsar server 9, docking11
-# username = 'koala'
-# port_http = 8094
-# pulsar_server_9 = '%s@%s' % (username, ip_server)
-
-# # pulsar server 10, docking12
-# username = 'koala'
-# port_http = 8095
-# pulsar_server_10 = '%s@%s' % (username, ip_server)
-
-# # pulsar server 11, docking2
-# username = 'koala'
-# port_http = 8085
-# pulsar_server_11 = '%s@%s' % (username, ip_server)
 
 # hosts
 # env.hosts = ["myserver.net"]
@@ -640,8 +577,8 @@ def installGROMACSlocal():
                 local('make -j 8')
                 local('sudo make install')
     with lcd('%sprograms' % folder_local):
-        local('rm -r gromacs-4.6.5')
-        local('rm gromacs-4.6.5.tar.gz')
+        local('sudo rm -r gromacs-4.6.5')
+        local('sudo rm gromacs-4.6.5.tar.gz')
 
 
 def setVirtualenvlocal():
@@ -702,27 +639,42 @@ def install2PGBuildConformationLocal():
         local('sudo ln -s %sprograms/%s/src/Gromacs_pop_initial .' % (folder_local, path))
 
 
-def installMEAMT():
-    # cp ~/programs/meamt/aemt-mo-up2
-    # cp ~/programs/meamt/aemt-pop-up2
-    pass
+def installMEAMTLocal():
+    with lcd("%sprograms" % folder_local):
+        local('cp %s/dependencies/meamt.zip .' % CURRENT_PATH)
+        local('unzip meamt.zip')
+        with lcd('meamt'):
+            local('cp aemt-mo-up2 %sexecute/' % data_path)
+            local('cp aemt-pop-up2 %sexecute/' % data_path)
 
 
-def installDependenciesLocal():
-    pass
+def installProtPredEDALocal():
+    with lcd("%sprograms" % folder_local):
+        local('cp %s/dependencies/protpred %sexecute'
+            % (CURRENT_PATH, data_path))
 
 
 def cloneGalaxyLocal():
     with lcd('%sprograms' % folder_local):
         local('git clone %s' % galaxy_repository)
-        with lcd('%s' % galaxy_project):
-            # local("sudo /bin/bash -l -c 'mkvirtualenv %s'" % galaxy_project)
-            # local("sudo chown -R %s:%s %senvs/%s" % (user, user, folder_local, galaxy_project))
-            local('sudo pip install -r requirements.txt')
+        # with lcd('%s' % galaxy_project):
+        #     local("/bin/bash -l -c 'mkvirtualenv %s'" % galaxy_project)
+        #     local("sudo chown -R %s:%s %senvs/%s" % (user, user, folder_local, galaxy_project))
+
+
+def installJsmolLocal():
+    with lcd("%sprograms" % folder_local):
+        local('cp %s/dependencies/jsmol.zip .' % CURRENT_PATH)
+        local('unzip jsmol.zip')
+        local('mkdir -p %sprograms/%s/static/js' %
+            (folder_local, galaxy_project))
+        local('ln -s %sprograms/jsmol %sprograms/%s/static/js/' %
+            (folder_local, folder_local, galaxy_project))
 
 
 # def buildEnvGalaxyLocal():
-#     local("/bin/bash -l -c 'workon %s'" % galaxy_project)
+#     local(". %senvs/%s/bin/activate"
+#         % (folder_local, galaxy_project))
 #     local('pip install -U distribute')
 #     local('pip install pycrypto')
 #     local('pip install natsort')
@@ -731,7 +683,6 @@ def cloneGalaxyLocal():
 #     local('pip install pyopenssl ndg-httpsclient pyasn1')
 #     local('pip install pycurl')
 #     local('pip install fabric')
-#     local("/bin/bash -l -c 'deactivate'")
 
 
 def setKoalaLibLinksLocal():
@@ -805,6 +756,7 @@ def copyExecuteFilesLocal():
 
 
 def setLibOpenMPILocal():
+    # TODO: verify is the link already exists
     local('sudo ln -s /usr/lib/libmpi_cxx.so.0.0.1 /usr/lib/libmpi_cxx.so.1')
     local(
         'sudo ln -s /usr/lib/openmpi/lib/libmpi_cxx.so.0.0.1 /usr/lib/openmpi/lib/libmpi_cxx.so.1')
@@ -842,17 +794,29 @@ def createDBKoalaLocal():
         " sudo -u postgres psql" % (bd, user_db))
 
 
+def configureKoalaServer():
+    # TODO: configure galaxy.ini according to http_port, directory and others here
+    pass
+
+def configureNginxLocal():
+    # TODO: find a way to configure the nginx server local, because upload_template only working remotely
+    pass
+
+
 def runKoalaLocal():
     log('Running Koala server local')
+    # local(". %senvs/%s/bin/activate"
+        # % (folder_local, galaxy_project))
     local('sh %sprograms/%s/run.sh --reload' % (folder_local, galaxy_project))
 
 
-def newKoalaLocal():
+def newKoalaLocal(new_user=None):
     """Create a new Koala Server local"""
     log('Creating a new Koala Server local')
 
     localLocale()
-    # createLocalUser()
+    if new_user:
+        createLocalUser()
     updateLocal()
     upgradeLocal()
     buildLocal()
@@ -864,14 +828,18 @@ def newKoalaLocal():
     setPythonPathLocal()
     installPyHighchartsLocal()
     install2PGCartesianLocal()
+    install2PGBuildConformationLocal()
+    installMEAMTLocal()
+    installProtPredEDALocal()
     cloneGalaxyLocal()
-    buildEnvGalaxyLocal()
+    installJsmolLocal()
+    # buildEnvGalaxyLocal()
     setKoalaLibLinksLocal()
     copyExecuteFilesLocal()
     setLibOpenMPILocal()
     installScriptsLocal()
     createDBKoalaLocal()
-    runKoalaLocal()
+    # runKoalaLocal()
 
 # lixo
 # # ------------------------------------------------------------
