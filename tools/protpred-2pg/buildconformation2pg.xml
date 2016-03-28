@@ -91,7 +91,7 @@
         </conditional>
         <param type="hidden" name="toolname" value="2PG_BuildConformation_Tool"/>
         <conditional name="name_output">
-            <param name="chk_name" type="boolean" label="Define a name to the output file?" help="" checked="False"/>
+            <param name="chk_name" type="boolean" label="Define a name to the output file?" help="" />
             <when value="true">
                 <param name="output_name" type="text" optional="false" size="50" label="New output file name" />
             </when>
