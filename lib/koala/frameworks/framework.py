@@ -15,7 +15,6 @@ class Framework(object):
         super(Framework, self).__init__()
 
         self.framework = framework
-        self.pathExecution = ''
         self.command = ''
         self.program = ''
 

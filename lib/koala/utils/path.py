@@ -41,13 +41,13 @@ class PathRuns(object):
             except Exception, e:
                 show_error_message("Error when CreateExecutionDirectory\n%s" % e)
 
-            self.pathExecution = os.path.join(self.get_path_execute(), nome_diretorio)
+            self.path_execution = os.path.join(self.get_path_execute(), nome_diretorio)
 
         except Exception, e:
             show_error_message("Error when CreateExecutionDirectory\n%s" % e)
 
     def get_path_execution(self):
-        return self.pathExecution
+        return self.path_execution
 
     def set_path_execute(self):
         try:
