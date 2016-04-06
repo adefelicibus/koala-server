@@ -634,6 +634,7 @@ def installGROMACSlocal():
 
 
 def installVINA_local():
+    log('Installing VINA package local')
     with lcd('%sprograms' % folder_local):
         local('sudo mkdir autodock-vina')
         local('sudo chown %s:%s autodock-vina' % (LOGGED_USER, LOGGED_USER))
@@ -646,18 +647,20 @@ def installVINA_local():
             local('sudo rm -rf autodock_vina_1_1_2_linux_x86.tgz')
             local('sudo rm -rf autodock_vina_1_1_2_linux')
             local(
-                'sudo echo "export VINA=%sprograms/autodock-vina/bin/vina" >> /home/%s/.bashrc' %
-                folder_local)
+                'sudo echo "export VINA=%sprograms/autodock-vina/bin/vina" >> /home/%s/.bashrc' % (
+                    folder_local, user))
             local("/bin/bash -l -c 'source ~/.bashrc'")
 
 
 def installMGL_local():
+    log('Installing MGL package local')
     with lcd('%sprograms' % folder_local):
         local('sudo mkdir mgltools')
         local('sudo chown %s:%s mgltools' % (LOGGED_USER, LOGGED_USER))
         with lcd('mgltools'):
-            local('sudo wget http://mgltools.scripps.edu/downloads/downloads/tars/releases/ \
-                REL1.5.6/mgltools_x86_64Linux2_1.5.6.tar.gz')
+            local(
+                'sudo wget http://mgltools.scripps.edu/downloads/downloads/tars/releases/'
+                'REL1.5.6/mgltools_x86_64Linux2_1.5.6.tar.gz')
             local('sudo tar zxvf mgltools_x86_64Linux2_1.5.6.tar.gz')
             local('sudo chown %s:%s mgltools_x86_64Linux2_1.5.6' % (LOGGED_USER, LOGGED_USER))
             with lcd('mgltools_x86_64Linux2_1.5.6'):
@@ -666,11 +669,11 @@ def installMGL_local():
             local('sudo rm -rf mgltools_x86_64Linux2_1.5.6')
             local('sudo ./install.sh -d %sprograms/mgltools' % folder_local)
             local('sudo echo "export PATH=%sprograms/mgltools/bin:$PATH\n'
-                  'export SCRIPT_LIGAND4=%sprograms/mgltools/MGLToolsPckgs/ \
-                  AutoDockTools/Utilities24/prepare_ligand4.py\n'
+                  'export SCRIPT_LIGAND4=%sprograms/mgltools/MGLToolsPckgs/'
+                  'AutoDockTools/Utilities24/prepare_ligand4.py\n'
                   'export PYTHONSH=%sprograms/mgltools/bin/pythonsh\n'
-                  'export SCRIPT_RECEPTOR4=%sprograms/mgltools/MGLToolsPckgs/ \
-                  AutoDockTools/Utilities24/prepare_receptor4.py\n'
+                  'export SCRIPT_RECEPTOR4=%sprograms/mgltools/MGLToolsPckgs/'
+                  'AutoDockTools/Utilities24/prepare_receptor4.py\n'
                   'alias pmv=\'%sprograms/mgltools/bin/pmv\'\n'
                   'alias adt=\'%sprograms/mgltools/bin/adt\'\n'
                   'alias vision=\'%sprograms/mgltools/bin/vision\'\n'
@@ -948,7 +951,6 @@ def newKoalaLocal(new_user=None):
     installGROMACSlocal()
     installVINA_local()
     installMGL_local()
-    setVirtualenvlocal()
     setExportLocal()
     installPyHighchartsLocal()
     install2PGCartesianLocal()
