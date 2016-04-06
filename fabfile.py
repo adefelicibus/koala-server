@@ -9,26 +9,8 @@ CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
 
 LOGGED_USER = getpass.getuser()
 
-# Configurações para o Cloud USP - Ribeirão
-
-# IP Externo 200.144.255.35
-
-# VM                 (22)     (80)
-# docking01     2221    8084
-# docking02     2227    8085
-# docking03     2228    8086
-# docking04     2229    8087
-# docking05     2230    8088
-# docking06     2231    8089
-# docking07     2232    8090
-# docking08     2233    8091
-# docking09     2234    8092
-# docking10     2235    8093
-# docking11     2236    8094
-# docking12     2224    8095
-
 # USER THAT WILL EXECUTE THE KOALA SERVER
-user = 'alexandre'
+user = 'koala'
 
 # Settings to Postgres Database
 bd = 'koaladb'
@@ -36,89 +18,44 @@ user_db = 'koala'
 passwd_db = 'koala'
 
 # IP SERVER
-ip_server = "200.144.255.35"
+ip_server = "0.0.0.0"
 
-#  LOCAL
-folder_local = '/home/%s/koala-test/' % user
-galaxy_path = '/home/%s/koala-test/galaxy/' % user
-data_path = '/home/%s/koala-test/dados/' % user
+#  LOCAL PATH
+folder_local = '/home/%s/koala/' % user
+galaxy_path = '/home/%s/koala/galaxy/' % user
+data_path = '/home/%s/koala/dados/' % user
+
+#  SERVER PATH
+folder_local = '/home/%s/koala/' % user
+galaxy_path = '/home/%s/koala/galaxy/' % user
+data_path = '/home/%s/koala/dados/' % user
 
 # GALAXY
 galaxy_user = 'galaxyproject'
 galaxy_project = 'galaxy'
-galaxy_repository = 'git@github.com:%s/%s.git' % (galaxy_user, galaxy_project)
+galaxy_repository = 'https://github.com/%s/%s.git -b master' % (galaxy_user, galaxy_project)
 
 # PULSAR
 pulsar_user = 'galaxyproject'
 pulsar_project = 'pulsar'
-pulsar_repository = 'git@github.com:%s/%s.git -b master' % (pulsar_user, pulsar_project)
+pulsar_repository = 'https://github.com/%s/%s.git -b master' % (pulsar_user, pulsar_project)
 
 # KOALA
 koala_user = 'adefelicibus'
 koala_project = 'koala-server'
-koala_repository = 'git@github.com:%s/%s.git' % (koala_user, koala_project)
+koala_repository = 'https://github.com/%s/%s.git -b master' % (koala_user, koala_project)
 
 # koala server
 username = 'koala'
 port = 2221
-port_http = 8084
+port_http = 8080
 koala_server = '%s@%s -p %s' % (username, ip_server, port)
 env_path = '/home/%s/env/bin/activate' % username
-
-# # pulsar server 1, docking03
-# username = 'koala'
-# port_http = 8086
-# pulsar_server_1 = '%s@%s' % (username, ip_server)
-
-# # pulsar server 2, docking04
-# username = 'koala'
-# port_http = 8087
-# pulsar_server_2 = '%s@%s' % (username, ip_server)
-
-# # pulsar server 3, docking05
-# username = 'koala'
-# port_http = 8088
-# pulsar_server_3 = '%s@%s' % (username, ip_server)
-
-# # pulsar server 4, docking06
-# username = 'koala'
-# port_http = 8089
-# pulsar_server_4 = '%s@%s' % (username, ip_server)
-
-# pulsar server 5, docking07
-# username = 'koala'
-# port_http = 8090
-# pulsar_server_5 = '%s@%s' % (username, ip_server)
-
-# # pulsar server 6, docking08
-# username = 'koala'
-# port_http = 8091
-# pulsar_server_6 = '%s@%s' % (username, ip_server)
 
 # # pulsar server 7, docking09
 username = 'koala'
 port_http = 8092
 pulsar_server_7 = '%s@%s' % (username, ip_server)
-
-# # pulsar server 8, docking10
-# username = 'koala'
-# port_http = 8093
-# pulsar_server_8 = '%s@%s' % (username, ip_server)
-
-# # pulsar server 9, docking11
-# username = 'koala'
-# port_http = 8094
-# pulsar_server_9 = '%s@%s' % (username, ip_server)
-
-# # pulsar server 10, docking12
-# username = 'koala'
-# port_http = 8095
-# pulsar_server_10 = '%s@%s' % (username, ip_server)
-
-# # pulsar server 11, docking2
-# username = 'koala'
-# port_http = 8085
-# pulsar_server_11 = '%s@%s' % (username, ip_server)
 
 # hosts
 # env.hosts = ["myserver.net"]
@@ -184,7 +121,6 @@ def build_server():
     sudo('apt-get -y install libcurl4-gnutls-dev')
     sudo('apt-get -y install libffi-dev')
     sudo('apt-get -y install python-numpy')
-    # reboot()
 
 
 def createDirectories_server(path=None):
@@ -331,7 +267,7 @@ def setPythonPath():
 
 def installPyHighcharts_server():
     with cd('~/programs'):
-        run('git clone git@github.com:adefelicibus/PyHighcharts.git')
+        run('git cloen https://github.com/adefelicibus/PyHighcharts.git')
         with cd('/usr/lib/python2.7/dist-packages'):
             sudo('ln -s /home/%s/programs/PyHighcharts/ PyHighcharts' % user)
 
@@ -339,7 +275,7 @@ def installPyHighcharts_server():
 def install2PGCartesian():
     path = '2pg_cartesian'
     with cd("~/programs"):
-        run('git clone git@github.com:rodrigofaccioli/2pg_cartesian.git %s' % path)
+        run('git clone https://github.com/rodrigofaccioli/2pg_cartesian.git %s' % path)
         with cd('~/programs/%s' % path):
             run('mkdir build')
             with cd('build'):
@@ -432,7 +368,6 @@ def setPulsarConfig():
     sed(
         '/home/koala/pulsar/server.ini',
         before='8913',
-        # before='8000',
         after='%s' % port_http,
         use_sudo=True)
     comment(
@@ -580,14 +515,16 @@ def log(message):
 
 
 def localLocale():
+    log('Setting locale local')
     local('sudo locale-gen --no-purge --lang pt_BR')
 
 
 def createLocalUser(user_senha=None):
-    """Criar um usuário no servidor"""
+    log('Create a new user local')
+    """Create a new user local"""
 
     if not user_senha:
-        user_senha = raw_input('Digite a senha do usuário: ')
+        user_senha = raw_input('Digite a senha do usuário "%s": ' % user)
 
     log('Criando usuário {0}'.format(user))
     local(
@@ -599,24 +536,22 @@ def createLocalUser(user_senha=None):
     print '\n============================================================='
 
 
-# Update local
 def updateLocal():
-    """Atualizando pacotes no servidor"""
-    log('Atualizando pacotes')
+    """Updating packages local"""
+    log('Updating packages local')
     local('sudo apt-get -y update')
 
 
-# Upgrade local
 def upgradeLocal():
     """Updating programs"""
     log('Updating programs')
     local('sudo apt-get -y upgrade')
 
 
-# install system dependencies
 def buildLocal():
     """Install all necessary packages"""
     log('Installing all necessary packages')
+    local('sudo apt-get -y install wget')
     local('sudo apt-get -y install git')
     local('sudo apt-get -y install python-dev')
     local('sudo apt-get -y install python-pip')
@@ -624,7 +559,6 @@ def buildLocal():
     local('sudo apt-get -y install python-virtualenv')
     local('sudo apt-get -y install pymol')
     local('sudo apt-get -y install postgresql postgresql-contrib')
-    local('sudo pip install virtualenvwrapper')
     local('sudo apt-get -y install openmpi-bin openmpi-doc libopenmpi-dev')
     local('sudo apt-get -y install automake')
     local('sudo apt-get -y install nginx supervisor')
@@ -632,97 +566,105 @@ def buildLocal():
     local('sudo apt-get -y install libffi-dev')
     local('sudo apt-get -y install python-numpy')
     local('sudo apt-get -y install gsl-bin libgsl0-dev')
+    local('sudo apt-get -y install libpng-dev')
+    local('sudo apt-get -y install libfreetype6-dev')
+    local('sudo apt-get -y install libblas-dev liblapack-dev libatlas-base-dev gfortran')
 
 
-def createDirectoriesLocal(path=None):
+def createDirectoriesLocal():
+    log('Creating directories local')
     if(not os.path.exists('%sprograms' % folder_local)):
         local('sudo mkdir -p %sprograms' % folder_local)
-    if(not os.path.exists('%senvs' % folder_local)):
-        local('sudo mkdir -p %senvs' % folder_local)
     if(not os.path.exists('%sexecute' % data_path)):
         local('sudo mkdir -p %sexecute' % data_path)
 
-    local('sudo chown %s:%s %senvs' % (user, user, folder_local))
-    local('sudo chown %s:%s %sprograms' % (user, user, folder_local))
-    local('sudo chown -R %s:%s %s' % (user, user, data_path))
-
 
 def installZlibLocal():
+    log('Installing zlib library local')
     with lcd('%sprograms' % folder_local):
-        local('wget http://zlib.net/zlib-1.2.8.tar.gz')
-        local('tar xzf zlib-1.2.8.tar.gz')
+        local('sudo wget http://zlib.net/zlib-1.2.8.tar.gz')
+        local('sudo tar xzf zlib-1.2.8.tar.gz')
         with lcd('zlib-1.2.8'):
-            local('./configure')
-            local('make')
+            local('sudo ./configure')
+            local('sudo make')
             local('sudo make install')
     with lcd('%sprograms' % folder_local):
-        local('rm zlib-1.2.8.tar.gz')
+        local('sudo rm zlib-1.2.8.tar.gz')
+        local('sudo rm -r zlib-1.2.8')
 
 
 def installFFTWlocal():
+    log('Installing FFTW library local')
     with lcd('%sprograms' % folder_local):
-        local('wget http://www.fftw.org/fftw-3.3.4.tar.gz')
-        local('tar xzf fftw-3.3.4.tar.gz')
+        local('sudo wget http://www.fftw.org/fftw-3.3.4.tar.gz')
+        local('sudo tar xzf fftw-3.3.4.tar.gz')
         with lcd('fftw-3.3.4'):
-            local('./configure --enable-float')
-            local('make')
+            local('sudo ./configure --enable-float')
+            local('sudo make')
             local('sudo make install')
     with lcd('%sprograms' % folder_local):
-        local('rm fftw-3.3.4.tar.gz')
+        local('sudo rm fftw-3.3.4.tar.gz')
+        local('sudo rm -r fftw-3.3.4')
 
 
 def installGROMACSlocal():
+    log('Installing GROMACS package local')
     with lcd('%sprograms' % folder_local):
-        local('wget ftp://ftp.gromacs.org/pub/gromacs/gromacs-4.6.5.tar.gz')
-        local('tar xzf gromacs-4.6.5.tar.gz')
+        local('sudo wget ftp://ftp.gromacs.org/pub/gromacs/gromacs-4.6.5.tar.gz')
+        local('sudo tar xzf gromacs-4.6.5.tar.gz')
+        local('sudo chown %s:%s gromacs-4.6.5' % (LOGGED_USER, LOGGED_USER))
         with lcd('gromacs-4.6.5'):
-            local('mkdir build')
+            local('sudo mkdir build')
             with lcd('build'):
                 local(
-                    'cmake .. -DSHARED_LIBS_DEFAULT=OFF '
+                    'sudo cmake .. -DSHARED_LIBS_DEFAULT=OFF '
                     '-DBUILD_SHARED_LIBS=OFF -DGMX_PREFER_STATIC_LIBS=YES '
                     '-DGMX_BUILD_OWN_FFTW=OFF -DFFTW_LIBRARY=/usr/local/lib/libfftw3f.a '
                     '-DFFTW_INCLUDE_DIR=/usr/local/include/ '
                     '-DGMX_GSL=OFF -DGMX_DEFAULT_SUFFIX=ON -DGMX_GPU=OFF '
                     '-DGMX_MPI=OFF -DGMX_DOUBLE=OFF '
-                    '-DGMX_INSTALL_PREFIX=%sprograms/gmx-4.6.5/no_mpi/ '
-                    '-DCMAKE_INSTALL_PREFIX=%sprograms/gmx-4.6.5/no_mpi/' % (
+                    '-DGMX_INSTALL_PREFIX=%sprograms/gmx-4.6.5/ '
+                    '-DCMAKE_INSTALL_PREFIX=%sprograms/gmx-4.6.5/' % (
                         folder_local, folder_local))
-                local('make -j 8')
+                local('sudo make -j 8')
                 local('sudo make install')
     with lcd('%sprograms' % folder_local):
-        local('rm -r gromacs-4.6.5')
-        local('rm gromacs-4.6.5.tar.gz')
+        local('sudo rm -r gromacs-4.6.5')
+        local('sudo rm gromacs-4.6.5.tar.gz')
 
 
 def installVINA_local():
     with lcd('%sprograms' % folder_local):
-        local('mkdir autodock-vina')
+        local('sudo mkdir autodock-vina')
+        local('sudo chown %s:%s autodock-vina' % (LOGGED_USER, LOGGED_USER))
         with lcd('autodock-vina'):
-            local('wget http://vina.scripps.edu/download/autodock_vina_1_1_2_linux_x86.tgz')
-            local('tar zxvf autodock_vina_1_1_2_linux_x86.tgz')
+            local('sudo wget http://vina.scripps.edu/download/autodock_vina_1_1_2_linux_x86.tgz')
+            local('sudo tar zxvf autodock_vina_1_1_2_linux_x86.tgz')
+            local('sudo chown %s:%s autodock_vina_1_1_2_linux_x86' % (LOGGED_USER, LOGGED_USER))
             with lcd('autodock_vina_1_1_2_linux_x86'):
-                local('mv * ../')
-            local('rm -rf autodock_vina_1_1_2_linux_x86.tgz')
-            local('rm -rf autodock_vina_1_1_2_linux')
+                local('sudo mv * ../')
+            local('sudo rm -rf autodock_vina_1_1_2_linux_x86.tgz')
+            local('sudo rm -rf autodock_vina_1_1_2_linux')
             local(
-                'sudo echo "export VINA=%sprograms/autodock-vina/bin/vina" >> ~/.bashrc' %
+                'sudo echo "export VINA=%sprograms/autodock-vina/bin/vina" >> /home/%s/.bashrc' %
                 folder_local)
             local("/bin/bash -l -c 'source ~/.bashrc'")
 
 
 def installMGL_local():
     with lcd('%sprograms' % folder_local):
-        local('mkdir mgltools')
+        local('sudo mkdir mgltools')
+        local('sudo chown %s:%s mgltools' % (LOGGED_USER, LOGGED_USER))
         with lcd('mgltools'):
-            local('wget http://mgltools.scripps.edu/downloads/downloads/tars/releases/ \
+            local('sudo wget http://mgltools.scripps.edu/downloads/downloads/tars/releases/ \
                 REL1.5.6/mgltools_x86_64Linux2_1.5.6.tar.gz')
-            local('tar zxvf mgltools_x86_64Linux2_1.5.6.tar.gz')
+            local('sudo tar zxvf mgltools_x86_64Linux2_1.5.6.tar.gz')
+            local('sudo chown %s:%s mgltools_x86_64Linux2_1.5.6' % (LOGGED_USER, LOGGED_USER))
             with lcd('mgltools_x86_64Linux2_1.5.6'):
-                local('mv * ../')
-            local('rm -rf mgltools_x86_64Linux2_1.5.6.tar.gz')
-            local('rm -rf mgltools_x86_64Linux2_1.5.6')
-            local('./install.sh -d %sprograms/mgltools' % folder_local)
+                local('sudo mv * ../')
+            local('sudo rm -rf mgltools_x86_64Linux2_1.5.6.tar.gz')
+            local('sudo rm -rf mgltools_x86_64Linux2_1.5.6')
+            local('sudo ./install.sh -d %sprograms/mgltools' % folder_local)
             local('sudo echo "export PATH=%sprograms/mgltools/bin:$PATH\n'
                   'export SCRIPT_LIGAND4=%sprograms/mgltools/MGLToolsPckgs/ \
                   AutoDockTools/Utilities24/prepare_ligand4.py\n'
@@ -732,113 +674,137 @@ def installMGL_local():
                   'alias pmv=\'%sprograms/mgltools/bin/pmv\'\n'
                   'alias adt=\'%sprograms/mgltools/bin/adt\'\n'
                   'alias vision=\'%sprograms/mgltools/bin/vision\'\n'
-                  'alias pythonsh=\'%sprograms/mgltools/bin/pythonsh\'" >> ~/.bashrc' %
+                  'alias pythonsh=\'%sprograms/mgltools/bin/pythonsh\'" >> /home/%s/.bashrc' %
                   (
                     folder_local, folder_local, folder_local, folder_local,
-                    folder_local, folder_local, folder_local, folder_local))
+                    folder_local, folder_local, folder_local, folder_local, user))
             local("/bin/bash -l -c 'source ~/.bashrc'")
 
 
-def setVirtualenvlocal():
-    local('echo "export WORKON_HOME=%senvs" >> ~/.bashrc' % folder_local)
-    local('echo "source /usr/local/bin/virtualenvwrapper.sh" >> ~/.bashrc')
-
-    local('echo "export WORKON_HOME=%senvs" >> ~/.profile' % folder_local)
-    local('echo "source /usr/local/bin/virtualenvwrapper.sh" >> ~/.profile')
-
-    local("/bin/bash -l -c 'source ~/.bashrc'")
-    local("/bin/bash -l -c 'source ~/.profile'")
-
-
-def setPythonPathLocal():
+def setExportLocal():
+    log('Creating some exports variables local')
+    if not os.path.exists("/home/%s/.bashrc" % user):
+        local('sudo touch /home/%s/.bashrc' % user)
     local(
-        'sudo echo "export PYTHONPATH=/usr/lib/python2.7/dist-packages:$PYTHONPATH\n'
-        'export PYTHONPATH=/usr/lib/python2.7/dist-packages/pymol:$PYTHONPATH\n'
-        'export PYTHONPATH=/usr/local/lib/python2.7/dist-packages:$PYTHONPATH\n'
-        'export PYTHONPATH=/usr/local/bin/pymol/modules:$PYTHONPATH\n'
-        'export MPI_DIR=/lib/openmpi\n'
-        'export PATH=/lib/openmpi/bin:$PATH\n'
-        'export LD_LIBRARY_PATH=/lib/openmpi/lib:$LD_LIBRARY_PATH" >> ~/.bashrc')
+        'echo "export MPI_DIR=/lib/openmpi\n'
+        'export LD_LIBRARY_PATH=/lib/openmpi/lib:$LD_LIBRARY_PATH" | \
+        sudo tee --append /home/%s/.bashrc'
+        % user)
 
     local("/bin/bash -l -c 'source ~/.bashrc'")
 
 
 def installPyHighchartsLocal():
+    log('Installing PyHighcharts local')
     with lcd('%sprograms' % folder_local):
-        local('git clone git@github.com:adefelicibus/PyHighcharts.git')
+        local('sudo mkdir PyHighcharts')
+        local('sudo chown %s:%s PyHighcharts' % (LOGGED_USER, LOGGED_USER))
+        local('git clone https://github.com/adefelicibus/PyHighcharts.git')
         with lcd('/usr/lib/python2.7/dist-packages'):
             local('sudo ln -s %sprograms/PyHighcharts/ PyHighcharts' % folder_local)
 
 
 def install2PGCartesianLocal():
+    log('Installing 2PG predictor local')
     path = '2pg_cartesian'
     with lcd("%sprograms" % folder_local):
-        local('git clone git@github.com:rodrigofaccioli/2pg_cartesian.git %s' % path)
+        local('sudo mkdir %s' % path)
+        local('sudo chown %s:%s %s' % (LOGGED_USER, LOGGED_USER, path))
+        local('git clone https://github.com/rodrigofaccioli/2pg_cartesian.git %s' % path)
         with lcd(path):
-            local('mkdir build')
+            local('sudo mkdir build')
             with lcd('build'):
-                local('cmake ..')
-                local('make')
+                local('sudo cmake ..')
+                local('sudo make')
                 local('sudo make install')
+    # TODO: test if 2pg_cartesian folder is really necessary
+    with lcd('%sprograms' % folder_local):
+        local('sudo rm -r %s' % path)
 
 
 def install2PGBuildConformationLocal():
+    log('Installing 2PG build conformation local')
     path = '2pg_build_conformation'
     with lcd("%sprograms" % folder_local):
-        local('git clone git@github.com:rodrigofaccioli/2pg_build_conformation.git %s' % path)
+        local('sudo mkdir %s' % path)
+        local('sudo chown %s:%s %s' % (LOGGED_USER, LOGGED_USER, path))
+        local('git clone https://github.com/rodrigofaccioli/2pg_build_conformation.git %s' % path)
         with lcd('%s/src' % path):
-            local('make')
+            local('sudo make')
     with lcd("/usr/local/bin"):
-        local('sudo ln -s %sprograms/%s/src/Gromacs_pop_initial .' % (folder_local, path))
+        local('sudo ln -s %sprograms/%s/src/protpred-Gromacs_pop_initial .' % (folder_local, path))
 
 
-def installMEAMT():
-    # cp ~/programs/meamt/aemt-mo-up2
-    # cp ~/programs/meamt/aemt-pop-up2
-    pass
+def installMEAMTLocal():
+    log('Creating directories local')
+    with lcd("%sprograms" % folder_local):
+        local('sudo cp %s/dependencies/meamt.zip .' % CURRENT_PATH)
+        local('sudo unzip meamt.zip')
+        local('sudo chown %s:%s meamt' % (LOGGED_USER, LOGGED_USER))
+        with lcd('meamt'):
+            local('sudo cp aemt-mo-up2 %sexecute/' % data_path)
+            local('sudo cp aemt-pop-up2 %sexecute/' % data_path)
+    with lcd("%sprograms" % folder_local):
+        local('sudo rm -r meamt')
+        local('sudo rm meamt.zip')
 
 
-def installDependenciesLocal():
-    pass
+def installProtPredEDALocal():
+    log('Installing ProtPredEda predictor local')
+    with lcd("%sprograms" % folder_local):
+        local('sudo cp %s/dependencies/protpred %sexecute' % (CURRENT_PATH, data_path))
 
 
 def cloneGalaxyLocal():
+    log('Installing Galaxy local')
     with lcd('%sprograms' % folder_local):
-        local('git clone %s' % galaxy_repository)
-        with lcd('%s' % galaxy_project):
-            local("sudo /bin/bash -l -c 'mkvirtualenv %s'" % galaxy_project)
-            local("sudo chown -R %s:%s %senvs/%s" % (user, user, folder_local, galaxy_project))
-            local('sudo pip install -r requirements.txt')
+        local('sudo mkdir %s' % galaxy_project)
+        local('sudo chown %s:%s %s' % (LOGGED_USER, LOGGED_USER, galaxy_project))
+        local('git clone %s %s' % (galaxy_repository, galaxy_project))
+
+
+def installJsmolLocal():
+    log('Installing Jsmol local')
+    with lcd("%sprograms" % folder_local):
+        local('sudo cp %s/dependencies/jsmol.zip .' % CURRENT_PATH)
+        local('sudo unzip jsmol.zip')
+        local('sudo mkdir -p %sprograms/%s/static/js' % (
+            folder_local, galaxy_project))
+        local('sudo ln -s %sprograms/jsmol/* %sprograms/%s/static/js/' % (
+            folder_local, folder_local, galaxy_project))
 
 
 def buildEnvGalaxyLocal():
-    local("sudo /bin/bash -l -c 'workon %s'" % galaxy_project)
-    local('sudo pip install -U distribute')
-    local('sudo pip install pycrypto')
-    local('sudo pip install natsort')
-    local('sudo pip install beautifulsoup4')
-    local('sudo pip install certifi')
-    local('sudo pip install pyopenssl ndg-httpsclient pyasn1')
-    local('sudo pip install pycurl')
-    local('sudo pip install fabric')
-    local("sudo /bin/bash -l -c 'deactivate'")
+    log('Build env packages local')
+    with lcd("%sprograms/%s" % (folder_local, galaxy_project)):
+        local('sudo virtualenv .venv')
+        local(". %sprograms/%s/.venv/bin/activate" % (
+            folder_local, galaxy_project))
+        with lcd(".venv"):
+            local('sudo bin/pip install -U distribute')
+            local('sudo bin/pip install pycrypto')
+            local('sudo bin/pip install natsort')
+            local('sudo bin/pip install beautifulsoup4')
+            local('sudo bin/pip install certifi')
+            local('sudo bin/pip install pyopenssl ndg-httpsclient pyasn1')
+            local('sudo bin/pip install pycurl')
+            local('sudo bin/pip install fabric')
+            local('sudo bin/pip install Biopython')
 
 
 def setKoalaLibLinksLocal():
+    log('Creating links to Koala files local')
     local(
-        'sudo ln -s %s/lib/koala/ %senvs/%s/lib/python2.7/site-packages/' % (
+        'sudo ln -s %s/lib/koala/ %sprograms/%s/.venv/lib/python2.7/site-packages/koala' % (
             CURRENT_PATH, folder_local, galaxy_project))
     local(
         'sudo ln -s %s/config/datatypes_conf.xml %sprograms/%s/config/' % (
             CURRENT_PATH, folder_local, galaxy_project))
-    local(
-        'sudo ln -s %s/config/galaxy.ini %sprograms/%s/config/' % (
-            CURRENT_PATH, folder_local, galaxy_project))
+    # local(
+    #     'sudo ln -s %s/config/galaxy.ini %sprograms/%s/config/' % (
+    #         CURRENT_PATH, folder_local, galaxy_project))
     local(
         'sudo ln -s %s/config/integrated_tool_panel.xml %sprograms/%s/config/' % (
-            CURRENT_PATH, folder_local, galaxy_project))
-    local(
-        'sudo ln -s %s/config/job_conf.xml %sprograms/%s/config/' % (
             CURRENT_PATH, folder_local, galaxy_project))
     local(
         'sudo ln -s %s/config/tool_conf.xml %sprograms/%s/config/' % (
@@ -894,18 +860,26 @@ def setKoalaLibLinksLocal():
 
 
 def copyExecuteFilesLocal():
-    local('cp -rR %s/execute/ %s' % (CURRENT_PATH, data_path))
+    log('Coping necessary files local')
+    local('sudo cp -rR %s/execute/ %s' % (CURRENT_PATH, data_path))
 
 
 def setLibOpenMPILocal():
-    local('sudo ln -s /usr/lib/libmpi_cxx.so.0.0.1 /usr/lib/libmpi_cxx.so.1')
-    local(
-        'sudo ln -s /usr/lib/openmpi/lib/libmpi_cxx.so.0.0.1 /usr/lib/openmpi/lib/libmpi_cxx.so.1')
-    local('sudo ln -s /usr/lib/libmpi.so.0 /usr/lib/libmpi.so.1')
-    local('sudo ln -s /usr/lib/openmpi/lib/libmpi.so /usr/lib/openmpi/lib/libmpi.so.1')
+    log('Creating MPI lib links local')
+    if not os.path.exists('/usr/lib/libmpi_cxx.so.1'):
+        local('sudo ln -s /usr/lib/libmpi_cxx.so.0.0.1 /usr/lib/libmpi_cxx.so.1')
+    if not os.path.exists('/usr/lib/openmpi/lib/libmpi_cxx.so.1'):
+        local(
+            'sudo ln -s /usr/lib/openmpi/lib/libmpi_cxx.so.0.0.1 \
+            /usr/lib/openmpi/lib/libmpi_cxx.so.1')
+    if not os.path.exists('/usr/lib/libmpi.so.1'):
+        local('sudo ln -s /usr/lib/libmpi.so.0 /usr/lib/libmpi.so.1')
+    if not os.path.exists('/usr/lib/openmpi/lib/libmpi.so.1'):
+        local('sudo ln -s /usr/lib/openmpi/lib/libmpi.so /usr/lib/openmpi/lib/libmpi.so.1')
 
 
 def installScriptsLocal():
+    log('Installing Koala scripts to Galaxy local')
     local(
         'sudo ln -s %s/scripts/check_structures_gromacs.py %sprograms/%s/scripts/' % (
             CURRENT_PATH, folder_local, galaxy_project))
@@ -924,28 +898,47 @@ def installScriptsLocal():
 
 
 def createDBKoalaLocal():
+    log('Creating a DB to Koala local')
+    local('sudo service postgresql restart')
     local(
         "echo 'CREATE USER %s SUPERUSER INHERIT CREATEDB CREATEROLE;' |"
         " sudo -u postgres psql" % user_db)
     local(
-        'echo "ALTER USER %s PASSWORD \'koalaa\';" |'
+        'echo "ALTER USER %s PASSWORD \'koala\';" |'
         ' sudo -u postgres psql' % user_db)
     local(
         "echo 'CREATE DATABASE %s --OWNER %s;' |"
         " sudo -u postgres psql" % (bd, user_db))
 
 
-def runKoalaLocal():
-    log('Running Koala server local')
-    local('sh %sprograms/%s/run.sh --reload' % (folder_local, galaxy_project))
+def configureKoalaServer():
+    # TODO: configure koala.ini according to directory and others here
+    pass
 
 
-def newKoalaLocal():
+def configurePymol():
+    log('Configuring Galaxy to use Pymol local')
+    with lcd('%sprograms/%s' % (folder_local, galaxy_project)):
+        if os.path.exists('/usr/lib/python2.7/dist-packages/pymol'):
+            local('sudo ln -s /usr/lib/python2.7/dist-packages/pymol \
+                .venv/lib/python2.7/site-packages/')
+        if os.path.exists('/usr/lib/python2.7/dist-packages/chempy'):
+                local('sudo ln -s /usr/lib/python2.7/dist-packages/chempy \
+                    .venv/lib/python2.7/site-packages/')
+
+
+def setOwnFiles():
+    log('Setting owner files local')
+    local('sudo chown -R %s:%s %s' % (user, user, folder_local))
+
+
+def newKoalaLocal(new_user=None):
     """Create a new Koala Server local"""
     log('Creating a new Koala Server local')
 
     localLocale()
-    createLocalUser()
+    if new_user:
+        createLocalUser()
     updateLocal()
     upgradeLocal()
     buildLocal()
@@ -956,76 +949,24 @@ def newKoalaLocal():
     installVINA_local()
     installMGL_local()
     setVirtualenvlocal()
-    setPythonPathLocal()
+    setExportLocal()
     installPyHighchartsLocal()
     install2PGCartesianLocal()
+    install2PGBuildConformationLocal()
+    installMEAMTLocal()
+    installProtPredEDALocal()
     cloneGalaxyLocal()
+    installJsmolLocal()
     buildEnvGalaxyLocal()
     setKoalaLibLinksLocal()
     copyExecuteFilesLocal()
     setLibOpenMPILocal()
     installScriptsLocal()
     createDBKoalaLocal()
-    runKoalaLocal()
+    configurePymol()
+    setOwnFiles()
 
-# lixo
-# # ------------------------------------------------------------
-
-# def server():
-#     """inicia o servidor do Galaxy local"""
-#     log('Iniciando servidor do Galaxy')
-#     local('sh galaxy-dist/run.sh --reload')
-
-# def update_tool_local(tool_name):
-#     """Atualiza tool no diretório do Galaxy"""
-#     log('Atualizando tool no diretorio do Galaxy')
-#     if not os.path.exists(tool_path):
-#         os.mkdir(tool_path)
-#         warn("Criando o diretório raiz das tools")
-#     if not os.path.exists(os.path.join(os.getcwd(), ''.join([tool_name, '.xml']))):
-#         abort("Tool não encontrada.")
-#     else:
-#         local('cp %s.py %s.xml %s' % (tool_name, tool_name, tool_path))
-
-# def update_tool_server(tool_name, server=''):
-#     """Atualiza tool no diretório do Galaxy no servidor"""
-#     log('Atualizando tool no diretorio do Galaxy no servidor')
-#     if not os.path.exists(os.path.join(os.getcwd(), ''.join([tool_name, '.xml']))):
-#         abort("Tool não encontrada.")
-#     else:
-#         local('scp %s.py %s.xml %s:%s' % (tool_name, tool_name, cloud_server, project_path))
-
-# def update_all_tools_local():
-#     pass
-
-# def reinitialize_server(server=''):
-#     '''Reinitile the remote server'''
-#     log('Reinitilizing the remote server')
-#     with settings(warn_only=True):
-#         if run('screen -R -S "Galaxy" -p 0 -X exec sh %s/run.sh --reload' % galaxy_path).failed:
-#             log('There is no screen availabe. \nYou must create a new screen.\nAfter that, type CTRL + A + D to deatached it')
-#             if confirm("Do you want to create a new screen now? "):
-#                 create_remote_screen()
-#                 run('screen -R -S "Galaxy" -p 0 -X exec sh %s/run.sh --reload' % galaxy_path)
-#             else:
-#                 abort("There is no screen available");
-
-# def create_remote_screen():
-#     '''Create a new screen'''
-#     log("Creating a new screen.")
-#     run('screen -R -S "Galaxy"')
-
-# def upload_public_key():
-#     """faz o upload da chave ssh para o servidor"""
-#     log('Adicionando chave publica no servidor')
-#     ssh_file = '~/.ssh/id_rsa.pub'
-#     target_path = '~/.ssh/uploaded_key.pub'
-#     put(ssh_file, target_path)
-#     run('echo `cat ~/.ssh/uploaded_key.pub` >> ~/.ssh/authorized_keys && rm -f ~/.ssh/uploaded_key.pub')
-
-# def remote_pull():
-#     """git pull remoto"""
-#     log('Atualizando aplicação no servidor')
-#     login()
-#     with cd(project_path):
-#         run('git pull origin master')
+    log('Your koala server has been installed.\n \
+    Log with %s and run Galaxy server\n \
+    sh %sprograms/%s/run.sh' % (
+        user, folder_local, galaxy_project))

@@ -2,3 +2,6 @@ Python / uWSGI
 *.pyc
 *.pyo*
 .pip-log.txt
+
+# Python virtualenv
+.venv
