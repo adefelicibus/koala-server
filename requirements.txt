@@ -13,3 +13,4 @@ pycrypto==2.6.1
 pyOpenSSL==0.15.1
 six==1.9.0
 wheel==0.24.0
+fabric
