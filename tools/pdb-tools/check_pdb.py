@@ -12,7 +12,7 @@ import shutil
 from koala.utils import show_error_message, list_directory, compress_files
 from koala.utils import extract_zip_file, extract_gz_file
 from koala.utils.output import send_multiple_outputs, send_output_results
-from koala.utils.path import PathRuns, clear_path_execute, get_path_gromacs
+from koala.utils.path import PathRuns, clear_path_execute
 from koala.utils.input import copy_pdbs_from_input
 from koala.utils.pdb import delete_check_files
 
@@ -119,7 +119,7 @@ class CheckPDBStructure(object):
         @type self: koala.CheckPDBStructure.CheckPDBStructure
         """
         try:
-            self.path_runs.set_path_execute()
+            # self.path_runs.set_path_execute()
             self.path_runs.set_execution_directory()
 
             if self.opts.compressedFile == '1':
@@ -150,7 +150,7 @@ class CheckPDBStructure(object):
             for pdb in pdbs:
                 self.check_structue_by_pdb2gmx(
                         os.path.join(self.path_runs.get_path_execution(), pdb),
-                        get_path_gromacs(),
+                        self.path_runs.get_path_gromacs(),
                         self.opts.forceField)
 
             path_output, file_output = os.path.split(self.opts.output)

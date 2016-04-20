@@ -31,7 +31,7 @@ class SplitPDB(object):
         @type self: koala.SplitPDB.SplitPDB
         """
         try:
-            self.path_runs.set_path_execute()
+            # self.path_runs.set_path_execute()
             self.path_runs.set_execution_directory()
 
             link_name = os.path.join(self.opts.outputdir, os.path.basename(self.opts.pdbName))
