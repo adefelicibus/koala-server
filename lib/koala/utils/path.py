@@ -8,6 +8,8 @@ import stat
 import shutil
 from koala.utils import show_error_message, get_logged_user
 
+from koala.config import Configuration
+
 # TODO: review exception rules
 # TODO: fill some values from a new config file
 
@@ -18,8 +20,10 @@ class PathRuns(object):
     def __init__(self):
         super(PathRuns, self).__init__()
 
+        config = Configuration()
+
+        self.path_execute = config.get('path_execute', None)
         self.path_execution = ''
-        self.path_execute = ''
 
     def set_execution_directory(self, email=None):
         try:
@@ -49,12 +53,12 @@ class PathRuns(object):
     def get_path_execution(self):
         return self.path_execution
 
-    def set_path_execute(self):
-        try:
-            self.path_execute = "/home/%s/execute/" % get_logged_user()
-            # self.path_execute = "/dados/%s/execute/" % get_logged_user()
-        except Exception, e:
-            show_error_message("Error when getPathExecute\n%s" % e)
+    # def set_path_execute(self):
+    #     try:
+    #         self.path_execute = "/home/%s/execute/" % get_logged_user()
+    #         # self.path_execute = "/dados/%s/execute/" % get_logged_user()
+    #     except Exception, e:
+    #         show_error_message("Error when getPathExecute\n%s" % e)
 
     def get_path_execute(self):
         return self.path_execute
