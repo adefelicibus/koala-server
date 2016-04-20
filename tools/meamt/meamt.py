@@ -359,7 +359,6 @@ class MEAMT(object):
                         //,noscript: true
                         //console: "none", // default will be jmolApplet0_infodiv
                         //script: "set antialiasDisplay;background white;load data/caffeine.mol;"
-                        //delay 3;background yellow;delay 0.1;background white;for (var i = 0; i < 10; i+=1){rotate y 3;delay 0.01}"
                     }
 
             </script>
@@ -664,7 +663,7 @@ class MEAMT(object):
         @type self: koala.MEAMT.MEAMT
         """
         try:
-            self.path_runs.set_path_execute()
+            # self.path_runs.set_path_execute()
             if(self.opts.inputEmail):
                 email = validate_email(self.opts.inputEmail)
                 self.path_runs.set_execution_directory(email)
