@@ -58,8 +58,8 @@ class SortMethodByFront(object):
             obj1 = ""
             obj2 = ""
 
-            x = [[]]*len(files)
-            y = [[]]*len(files)
+            x = [[]] * len(files)
+            y = [[]] * len(files)
 
             for i, f in enumerate(files):
                 f = os.path.join(self.path_runs.get_path_execution(), f)
@@ -134,11 +134,11 @@ class SortMethodByFront(object):
                     else:
                         it["name"] = "front%d" % i
                     it["x"] = (context.create_decimal_from_float(z[ii])).quantize(
-                            Decimal('.1'),
-                            rounding=ROUND_UP)
+                        Decimal('.1'),
+                        rounding=ROUND_UP)
                     it["y"] = (context.create_decimal_from_float(y[i][ii])).quantize(
-                            Decimal('.1'),
-                            rounding=ROUND_UP)
+                        Decimal('.1'),
+                        rounding=ROUND_UP)
                     data.append(it)
                     it = {}
 
@@ -163,7 +163,7 @@ class SortMethodByFront(object):
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
         <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
         <head> <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <meta name="generator" content="Galaxy %s tool output - see http://g2.trac.bx.psu.edu/" />
+        <meta name="generator" content="Galaxy %s tool output" />
         <title></title>
         <link rel="stylesheet" href="/static/koala.css" type="text/css" />
         <link rel="stylesheet" href="/static/style/base.css" type="text/css" />
@@ -344,16 +344,16 @@ class SortMethodByFront(object):
             self.path_runs.get_path_execution(),
             self.framework.get_framework())
 
-        self.framework.set_parameter(
-                'objective_analisys_dimo_source',
-                '/home/%s/programs/dimo/DIMO2' % get_logged_user())
+        # self.framework.set_parameter(
+        #         'objective_analisys_dimo_source',
+        #         '/home/%s/programs/dimo/DIMO2' % get_logged_user())
         self.framework.set_parameter('Local_Execute', self.path_runs.get_path_execution())
         self.framework.set_parameter(
-                'Path_Gromacs_Programs',
-                get_path_gromacs())
+            'Path_Gromacs_Programs',
+            self.path_runs.get_path_gromacs())
         self.framework.set_parameter(
-                'NativeProtein',
-                '%s1VII.pdb' % self.path_runs.get_path_execution())
+            'NativeProtein',
+            '%s1VII.pdb' % self.path_runs.get_path_execution())
 
         create_configuration_file(
             self.path_runs.get_path_execution(), self.framework)
@@ -374,8 +374,8 @@ class SortMethodByFront(object):
         self.getBetterPDBs(self.path_runs.get_path_execution())
 
         result, filesHtml = get_result_files(
-                self.path_runs.get_path_execution(),
-                self.opts.toolname)
+            self.path_runs.get_path_execution(),
+            self.opts.toolname)
 
         send_output_files_html(self.opts.htmlfiledir, filesHtml)
         send_output_files_html(self.opts.htmlfiledir, [result])

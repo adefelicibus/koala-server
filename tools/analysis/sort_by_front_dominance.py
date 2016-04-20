@@ -12,10 +12,10 @@ import gzip
 import cProfile
 import math
 
-from koala.utils import get_file_size, show_error_message, list_directory, get_logged_user
+from koala.utils import get_file_size, show_error_message, list_directory
 from koala.utils import extract_zip_file, extract_gz_file, TimeJobExecution, copy_necessary_files
 from koala.utils.output import send_output_files_html, get_result_files
-from koala.utils.path import PathRuns, clear_path_execute, get_path_gromacs
+from koala.utils.path import PathRuns, clear_path_execute
 from koala.utils.input import copy_pdbs_from_input, create_configuration_file, format_fitness
 from koala.frameworks.params import Params
 from koala.utils.scripts import rename_atoms, check_pdb
@@ -61,8 +61,8 @@ class SortByFront(object):
             obj1 = ""
             obj2 = ""
 
-            x = [[]]*len(files)
-            y = [[]]*len(files)
+            x = [[]] * len(files)
+            y = [[]] * len(files)
 
             for i, f in enumerate(files):
                 f = os.path.join(self.path_runs.get_path_execution(), f)
@@ -276,14 +276,14 @@ class SortByFront(object):
                 for i in range(0, n):
                     fhtml.append(
                         '<td><a href="%s">%s</a></td>' % (
-                                listaArquivosPdb[idx], listaArquivosPdb[idx]))
+                            listaArquivosPdb[idx], listaArquivosPdb[idx]))
                     idx += 1
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, n):
                     sfsize = get_file_size(
-                            listaArquivosPdb[idx],
-                            self.opts.htmlfiledir)
+                        listaArquivosPdb[idx],
+                        self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
                     idx += 1
                 idx = idx_linha
@@ -304,14 +304,14 @@ class SortByFront(object):
                     for i in range(start, end):
                         fhtml.append(
                             '<td><a href="%s">%s</a></td>' % (
-                                    listaArquivosPdb[idx], listaArquivosPdb[idx]))
+                                listaArquivosPdb[idx], listaArquivosPdb[idx]))
                         idx += 1
                     idx = idx_linha
                     fhtml.append('</tr><tr>')
                     for i in range(start, end):
                         sfsize = get_file_size(
-                                listaArquivosPdb[idx],
-                                self.opts.htmlfiledir)
+                            listaArquivosPdb[idx],
+                            self.opts.htmlfiledir)
                         fhtml.append('<td>%s</td>' % (sfsize))
                         idx += 1
                     fhtml.append('</tr>')
@@ -330,14 +330,14 @@ class SortByFront(object):
                 for i in range(0, rest):
                     fhtml.append(
                         '<td><a href="%s">%s</a></td>' % (
-                                listaArquivosPdb[idx], listaArquivosPdb[idx]))
+                            listaArquivosPdb[idx], listaArquivosPdb[idx]))
                     idx += 1
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, rest):
                     sfsize = get_file_size(
-                            listaArquivosPdb[idx],
-                            self.opts.htmlfiledir)
+                        listaArquivosPdb[idx],
+                        self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
                     idx += 1
                 idx = idx_linha
@@ -499,7 +499,6 @@ class SortByFront(object):
                         //,noscript: true
                         //console: "none", // default will be jmolApplet0_infodiv
                         //script: "set antialiasDisplay;background white;load data/caffeine.mol;"
-                        //delay 3;background yellow;delay 0.1;background white;for (var i = 0; i < 10; i+=1){rotate y 3;delay 0.01}"
                     }
 
             </script>
@@ -601,14 +600,14 @@ class SortByFront(object):
                 for i in range(0, n):
                     fhtml.append(
                         '<td><a href="/datasets/%s/display/%s">%s</a></td>' % (
-                                self.opts.datasetID, listaArquivosPdb[idx], listaArquivosPdb[idx]))
+                            self.opts.datasetID, listaArquivosPdb[idx], listaArquivosPdb[idx]))
                     idx += 1
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, n):
                     sfsize = get_file_size(
-                            listaArquivosPdb[idx],
-                            self.opts.htmlfiledir)
+                        listaArquivosPdb[idx],
+                        self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
                     idx += 1
                 idx = idx_linha
@@ -640,16 +639,16 @@ class SortByFront(object):
                     for i in range(start, end):
                         fhtml.append(
                             '<td><a href="/datasets/%s/display/%s">%s</a></td>' % (
-                                    self.opts.datasetID,
-                                    listaArquivosPdb[idx],
-                                    listaArquivosPdb[idx]))
+                                self.opts.datasetID,
+                                listaArquivosPdb[idx],
+                                listaArquivosPdb[idx]))
                         idx += 1
                     idx = idx_linha
                     fhtml.append('</tr><tr>')
                     for i in range(start, end):
                         sfsize = get_file_size(
-                                listaArquivosPdb[idx],
-                                self.opts.htmlfiledir)
+                            listaArquivosPdb[idx],
+                            self.opts.htmlfiledir)
                         fhtml.append('<td>%s</td>' % (sfsize))
                         idx += 1
                     idx = idx_linha
@@ -680,14 +679,14 @@ class SortByFront(object):
                 for i in range(0, rest):
                     fhtml.append(
                         '<td><a href="/datasets/%s/display/%s">%s</a></td>' % (
-                                self.opts.datasetID, listaArquivosPdb[idx], listaArquivosPdb[idx]))
+                            self.opts.datasetID, listaArquivosPdb[idx], listaArquivosPdb[idx]))
                     idx += 1
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, rest):
                     sfsize = get_file_size(
-                            listaArquivosPdb[idx],
-                            self.opts.htmlfiledir)
+                        listaArquivosPdb[idx],
+                        self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
                     idx += 1
                 idx = idx_linha
@@ -832,7 +831,7 @@ class SortByFront(object):
         @type self: koala.SortByFront.SortByFront
         """
 
-        self.path_runs.set_path_execute()
+        # self.path_runs.set_path_execute()
         self.path_runs.set_execution_directory()
 
         copy_necessary_files(
@@ -840,16 +839,16 @@ class SortByFront(object):
             self.path_runs.get_path_execution(),
             self.framework.get_framework())
 
-        self.framework.set_parameter(
-                'objective_analisys_dimo_source',
-                '/home/%s/programs/dimo/DIMO2' % get_logged_user())
+        # self.framework.set_parameter(
+        #         'objective_analisys_dimo_source',
+        #         '/home/%s/programs/dimo/DIMO2' % get_logged_user())
         self.framework.set_parameter('Local_Execute', self.path_runs.get_path_execution())
         self.framework.set_parameter(
-                'Path_Gromacs_Programs',
-                get_path_gromacs())
+            'Path_Gromacs_Programs',
+            self.path_runs.get_path_gromacs())
         self.framework.set_parameter(
-                'NativeProtein',
-                '%s1VII.pdb' % self.path_runs.get_path_execution())
+            'NativeProtein',
+            '%s1VII.pdb' % self.path_runs.get_path_execution())
 
         NumberObjective, Fitness_Energy = format_fitness(self.opts.inputFitness)
 
@@ -879,10 +878,10 @@ class SortByFront(object):
                         raise Exception("The input file could not be read.\n%s" % e)
         else:
                 copy_pdbs_from_input(
-                        self.path_runs.get_path_execution(),
-                        self.opts.htmlfiledir,
-                        self.opts.inputnames,
-                        self.opts.inputPDBs)
+                    self.path_runs.get_path_execution(),
+                    self.opts.htmlfiledir,
+                    self.opts.inputnames,
+                    self.opts.inputPDBs)
 
         if(self.opts.renameAtoms == 'true'):
             if not rename_atoms(
@@ -903,7 +902,7 @@ class SortByFront(object):
         cl = [self.framework.get_command(), config, '&']
 
         retProcess = subprocess.Popen(
-            cl, 0, stdout=None,  stderr=None, shell=False)
+            cl, 0, stdout=None, stderr=None, shell=False)
         retCode = retProcess.wait()
         if(retCode != 0):
             show_error_message(
@@ -917,8 +916,8 @@ class SortByFront(object):
         send_output_files_html(self.opts.htmlfiledir, pdbsToCopy)
 
         result, filesHtml = get_result_files(
-                self.path_runs.get_path_execution(),
-                self.opts.toolname)
+            self.path_runs.get_path_execution(),
+            self.opts.toolname)
 
         send_output_files_html(self.opts.htmlfiledir, filesHtml)
         send_output_files_html(self.opts.htmlfiledir, [result])

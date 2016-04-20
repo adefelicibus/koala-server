@@ -766,8 +766,7 @@ class CalculateTMScore(object):
         @type self: koala.CalculateTMScore.CalculateTMScore
         """
         try:
-
-            self.path_runs.set_path_execute()
+            # self.path_runs.set_path_execute()
             self.path_runs.set_execution_directory()
 
             if self.opts.compressedFile == '1':

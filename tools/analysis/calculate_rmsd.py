@@ -87,7 +87,7 @@ class CalculateRMSD(object):
             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
             <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
             <head> <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-            <meta name="generator" content="Galaxy %s tool output - see http://g2.trac.bx.psu.edu/" />
+            <meta name="generator" content="Galaxy %s tool output" />
             <title></title>
             <link rel="stylesheet" href="/static/koala.css" type="text/css" />
             <link rel="stylesheet" href="/static/style/base.css" type="text/css" />
@@ -185,14 +185,14 @@ class CalculateRMSD(object):
                 for i in range(0, n):
                     fhtml.append(
                         '<td><a href="%s">%s</a></td>' % (
-                                listaArquivosPdb[idx], listaArquivosPdb[idx]))
+                            listaArquivosPdb[idx], listaArquivosPdb[idx]))
                     idx += 1
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, n):
                     sfsize = get_file_size(
-                            listaArquivosPdb[idx],
-                            self.opts.htmlfiledir)
+                        listaArquivosPdb[idx],
+                        self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
                     idx += 1
                 idx = idx_linha
@@ -777,7 +777,7 @@ class CalculateRMSD(object):
         @type self: koala.CalculateRMSD.CalculateRMSD
         """
         try:
-            self.path_runs.set_path_execute()
+            # self.path_runs.set_path_execute()
             self.path_runs.set_execution_directory()
 
             if self.opts.compressedFile == '1':
