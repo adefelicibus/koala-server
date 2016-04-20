@@ -31,6 +31,8 @@ class Configuration(object):
         # kwargs: config_file {'config_file:__file__'}
         # root_dir {'root_dir: __path__'} pegar o caminho abstrato da lib koala
 
+        # TODO: create exceptions about the files
+
         self.config_file = kwargs.get('config_file', resolve_path(DEFAULT_INI[0], KOALA_ROOT_DIR))
         self.root = kwargs.get('root_dir', KOALA_ROOT_DIR)
         self.config_dict = {}

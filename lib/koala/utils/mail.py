@@ -11,6 +11,9 @@ import datetime
 import os
 from koala.utils import show_error_message
 
+from koala.config import Configuration
+config = Configuration()
+
 # TODO: take the smtp configuration from galaxy's config.ini file
 # TODO: review exception rules
 
@@ -61,17 +64,16 @@ def send_email(de, para, assunto, mensagem, arquivos, servidor):
                 parte.set_payload(open(arquivo, 'rb').read())
                 encoders.encode_base64(parte)
                 parte.add_header(
-                    'Content-Disposition', 'attachment; filename="%s"' % os.path.basename(arquivo)
-                    )
+                    'Content-Disposition', 'attachment; filename="%s"' % os.path.basename(arquivo))
                 msg.attach(parte)
 
             # Conecta ao servidor SMTP
-            smtp = smtplib.SMTP(servidor, 587)
+            smtp = smtplib.SMTP(servidor, config.getint('smtp_port', 587))
             smtp.ehlo()
             smtp.starttls()
             smtp.ehlo()
             # Faz login no servidor
-            smtp.login('adefelicibus@gmail.com', 'mami1752@')
+            smtp.login(config.get('email_address', None), config.get('email_password', None))
             try:
                 # Envia o e-mail
                 smtp.sendmail(de, para, msg.as_string())

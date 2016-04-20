@@ -6,7 +6,7 @@ import random
 import os
 import stat
 import shutil
-from koala.utils import show_error_message, get_logged_user
+from koala.utils import show_error_message  # , get_logged_user
 
 from koala.config import Configuration
 
@@ -20,9 +20,9 @@ class PathRuns(object):
     def __init__(self):
         super(PathRuns, self).__init__()
 
-        config = Configuration()
+        self.config = Configuration()
 
-        self.path_execute = config.get('path_execute', None)
+        self.path_execute = self.config.get('path_execute', None)
         self.path_execution = ''
 
     def set_execution_directory(self, email=None):
@@ -63,12 +63,18 @@ class PathRuns(object):
     def get_path_execute(self):
         return self.path_execute
 
+    def get_path_algorithms(self, framework):
+        try:
+            # return "/home/%s/programs/%s/" % (get_logged_user(), framework)
+            return self.config.get(framework.lower(), None)
+        except Exception, e:
+            show_error_message("Error when getPathAlgorithms\n%s" % e)
 
-def get_path_algorithms(framework):
-    try:
-        return "/home/%s/programs/%s/" % (get_logged_user(), framework)
-    except Exception, e:
-        show_error_message("Error when getPathAlgorithms\n%s" % e)
+    def get_path_gromacs(self):
+        # pathGromacs = '/home/%s/programs/gmx-4.6.5/no_mpi/bin/' \
+        #                                 % get_logged_user()
+        # return pathGromacs
+        return self.config.get('path_gromacs', None)
 
 
 def clear_path_execute(path):
@@ -81,9 +87,3 @@ def clear_path_execute(path):
             return False
     except Exception, e:
         show_error_message("Error when clearPathExecute:\n%s" % e)
-
-
-def get_path_gromacs():
-    pathGromacs = '/home/%s/programs/gmx-4.6.5/no_mpi/bin/' \
-                                    % get_logged_user()
-    return pathGromacs
