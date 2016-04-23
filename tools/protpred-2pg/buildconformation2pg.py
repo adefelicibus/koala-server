@@ -8,7 +8,7 @@ import cProfile
 
 from koala.utils import copy_necessary_files, show_error_message
 from koala.utils.output import get_result_files, send_output_results
-from koala.utils.path import PathRuns, clear_path_execute, get_path_gromacs, get_path_algorithms
+from koala.utils.path import PathRuns, clear_path_execute
 from koala.utils.input import create_configuration_file, create_local_fasta_file
 from koala.frameworks.params import Params
 
@@ -38,7 +38,7 @@ class BuildConformation2PG(object):
         @type self: koala.BuildConformation2PG.BuildConformation2PG
         """
         try:
-            self.path_runs.set_path_execute()
+            # self.path_runs.set_path_execute()
             self.path_runs.set_execution_directory()
 
             self.sequence = create_local_fasta_file(
@@ -76,13 +76,13 @@ class BuildConformation2PG(object):
                 self.path_runs.get_path_execution())
             self.framework.set_parameter(
                     'Path_Gromacs_Programs',
-                    get_path_gromacs())
+                    self.path_runs.get_path_gromacs())
             self.framework.set_parameter(
                 'NativeProtein',
                 '%s1VII.pdb' % self.path_runs.get_path_execution())
             self.framework.set_parameter(
                     'Database',
-                    '%sDatabase/' % get_path_algorithms('2pg_build_conformation'))
+                    '%sDatabase/' % self.path_runs.get_path_algorithms('2pg_build_conformation'))
 
             create_configuration_file(
                 self.path_runs.get_path_execution(), self.framework)
