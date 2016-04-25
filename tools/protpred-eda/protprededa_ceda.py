@@ -706,7 +706,7 @@ class ProtPredEDACEDA(object):
         @type self: koala.ProtPredEDA.ProtPredEDA
         """
         try:
-            self.path_runs.set_path_execute()
+            # self.path_runs.set_path_execute()
             if self.opts.inputEmail:
                 email = validate_email(self.opts.inputEmail)
                 self.path_runs.set_execution_directory(email)
