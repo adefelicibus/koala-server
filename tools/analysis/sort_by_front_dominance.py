@@ -909,6 +909,8 @@ class SortByFront(object):
             show_error_message(
                 "The 2PG framework finished wrong.\nContact the system administrator.")
 
+        self.getBetterPDBs(self.path_runs.get_path_execution())
+
         build_images(self.methods, self.path_runs.get_path_execution())
 
         pdbsToCopy = [os.path.join(
