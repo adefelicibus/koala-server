@@ -981,6 +981,9 @@ class DominanceRanking(object):
                         self.headers[j+1][2] = self.headers[j+1][2] + 1
 
         self.SortMatrix()
+
+        self.getBetterPDBs()
+
         build_images(self.methods, self.path_runs.get_path_execution())
 
         pdbsToCopy = [os.path.join(
