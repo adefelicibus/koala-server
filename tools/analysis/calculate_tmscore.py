@@ -13,7 +13,7 @@ import cProfile
 from koala.utils import get_file_size, list_directory, show_warning_message, show_error_message
 from koala.utils import extract_zip_file, extract_gz_file, TimeJobExecution
 from koala.utils.input import copy_pdb_reference
-from koala.utils.output import send_output_files_html, get_result_files
+from koala.utils.output import send_output_files_html, get_result_files, build_images
 from koala.utils.path import PathRuns, clear_path_execute
 from koala.utils.input import copy_pdbs_from_input
 
@@ -398,7 +398,6 @@ class CalculateTMScore(object):
                         //,noscript: true
                         //console: "none", // default will be jmolApplet0_infodiv
                         //script: "set antialiasDisplay;background white;load data/caffeine.mol;"
-                        //delay 3;background yellow;delay 0.1;background white;for (var i = 0; i < 10; i+=1){rotate y 3;delay 0.01}"
                     }
 
             </script>
@@ -766,8 +765,6 @@ class CalculateTMScore(object):
         @type self: koala.CalculateTMScore.CalculateTMScore
         """
         try:
-
-            self.path_runs.set_path_execute()
             self.path_runs.set_execution_directory()
 
             if self.opts.compressedFile == '1':

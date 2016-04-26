@@ -4,6 +4,8 @@
 import subprocess
 from koala.utils import show_error_message
 
+from koala.config import Configuration
+
 # TODO: review exception rules
 # TODO: build a new get_configuration_file method
 
@@ -18,6 +20,8 @@ class Framework(object):
         self.command = ''
         self.program = ''
 
+        self.config = Configuration()
+
     def set_framework(self, framework):
         self.framework = framework
 
@@ -30,13 +34,10 @@ class Framework(object):
     def set_command(self, path_execution, algorithm):
         try:
             if self.get_framework() == '2PG':
-                self.command = '/usr/local/bin/%s' % (algorithm)
+                self.command = '%s/%s' % (
+                    self.config.get(self.get_framework().lower(), None), algorithm)
             else:
                 self.command = '%s%s' % (path_execution, algorithm)
-            # elif self.get_framework() in ('MEAMT', 'i-paes'):
-            #     self.command = '%s%s' % (get_path_algorithms(self.get_framework()), algorithm)
-            # else:
-            #     self.command = '%s%s' % (path_execution, algorithm)
         except Exception, e:
             show_error_message("Error when set_command\n%s" % e)
 

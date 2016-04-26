@@ -41,10 +41,8 @@ class BuildPopulationMEAMT(object):
         @type self: koala.BuildPopulationMEAMT.BuildPopulationMEAMT
         """
         try:
-            self.path_runs.set_path_execute()
+            # self.path_runs.set_path_execute()
             self.path_runs.set_execution_directory()
-
-            print 'create dirs'
 
             self.sequence = create_local_fasta_file(
                     self.path_runs.get_path_execution(),
@@ -53,20 +51,14 @@ class BuildPopulationMEAMT(object):
                     self.opts.toolname,
                     self.framework)
 
-            print 'create fasta'
-
             copy_necessary_files(
                 self.path_runs.get_path_execute(),
                 self.path_runs.get_path_execution(),
                 self.framework.get_framework())
 
-            print 'copy files'
-
             self.framework.set_command(
                 self.path_runs.get_path_execution(),
                 'aemt-pop-up2')
-
-            print 'set command'
 
             size = int(self.opts.sizePopulation) / 15
 
@@ -110,8 +102,6 @@ class BuildPopulationMEAMT(object):
                 str(0),
                 os.path.join(self.path_runs.get_path_execution(), "meat.txt"),
                 '&']
-
-            print cl
 
             retProcess = subprocess.Popen(cl, 0, None, None, None, False)
             retProcess.wait()

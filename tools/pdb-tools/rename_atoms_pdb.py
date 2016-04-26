@@ -8,7 +8,7 @@ import cProfile
 
 from koala.utils import show_error_message
 from koala.utils.output import send_output_results
-from koala.utils.path import PathRuns, clear_path_execute, get_path_gromacs
+from koala.utils.path import PathRuns, clear_path_execute
 from koala.utils.pdb import delete_check_files
 
 
@@ -63,7 +63,7 @@ class RenameAtoms(object):
         @type self: koala.CheckPDBStructure.CheckPDBStructure
         """
         try:
-            self.path_runs.set_path_execute()
+            # self.path_runs.set_path_execute()
             self.path_runs.set_execution_directory()
 
             self.opts.pdbName = self.opts.pdbName.replace(
@@ -76,7 +76,7 @@ class RenameAtoms(object):
 
             self.rename_atoms_structure(
                     os.path.join(self.path_runs.get_path_execution(), self.opts.pdbName),
-                    get_path_gromacs(),
+                    self.path_runs.get_path_gromacs(),
                     self.opts.forceField
             )
 

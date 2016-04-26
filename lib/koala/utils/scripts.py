@@ -5,11 +5,10 @@ import subprocess
 import os
 import shutil
 
-from koala.utils.path import get_path_gromacs
 from koala.utils import show_error_message, show_message
 
 
-def rename_atoms(path_execution, path_galaxy):
+def rename_atoms(path_execution, path_galaxy, path_gromacs):
     """
     Create a subprocess to rename the missing atoms in a PDB file using pdb2gmx
     @type self: koala.CalculateRMSD.CalculateRMSD
@@ -20,7 +19,7 @@ def rename_atoms(path_execution, path_galaxy):
     try:
         cl = [
             '%s/scripts/rename_atoms.py' %
-            path_galaxy, path_execution, get_path_gromacs(), '&']
+            path_galaxy, path_execution, path_gromacs, '&']
 
         retProcess = subprocess.Popen(cl, 0, None, None, None, False)
         pvalue = retProcess.wait()
@@ -33,7 +32,7 @@ def rename_atoms(path_execution, path_galaxy):
         show_error_message("Error while renaming atoms.\n%s" % e)
 
 
-def check_pdb(path_execution, path_galaxy):
+def check_pdb(path_execution, path_galaxy, path_gromacs):
     """
     Create a subprocess to check the PDB structure using pdb2gmx
     @type self: koala.CalculateRMSD.CalculateRMSD
@@ -44,7 +43,7 @@ def check_pdb(path_execution, path_galaxy):
     try:
         cl = [
             '%s/scripts/check_structures_gromacs.py' %
-            path_galaxy, path_execution, get_path_gromacs(), '&']
+            path_galaxy, path_execution, path_gromacs, '&']
 
         retProcess = subprocess.Popen(cl, 0, None, None, None, False)
         pvalue = retProcess.wait()
@@ -79,11 +78,11 @@ def prepare_pdb(path_execution, path_galaxy):
         show_error_message("Error while preparing PDBs:\n%s" % e)
 
 
-def residue_renumber(path_execution, path_galaxy):
+def residue_renumber(path_execution, path_galaxy, path_gromacs):
     try:
         cl = [
             '%s/scripts/residue_renumber_all_pdbs.py' %
-            path_galaxy, path_execution, get_path_gromacs(), '&']
+            path_galaxy, path_execution, path_gromacs, '&']
 
         retProcess = subprocess.Popen(cl, 0, None, None, None, False)
         pvalue = retProcess.wait()
@@ -96,9 +95,9 @@ def residue_renumber(path_execution, path_galaxy):
         show_error_message("Error while renumbering PDBs:\n%s" % e)
 
 
-def minimization(path_execution, path_galaxy, pdbPrefix=''):
+def minimization(path_execution, path_galaxy, path_gromacs, pdbPrefix=''):
     try:
-        cl = ['%s/min.sh' % path_execution, path_execution, get_path_gromacs(), pdbPrefix, '&']
+        cl = ['%s/min.sh' % path_execution, path_execution, path_gromacs, pdbPrefix, '&']
 
         shutil.copy(
             os.path.join(

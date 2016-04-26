@@ -14,7 +14,7 @@ import subprocess
 from koala.utils import get_file_size, show_error_message, list_directory, show_warning_message
 from koala.utils import extract_zip_file, extract_gz_file, TimeJobExecution
 from koala.utils.input import copy_pdb_reference
-from koala.utils.output import send_output_files_html, get_result_files
+from koala.utils.output import send_output_files_html, get_result_files, build_images
 from koala.utils.path import PathRuns, clear_path_execute
 from koala.utils.input import copy_pdbs_from_input
 
@@ -171,14 +171,14 @@ class CalculateGDTTS(object):
             for i in range(0, n):
                 fhtml.append(
                     '<td><a href="%s">%s</a></td>' % (
-                            listaArquivosPdb[idx], listaArquivosPdb[idx]))
+                        listaArquivosPdb[idx], listaArquivosPdb[idx]))
                 idx += 1
             idx = idx_linha
             fhtml.append('</tr><tr>')
             for i in range(0, n):
                 sfsize = get_file_size(
-                        listaArquivosPdb[idx],
-                        self.opts.htmlfiledir)
+                    listaArquivosPdb[idx],
+                    self.opts.htmlfiledir)
                 fhtml.append('<td>%s</td>' % (sfsize))
                 idx += 1
             idx = idx_linha
@@ -198,14 +198,14 @@ class CalculateGDTTS(object):
                 for i in range(start, end):
                     fhtml.append(
                         '<td><a href="%s">%s</a></td>' % (
-                                listaArquivosPdb[idx], listaArquivosPdb[idx]))
+                            listaArquivosPdb[idx], listaArquivosPdb[idx]))
                     idx += 1
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(start, end):
                     sfsize = get_file_size(
-                            listaArquivosPdb[idx],
-                            self.opts.htmlfiledir)
+                        listaArquivosPdb[idx],
+                        self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
                     idx += 1
                 fhtml.append('</tr>')
@@ -223,14 +223,14 @@ class CalculateGDTTS(object):
             for i in range(0, rest):
                 fhtml.append(
                     '<td><a href="%s">%s</a></td>' % (
-                            listaArquivosPdb[idx], listaArquivosPdb[idx]))
+                        listaArquivosPdb[idx], listaArquivosPdb[idx]))
                 idx += 1
             idx = idx_linha
             fhtml.append('</tr><tr>')
             for i in range(0, rest):
                 sfsize = get_file_size(
-                        listaArquivosPdb[idx],
-                        self.opts.htmlfiledir)
+                    listaArquivosPdb[idx],
+                    self.opts.htmlfiledir)
                 fhtml.append('<td>%s</td>' % (sfsize))
                 idx += 1
             idx = idx_linha
@@ -348,7 +348,7 @@ class CalculateGDTTS(object):
             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
             <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
             <head> <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-            <meta name="generator" content="Galaxy %s tool output - see http://g2.trac.bx.psu.edu/" />
+            <meta name="generator" content="Galaxy %s tool output" />
             <title></title>
             <link rel="stylesheet" href="../../../static/galaxy_icmc.css" type="text/css" />
             <link rel="stylesheet" href="../../../static/style/base.css" type="text/css" />
@@ -396,7 +396,6 @@ class CalculateGDTTS(object):
                         //,noscript: true
                         //console: "none", // default will be jmolApplet0_infodiv
                         //script: "set antialiasDisplay;background white;load data/caffeine.mol;"
-                        //delay 3;background yellow;delay 0.1;background white;for (var i = 0; i < 10; i+=1){rotate y 3;delay 0.01}"
                     }
 
             </script>
@@ -493,14 +492,14 @@ class CalculateGDTTS(object):
                 for i in range(0, n):
                     fhtml.append(
                         '<td><a href="/datasets/%s/display/%s">%s</a></td>' % (
-                                self.opts.datasetID, listaArquivosPdb[idx], listaArquivosPdb[idx]))
+                            self.opts.datasetID, listaArquivosPdb[idx], listaArquivosPdb[idx]))
                     idx += 1
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, n):
                     sfsize = get_file_size(
-                            listaArquivosPdb[idx],
-                            self.opts.htmlfiledir)
+                        listaArquivosPdb[idx],
+                        self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
                     idx += 1
                 idx = idx_linha
@@ -509,7 +508,8 @@ class CalculateGDTTS(object):
                     fhtml.append(
                         '<td>'
                         '<a href="javascript:Jmol.script(jmolApplet0,'
-                        "'load /datasets/%s/display/%s;cartoons only;color  cartoons structure; spin on')"
+                        "'load /datasets/%s/display/%s;cartoons only; \
+                        color  cartoons structure; spin on')"
                         '">Load on Jmol</a></td>' % (
                             self.opts.datasetID, listaArquivosPdb[idx]))
                     idx += 1
@@ -531,16 +531,16 @@ class CalculateGDTTS(object):
                     for i in range(start, end):
                         fhtml.append(
                             '<td><a href="/datasets/%s/display/%s">%s</a></td>' % (
-                                    self.opts.datasetID,
-                                    listaArquivosPdb[idx],
-                                    listaArquivosPdb[idx]))
+                                self.opts.datasetID,
+                                listaArquivosPdb[idx],
+                                listaArquivosPdb[idx]))
                         idx += 1
                     idx = idx_linha
                     fhtml.append('</tr><tr>')
                     for i in range(start, end):
                         sfsize = get_file_size(
-                                listaArquivosPdb[idx],
-                                self.opts.htmlfiledir)
+                            listaArquivosPdb[idx],
+                            self.opts.htmlfiledir)
                         fhtml.append('<td>%s</td>' % (sfsize))
                         idx += 1
                     idx = idx_linha
@@ -549,7 +549,8 @@ class CalculateGDTTS(object):
                         fhtml.append(
                             '<td>'
                             '<a href="javascript:Jmol.script(jmolApplet0,'
-                            "'load /datasets/%s/display/%s;cartoons only;color cartoons structure; spin on')"
+                            "'load /datasets/%s/display/%s;cartoons only; \
+                            color cartoons structure; spin on')"
                             '">Load on Jmol</a></td>' % (
                                 self.opts.datasetID, listaArquivosPdb[idx]))
                         idx += 1
@@ -570,14 +571,14 @@ class CalculateGDTTS(object):
                 for i in range(0, rest):
                     fhtml.append(
                         '<td><a href="/datasets/%s/display/%s">%s</a></td>' % (
-                                self.opts.datasetID, listaArquivosPdb[idx], listaArquivosPdb[idx]))
+                            self.opts.datasetID, listaArquivosPdb[idx], listaArquivosPdb[idx]))
                     idx += 1
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, rest):
                     sfsize = get_file_size(
-                            listaArquivosPdb[idx],
-                            self.opts.htmlfiledir)
+                        listaArquivosPdb[idx],
+                        self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
                     idx += 1
                 idx = idx_linha
@@ -586,7 +587,8 @@ class CalculateGDTTS(object):
                     fhtml.append(
                         '<td>'
                         '<a href="javascript:Jmol.script(jmolApplet0,'
-                        "'load /datasets/%s/display/%s;cartoons only;color cartoons structure; spin on')"
+                        "'load /datasets/%s/display/%s;cartoons only; \
+                        color cartoons structure; spin on')"
                         '">Load on Jmol</a></td>' % (
                             self.opts.datasetID, listaArquivosPdb[idx]))
                     idx += 1
@@ -718,24 +720,24 @@ class CalculateGDTTS(object):
                     name_reference, ext = os.path.splitext(self.opts.inputPDBRefName)
 
                     result_file = file(os.path.join(
-                            self.path_runs.get_path_execution(),
-                            name_reference + '_' + name_pdb + '.txt'),
+                        self.path_runs.get_path_execution(),
+                        name_reference + '_' + name_pdb + '.txt'),
                         'w')
 
                     cl = [
-                        self.path_runs.get_path_execute()+'TMscore',
+                        self.path_runs.get_path_execute() + 'TMscore',
                         os.path.join(
                             self.path_runs.get_path_execution(), self.opts.inputPDBRefName),
                         os.path.join(
-                            self.path_runs.get_path_execution(),  pdb),
+                            self.path_runs.get_path_execution(), pdb),
                         '-o',
                         'TM.sup',
                         '>',
-                        self.path_runs.get_path_execution()+name_reference+'_'+name_pdb+'.txt',
+                        self.path_runs.get_path_execution() + name_reference + '_' + name_pdb + '.txt',
                         '&']
 
                     retProcess = subprocess.Popen(
-                        cl, 0, stdout=result_file,  stderr=None, shell=False)
+                        cl, 0, stdout=result_file, stderr=None, shell=False)
                     retCode = retProcess.wait()
                     if(retCode != 0):
                         show_error_message(
@@ -778,7 +780,6 @@ class CalculateGDTTS(object):
         @type self: koala.CalculateGDTTS.CalculateGDTTS
         """
         try:
-            self.path_runs.set_path_execute()
             self.path_runs.set_execution_directory()
 
             if self.opts.compressedFile == '1':
@@ -803,17 +804,16 @@ class CalculateGDTTS(object):
                             show_error_message("The input file could not be read.\n%s" % e)
             else:
                     copy_pdbs_from_input(
-                            self.path_runs.get_path_execution(),
-                            self.opts.htmlfiledir,
-                            self.opts.inputnames,
-                            self.opts.inputPdbs)
+                        self.path_runs.get_path_execution(),
+                        self.opts.htmlfiledir,
+                        self.opts.inputnames,
+                        self.opts.inputPdbs)
 
             copy_pdb_reference(
                 self.opts.htmlfiledir,
                 self.path_runs.get_path_execution(),
                 self.opts.inputPDBRefName,
-                self.opts.inputPDBRef
-                )
+                self.opts.inputPDBRef)
 
             self.gdt_value = self.getGDTValues()
 
