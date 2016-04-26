@@ -14,7 +14,7 @@ import math
 
 from koala.utils import get_file_size, show_error_message, list_directory
 from koala.utils import extract_zip_file, extract_gz_file, TimeJobExecution, copy_necessary_files
-from koala.utils.output import send_output_files_html, get_result_files
+from koala.utils.output import send_output_files_html, get_result_files, build_images
 from koala.utils.path import PathRuns, clear_path_execute
 from koala.utils.input import copy_pdbs_from_input, create_configuration_file, format_fitness
 from koala.frameworks.params import Params

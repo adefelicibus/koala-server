@@ -6,7 +6,7 @@ import random
 import os
 import stat
 import shutil
-from koala.utils import show_error_message  # , get_logged_user
+from koala.utils import show_error_message
 
 from koala.config import Configuration
 
@@ -53,27 +53,16 @@ class PathRuns(object):
     def get_path_execution(self):
         return self.path_execution
 
-    # def set_path_execute(self):
-    #     try:
-    #         self.path_execute = "/home/%s/execute/" % get_logged_user()
-    #         # self.path_execute = "/dados/%s/execute/" % get_logged_user()
-    #     except Exception, e:
-    #         show_error_message("Error when getPathExecute\n%s" % e)
-
     def get_path_execute(self):
         return self.path_execute
 
     def get_path_algorithms(self, framework):
         try:
-            # return "/home/%s/programs/%s/" % (get_logged_user(), framework)
-            return self.config.get(framework.lower(), None)
+            return self.config.get(framework.lower(), None) + os.sep
         except Exception, e:
             show_error_message("Error when getPathAlgorithms\n%s" % e)
 
     def get_path_gromacs(self):
-        # pathGromacs = '/home/%s/programs/gmx-4.6.5/no_mpi/bin/' \
-        #                                 % get_logged_user()
-        # return pathGromacs
         return self.config.get('path_gromacs', None)
 
 

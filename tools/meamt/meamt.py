@@ -641,18 +641,28 @@ class MEAMT(object):
             show_error_message("Error on makeHtmlWithJMol:\n%s" % str(e))
 
     def do_minimization(self, pdbPrefix=''):
-        if not check_pdb(self.path_runs.get_path_execution(), self.opts.galaxyroot):
+        if not check_pdb(
+                self.path_runs.get_path_execution(),
+                self.opts.galaxyroot,
+                self.path_runs.get_path_gromacs()):
             raise Exception("The script to check the PDBs finished wrong.")
 
-        if not prepare_pdb(self.path_runs.get_path_execution(), self.opts.galaxyroot):
+        if not prepare_pdb(
+                self.path_runs.get_path_execution(),
+                self.opts.galaxyroot):
             raise Exception("The script to prepare the PDBs finished wrong.")
 
         if not residue_renumber(
-                self.path_runs.get_path_execution(), self.opts.galaxyroot):
+                self.path_runs.get_path_execution(),
+                self.opts.galaxyroot,
+                self.path_runs.get_path_gromacs()):
             raise Exception("The script to renumber the residues finished wrong.")
 
         if not minimization(
-                self.path_runs.get_path_execution(), self.opts.galaxyroot, pdbPrefix):
+                self.path_runs.get_path_execution(),
+                self.opts.galaxyroot,
+                self.path_runs.get_path_gromacs(),
+                pdbPrefix):
             raise Exception("The script of minimization finished wrong.")
 
     def main(self):

@@ -9,10 +9,10 @@ from PyHighcharts.highcharts.chart import Highchart
 from decimal import *
 import cProfile
 
-from koala.utils import get_file_size, show_error_message, list_directory, get_logged_user
+from koala.utils import get_file_size, show_error_message, list_directory
 from koala.utils import TimeJobExecution, copy_necessary_files
 from koala.utils.output import send_output_files_html, get_result_files
-from koala.utils.path import PathRuns, clear_path_execute, get_path_gromacs
+from koala.utils.path import PathRuns, clear_path_execute
 from koala.utils.input import create_configuration_file
 from koala.frameworks.params import Params
 
@@ -336,7 +336,6 @@ class SortMethodByFront(object):
         @type self: koala.SortByFront.SortByFront
         """
 
-        self.path_runs.set_path_execute()
         self.path_runs.set_execution_directory()
 
         copy_necessary_files(
@@ -344,9 +343,6 @@ class SortMethodByFront(object):
             self.path_runs.get_path_execution(),
             self.framework.get_framework())
 
-        # self.framework.set_parameter(
-        #         'objective_analisys_dimo_source',
-        #         '/home/%s/programs/dimo/DIMO2' % get_logged_user())
         self.framework.set_parameter('Local_Execute', self.path_runs.get_path_execution())
         self.framework.set_parameter(
             'Path_Gromacs_Programs',

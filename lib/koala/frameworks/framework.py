@@ -38,10 +38,6 @@ class Framework(object):
                     self.config.get(self.get_framework().lower(), None), algorithm)
             else:
                 self.command = '%s%s' % (path_execution, algorithm)
-            # elif self.get_framework() in ('MEAMT', 'i-paes'):
-            #     self.command = '%s%s' % (get_path_algorithms(self.get_framework()), algorithm)
-            # else:
-            #     self.command = '%s%s' % (path_execution, algorithm)
         except Exception, e:
             show_error_message("Error when set_command\n%s" % e)
 

@@ -68,7 +68,7 @@ def send_email(de, para, assunto, mensagem, arquivos, servidor):
                 msg.attach(parte)
 
             # Conecta ao servidor SMTP
-            smtp = smtplib.SMTP(servidor, config.getint('smtp_port', 587))
+            smtp = smtplib.SMTP(servidor, config.get('smtp_port', 587))
             smtp.ehlo()
             smtp.starttls()
             smtp.ehlo()

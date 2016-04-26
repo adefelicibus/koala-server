@@ -11,7 +11,7 @@ import zipfile
 import gzip
 import cProfile
 
-from koala.utils import get_file_size, show_error_message, list_directory, get_logged_user
+from koala.utils import get_file_size, show_error_message, list_directory
 from koala.utils import extract_zip_file, extract_gz_file, TimeJobExecution, copy_necessary_files
 from koala.utils.output import send_output_files_html, get_result_files, build_images
 from koala.utils.path import PathRuns, clear_path_execute
@@ -859,7 +859,6 @@ class DominanceRanking(object):
         @type self: koala.DominanceRanking.DominanceRanking
         """
 
-        # self.path_runs.set_path_execute()
         self.path_runs.set_execution_directory()
 
         copy_necessary_files(
@@ -867,9 +866,6 @@ class DominanceRanking(object):
             self.path_runs.get_path_execution(),
             self.framework.get_framework())
 
-        # self.framework.set_parameter(
-        #     'objective_analisys_dimo_source',
-        #     '/home/%s/programs/dimo/DIMO2' % get_logged_user())
         self.framework.set_parameter('Local_Execute', self.path_runs.get_path_execution())
         self.framework.set_parameter('Path_Gromacs_Programs', self.path_runs.get_path_gromacs())
         self.framework.set_parameter(
@@ -903,13 +899,15 @@ class DominanceRanking(object):
         if(self.opts.renameAtoms == 'true'):
             if not rename_atoms(
                     self.path_runs.get_path_execution(),
-                    self.opts.galaxyroot):
+                    self.opts.galaxyroot,
+                    self.path_runs.get_path_gromacs()):
                 raise Exception("The script to rename the atoms finished wrong.")
 
         if(self.opts.checkStructures == 'true'):
             if not check_pdb(
                     self.path_runs.get_path_execution(),
-                    self.opts.galaxyroot):
+                    self.opts.galaxyroot,
+                    self.path_runs.get_path_gromacs()):
                 raise Exception("The script to check the structure finished wrong.")
 
         self.framework.set_command(
