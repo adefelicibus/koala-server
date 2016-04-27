@@ -764,7 +764,7 @@ class MonteCarlo2PG(object):
                 'NativeProtein', '%s1VII.pdb' % self.path_runs.get_path_execution())
             self.framework.set_parameter(
                     'Database',
-                    '%sDatabase/' % self.path_runs.get_path_algorithms('2pg_build_conformation'))
+                    '%sDatabase/' % self.path_runs.get_path_algorithms('build_conformation_2pg'))
 
             create_configuration_file(
                 self.path_runs.get_path_execution(), self.framework)

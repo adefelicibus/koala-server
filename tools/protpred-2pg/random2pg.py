@@ -764,7 +764,7 @@ class Random2PG(object):
             self.framework.set_parameter(
                     'Database',
                     '%s/Database/' %
-                    self.path_runs.get_path_algorithms('2pg_build_conformation'))
+                    self.path_runs.get_path_algorithms('build_conformation_2pg'))
 
             create_configuration_file(
                 self.path_runs.get_path_execution(), self.framework)
