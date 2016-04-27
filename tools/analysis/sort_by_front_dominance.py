@@ -886,13 +886,15 @@ class SortByFront(object):
         if(self.opts.renameAtoms == 'true'):
             if not rename_atoms(
                     self.path_runs.get_path_execution(),
-                    self.opts.galaxyroot):
+                    self.opts.galaxyroot,
+                    self.path_runs.get_path_gromacs()):
                 raise Exception("The script to rename the atoms finished wrong.")
 
         if(self.opts.checkStructures == 'true'):
             if not check_pdb(
                     self.path_runs.get_path_execution(),
-                    self.opts.galaxyroot):
+                    self.opts.galaxyroot,
+                    self.path_runs.get_path_gromacs()):
                 raise Exception("The script to check the structure finished wrong.")
 
         self.framework.set_command(
