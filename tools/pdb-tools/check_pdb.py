@@ -87,18 +87,18 @@ class CheckPDBStructure(object):
             program = os.path.join(gmx_path, "pdb2gmx")
 
             process = Popen([
-                    program,
-                    '-f',
-                    pdbfile,
-                    '-o',
-                    'check.gro',
-                    '-p',
-                    'check.top',
-                    '-water',
-                    'none',
-                    '-ff',
-                    forcefield,
-                    '-ignh'], stdout=PIPE, stderr=PIPE)
+                program,
+                '-f',
+                pdbfile,
+                '-o',
+                'check.gro',
+                '-p',
+                'check.top',
+                '-water',
+                'none',
+                '-ff',
+                forcefield,
+                '-ignh'], stdout=PIPE, stderr=PIPE)
 
             stdout, stderr = process.communicate()
             process.wait()
@@ -119,7 +119,6 @@ class CheckPDBStructure(object):
         @type self: koala.CheckPDBStructure.CheckPDBStructure
         """
         try:
-            # self.path_runs.set_path_execute()
             self.path_runs.set_execution_directory()
 
             if self.opts.compressedFile == '1':
@@ -149,9 +148,9 @@ class CheckPDBStructure(object):
 
             for pdb in pdbs:
                 self.check_structue_by_pdb2gmx(
-                        os.path.join(self.path_runs.get_path_execution(), pdb),
-                        self.path_runs.get_path_gromacs(),
-                        self.opts.forceField)
+                    os.path.join(self.path_runs.get_path_execution(), pdb),
+                    self.path_runs.get_path_gromacs(),
+                    self.opts.forceField)
 
             path_output, file_output = os.path.split(self.opts.output)
 
@@ -159,17 +158,17 @@ class CheckPDBStructure(object):
 
             if compress_files(pdbs_accepted, self.path_runs.get_path_execution(), "PDBsChecked"):
                 send_output_results(
-                        path_output,
-                        file_output,
-                        os.path.join(self.path_runs.get_path_execution(), 'PDBsChecked.zip'))
+                    path_output,
+                    file_output,
+                    os.path.join(self.path_runs.get_path_execution(), 'PDBsChecked.zip'))
 
             if(os.path.exists(
                     os.path.join(self.path_runs.get_path_execution(), self.check_pdb_log))):
                 send_multiple_outputs(
-                        path_output,
-                        [os.path.join(self.path_runs.get_path_execution(), self.check_pdb_log)],
-                        self.opts.galaxydir,
-                        self.opts.outputID)
+                    path_output,
+                    [os.path.join(self.path_runs.get_path_execution(), self.check_pdb_log)],
+                    self.opts.galaxydir,
+                    self.opts.outputID)
 
         except Exception, e:
             show_error_message(str(e))

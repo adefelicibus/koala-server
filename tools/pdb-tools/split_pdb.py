@@ -31,7 +31,6 @@ class SplitPDB(object):
         @type self: koala.SplitPDB.SplitPDB
         """
         try:
-            # self.path_runs.set_path_execute()
             self.path_runs.set_execution_directory()
 
             link_name = os.path.join(self.opts.outputdir, os.path.basename(self.opts.pdbName))
@@ -40,24 +39,24 @@ class SplitPDB(object):
                 os.system("cp %s %s" % (link_name, self.path_runs.get_path_execution()))
 
             pdbs = parse_pdb(
-                    self.path_runs.get_path_execution(),
-                    os.path.join(self.path_runs.get_path_execution(), self.opts.pdbName))
+                self.path_runs.get_path_execution(),
+                os.path.join(self.path_runs.get_path_execution(), self.opts.pdbName))
 
             path_output, file_output = os.path.split(self.opts.output)
 
             send_multiple_outputs(
-                    self.path_runs.get_path_execution(),
-                    pdbs, self.opts.galaxydir,
-                    self.opts.outputID)
+                self.path_runs.get_path_execution(),
+                pdbs, self.opts.galaxydir,
+                self.opts.outputID)
 
             if self.opts.createCompressFile == "True":
                 if compress_files(pdbs, self.path_runs.get_path_execution(), self.opts.toolname):
                     path_output, file_output = os.path.split(self.opts.outputZip)
                     send_output_results(
-                            path_output,
-                            file_output,
-                            os.path.join(
-                                self.path_runs.get_path_execution(), '%s.zip' % self.opts.toolname))
+                        path_output,
+                        file_output,
+                        os.path.join(
+                            self.path_runs.get_path_execution(), '%s.zip' % self.opts.toolname))
 
         except Exception, e:
             show_error_message(str(e))

@@ -41,17 +41,17 @@ class RenameAtoms(object):
 
         program = os.path.join(gmx_path, "pdb2gmx")
         process = Popen([
-                program,
-                '-f',
-                pdbfile,
-                '-o',
-                pdbfile,
-                '-p',
-                'check.top',
-                '-water',
-                'none',
-                '-ff',
-                forcefield], stdout=PIPE, stderr=PIPE)
+            program,
+            '-f',
+            pdbfile,
+            '-o',
+            pdbfile,
+            '-p',
+            'check.top',
+            '-water',
+            'none',
+            '-ff',
+            forcefield], stdout=PIPE, stderr=PIPE)
         stdout, stderr = process.communicate()
         process.wait()
 
@@ -63,7 +63,6 @@ class RenameAtoms(object):
         @type self: koala.CheckPDBStructure.CheckPDBStructure
         """
         try:
-            # self.path_runs.set_path_execute()
             self.path_runs.set_execution_directory()
 
             self.opts.pdbName = self.opts.pdbName.replace(
@@ -75,17 +74,17 @@ class RenameAtoms(object):
                 os.system("cp %s %s" % (link_name, self.path_runs.get_path_execution()))
 
             self.rename_atoms_structure(
-                    os.path.join(self.path_runs.get_path_execution(), self.opts.pdbName),
-                    self.path_runs.get_path_gromacs(),
-                    self.opts.forceField
+                os.path.join(self.path_runs.get_path_execution(), self.opts.pdbName),
+                self.path_runs.get_path_gromacs(),
+                self.opts.forceField
             )
 
             path_output, file_output = os.path.split(self.opts.output)
 
             send_output_results(
-                    path_output,
-                    file_output,
-                    os.path.join(self.path_runs.get_path_execution(), self.opts.pdbName))
+                path_output,
+                file_output,
+                os.path.join(self.path_runs.get_path_execution(), self.opts.pdbName))
 
         except Exception, e:
             show_error_message(str(e))

@@ -391,7 +391,9 @@ class CalculateGDTTS(object):
                         disableInitialConsole: false,
                         readyFunction: jmol_isReady,
                         allowjavascript: true,
-                        script: "set antialiasDisplay;set showtiming;load async /datasets/%s/display/%s;cartoons only;color  cartoons structure; spin on"
+                        script: "set antialiasDisplay;set showtiming; \
+                        load async /datasets/%s/display/%s;cartoons only; \
+                        color  cartoons structure; spin on"
                         //,defaultModel: ":dopamine"
                         //,noscript: true
                         //console: "none", // default will be jmolApplet0_infodiv

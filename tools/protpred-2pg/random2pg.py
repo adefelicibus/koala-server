@@ -126,8 +126,8 @@ class Random2PG(object):
 
             # images (e depois models)
             listaArquivosPdb = list_directory(
-                        self.path_runs.get_path_execution(),
-                        'randomSolution-M*.pdb')
+                self.path_runs.get_path_execution(),
+                'randomSolution-M*.pdb')
 
             if len(listaArquivosPdb) <= 20:
                 size = int(len(listaArquivosPdb) / 5)
@@ -155,14 +155,14 @@ class Random2PG(object):
                 for i in range(0, n):
                     fhtml.append(
                         '<td><a href="%s">%s</a></td>' % (
-                                listaArquivosPdb[idx], listaArquivosPdb[idx]))
+                            listaArquivosPdb[idx], listaArquivosPdb[idx]))
                     idx += 1
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, n):
                     sfsize = get_file_size(
-                            listaArquivosPdb[idx],
-                            self.opts.htmlfiledir)
+                        listaArquivosPdb[idx],
+                        self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
                     idx += 1
                 idx = idx_linha
@@ -183,14 +183,14 @@ class Random2PG(object):
                     for i in range(start, end):
                         fhtml.append(
                             '<td><a href="%s">%s</a></td>' % (
-                                    listaArquivosPdb[idx], listaArquivosPdb[idx]))
+                                listaArquivosPdb[idx], listaArquivosPdb[idx]))
                         idx += 1
                     idx = idx_linha
                     fhtml.append('</tr><tr>')
                     for i in range(start, end):
                         sfsize = get_file_size(
-                                listaArquivosPdb[idx],
-                                self.opts.htmlfiledir)
+                            listaArquivosPdb[idx],
+                            self.opts.htmlfiledir)
                         fhtml.append('<td>%s</td>' % (sfsize))
                         idx += 1
                     fhtml.append('</tr>')
@@ -209,14 +209,14 @@ class Random2PG(object):
                 for i in range(0, rest):
                     fhtml.append(
                         '<td><a href="%s">%s</a></td>' % (
-                                listaArquivosPdb[idx], listaArquivosPdb[idx]))
+                            listaArquivosPdb[idx], listaArquivosPdb[idx]))
                     idx += 1
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, rest):
                     sfsize = get_file_size(
-                            listaArquivosPdb[idx],
-                            self.opts.htmlfiledir)
+                        listaArquivosPdb[idx],
+                        self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
                     idx += 1
                 idx = idx_linha
@@ -378,12 +378,13 @@ class Random2PG(object):
                         disableInitialConsole: false,
                         readyFunction: jmol_isReady,
                         allowjavascript: true,
-                        script: "set antialiasDisplay;set showtiming;load async /datasets/%s/display/%s;cartoons only;color  cartoons structure; spin on"
+                        script: "set antialiasDisplay;set showtiming; \
+                        load async /datasets/%s/display/%s;cartoons only; \
+                        color  cartoons structure; spin on"
                         //,defaultModel: ":dopamine"
                         //,noscript: true
                         //console: "none", // default will be jmolApplet0_infodiv
                         //script: "set antialiasDisplay;background white;load data/caffeine.mol;"
-                        //delay 3;background yellow;delay 0.1;background white;for (var i = 0; i < 10; i+=1){rotate y 3;delay 0.01}"
                     }
 
             </script>
@@ -450,8 +451,8 @@ class Random2PG(object):
 
             # images (e depois models)
             listaArquivosPdb = list_directory(
-                        self.path_runs.get_path_execution(),
-                        'randomSolution-M*.pdb')
+                self.path_runs.get_path_execution(),
+                'randomSolution-M*.pdb')
 
             if len(listaArquivosPdb) <= 20:
                 size = int(len(listaArquivosPdb) / 5)
@@ -480,14 +481,14 @@ class Random2PG(object):
                 for i in range(0, n):
                     fhtml.append(
                         '<td><a href="/datasets/%s/display/%s">%s</a></td>' % (
-                                self.opts.datasetID, listaArquivosPdb[idx], listaArquivosPdb[idx]))
+                            self.opts.datasetID, listaArquivosPdb[idx], listaArquivosPdb[idx]))
                     idx += 1
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, n):
                     sfsize = get_file_size(
-                            listaArquivosPdb[idx],
-                            self.opts.htmlfiledir)
+                        listaArquivosPdb[idx],
+                        self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
                     idx += 1
                 idx = idx_linha
@@ -526,8 +527,8 @@ class Random2PG(object):
                     fhtml.append('</tr><tr>')
                     for i in range(start, end):
                         sfsize = get_file_size(
-                                listaArquivosPdb[idx],
-                                self.opts.htmlfiledir)
+                            listaArquivosPdb[idx],
+                            self.opts.htmlfiledir)
                         fhtml.append('<td>%s</td>' % (sfsize))
                         idx += 1
                     idx = idx_linha
@@ -557,14 +558,14 @@ class Random2PG(object):
                 for i in range(0, rest):
                     fhtml.append(
                         '<td><a href="/datasets/%s/display/%s">%s</a></td>' % (
-                                self.opts.datasetID, listaArquivosPdb[idx], listaArquivosPdb[idx]))
+                            self.opts.datasetID, listaArquivosPdb[idx], listaArquivosPdb[idx]))
                     idx += 1
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, rest):
                     sfsize = get_file_size(
-                            listaArquivosPdb[idx],
-                            self.opts.htmlfiledir)
+                        listaArquivosPdb[idx],
+                        self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
                     idx += 1
                 idx = idx_linha
@@ -684,27 +685,31 @@ class Random2PG(object):
 
     def do_minimization(self, pdbPrefix=''):
         if not check_pdb(
-                self.path_runs.get_path_execution(),
-                self.opts.galaxyroot,
-                self.path_runs.get_path
-                ):
+            self.path_runs.get_path_execution(),
+            self.opts.galaxyroot,
+            self.path_runs.get_path_gromacs()
+        ):
             raise Exception("The script to check the PDBs finished wrong.")
 
-        if not prepare_pdb(self.path_runs.get_path_execution(), self.opts.galaxyroot):
+        if not prepare_pdb(
+            self.path_runs.get_path_execution(),
+            self.opts.galaxyroot
+        ):
             raise Exception("The script to prepare the PDBs finished wrong.")
 
         if not residue_renumber(
-                self.path_runs.get_path_execution(),
-                self.opts.galaxyroot,
-                self.path_runs.get_path_gromacs()
-                ):
+            self.path_runs.get_path_execution(),
+            self.opts.galaxyroot,
+            self.path_runs.get_path_gromacs()
+        ):
             raise Exception("The script to renumber the residues finished wrong.")
 
         if not minimization(
-                self.path_runs.get_path_execution(),
-                self.opts.galaxyroot,
-                self.path_runs.get_path_gromacs(),
-                pdbPrefix):
+            self.path_runs.get_path_execution(),
+            self.opts.galaxyroot,
+            self.path_runs.get_path_gromacs(),
+            pdbPrefix
+        ):
             raise Exception("The script of minimization finished wrong.")
 
     def run_Random(self):
@@ -715,7 +720,6 @@ class Random2PG(object):
         """
 
         try:
-            # self.path_runs.set_path_execute()
             if self.opts.inputEmail:
                 email = validate_email(self.opts.inputEmail)
                 self.path_runs.set_execution_directory(email)
@@ -723,16 +727,16 @@ class Random2PG(object):
                 self.path_runs.set_execution_directory()
 
             self.sequence = create_local_fasta_file(
-                    self.path_runs.get_path_execution(),
-                    self.opts.fromFasta,
-                    self.opts.inputFasta,
-                    self.opts.toolname,
-                    self.framework)
+                self.path_runs.get_path_execution(),
+                self.opts.fromFasta,
+                self.opts.inputFasta,
+                self.opts.toolname,
+                self.framework)
 
             SizePopulation = create_local_pop_file(
-                    self.path_runs.get_path_execution(),
-                    self.opts.inputPop,
-                    self.framework)
+                self.path_runs.get_path_execution(),
+                self.opts.inputPop,
+                self.framework)
 
             if SizePopulation > 1:
                 show_error_message(
@@ -752,19 +756,19 @@ class Random2PG(object):
             self.framework.set_parameter(
                 'force_field', self.opts.forceField)
             self.framework.set_parameter(
-                    'SequenceAminoAcidsPathFileName',
-                    self.path_runs.get_path_execution() + 'fasta.txt')
+                'SequenceAminoAcidsPathFileName',
+                self.path_runs.get_path_execution() + 'fasta.txt')
             self.framework.set_parameter(
                 'Local_Execute', self.path_runs.get_path_execution())
             self.framework.set_parameter(
-                    'Path_Gromacs_Programs',
-                    self.path_runs.get_path_gromacs())
+                'Path_Gromacs_Programs',
+                self.path_runs.get_path_gromacs())
             self.framework.set_parameter(
                 'NativeProtein', '%s1VII.pdb' % self.path_runs.get_path_execution())
             self.framework.set_parameter(
-                    'Database',
-                    '%s/Database/' %
-                    self.path_runs.get_path_algorithms('2pg_build_conformation'))
+                'Database',
+                '%s/Database/' %
+                self.path_runs.get_path_algorithms('build_conformation_2pg'))
 
             create_configuration_file(
                 self.path_runs.get_path_execution(), self.framework)
@@ -778,17 +782,17 @@ class Random2PG(object):
             cl = [self.framework.get_command(), config, '&']
 
             retProcess = subprocess.Popen(
-                cl, 0, stdout=None,  stderr=subprocess.STDOUT, shell=False)
+                cl, 0, stdout=None, stderr=subprocess.STDOUT, shell=False)
             retCode = retProcess.wait()
             if(retCode != 0):
                 show_error_message(
                     "The 2PG framework finished wrong.\nContact the system administrator.")
 
             parse_pdb(
-                    self.path_runs.get_path_execution(),
-                    'random_algorithm_solutions.pdb',
-                    20,
-                    'randomSolution')
+                self.path_runs.get_path_execution(),
+                'random_algorithm_solutions.pdb',
+                20,
+                'randomSolution')
 
             if(self.opts.runMinimization == 'true'):
                 self.do_minimization("randomSolution")
@@ -810,9 +814,9 @@ class Random2PG(object):
             self.opts.htmlfiledir = htmldir
 
             result, filesHtml = get_result_files(
-                    self.path_runs.get_path_execution(),
-                    self.opts.toolname,
-                    'randomSolution-M')
+                self.path_runs.get_path_execution(),
+                self.opts.toolname,
+                'randomSolution-M')
 
             send_output_files_html(self.opts.htmlfiledir, filesHtml)
             send_output_files_html(self.opts.htmlfiledir, [result])
@@ -821,9 +825,9 @@ class Random2PG(object):
                 if compress_files(pdbs, self.path_runs.get_path_execution(), "2PGRandom"):
                     path_output, file_output = os.path.split(self.opts.outputZip)
                     send_output_results(
-                            path_output,
-                            file_output,
-                            os.path.join(self.path_runs.get_path_execution(), '2PGRandom.zip'))
+                        path_output,
+                        file_output,
+                        os.path.join(self.path_runs.get_path_execution(), '2PGRandom.zip'))
 
             self.makeHtml()
 
@@ -832,12 +836,10 @@ class Random2PG(object):
 
             if(self.opts.inputEmail):
                 send_email(
-                        'adefelicibus@gmail.com',
-                        email,
-                        '%s Execution on Galaxy - Cloud USP' % self.opts.toolname,
-                        get_message_email(self.opts.toolname),
-                        [],
-                        'smtp.gmail.com')
+                    email,
+                    '%s Execution on Galaxy - Cloud USP' % self.opts.toolname,
+                    get_message_email(self.opts.toolname),
+                    [])
 
         except Exception, e:
             show_error_message(str(e))

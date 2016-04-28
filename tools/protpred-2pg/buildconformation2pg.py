@@ -38,15 +38,14 @@ class BuildConformation2PG(object):
         @type self: koala.BuildConformation2PG.BuildConformation2PG
         """
         try:
-            # self.path_runs.set_path_execute()
             self.path_runs.set_execution_directory()
 
             self.sequence = create_local_fasta_file(
-                    self.path_runs.get_path_execution(),
-                    self.opts.fromFasta,
-                    self.opts.inputFasta,
-                    self.opts.toolname,
-                    self.framework)
+                self.path_runs.get_path_execution(),
+                self.opts.fromFasta,
+                self.opts.inputFasta,
+                self.opts.toolname,
+                self.framework)
 
             copy_necessary_files(
                 self.path_runs.get_path_execute(),
@@ -69,20 +68,20 @@ class BuildConformation2PG(object):
                     'n_terminal_charge', self.opts.nTerminal)
 
             self.framework.set_parameter(
-                    'SequenceAminoAcidsPathFileName',
-                    self.path_runs.get_path_execution() + 'fasta.txt')
+                'SequenceAminoAcidsPathFileName',
+                self.path_runs.get_path_execution() + 'fasta.txt')
             self.framework.set_parameter(
                 'Local_Execute',
                 self.path_runs.get_path_execution())
             self.framework.set_parameter(
-                    'Path_Gromacs_Programs',
-                    self.path_runs.get_path_gromacs())
+                'Path_Gromacs_Programs',
+                self.path_runs.get_path_gromacs())
             self.framework.set_parameter(
                 'NativeProtein',
                 '%s1VII.pdb' % self.path_runs.get_path_execution())
             self.framework.set_parameter(
-                    'Database',
-                    '%sDatabase/' % self.path_runs.get_path_algorithms('2pg_build_conformation'))
+                'Database',
+                '%sDatabase/' % self.path_runs.get_path_algorithms('build_conformation_2pg'))
 
             create_configuration_file(
                 self.path_runs.get_path_execution(), self.framework)
@@ -96,7 +95,7 @@ class BuildConformation2PG(object):
             cl = [self.framework.get_command(), config, '&']
 
             retProcess = subprocess.Popen(
-                cl, 0, stdout=None,  stderr=subprocess.STDOUT, shell=False)
+                cl, 0, stdout=None, stderr=subprocess.STDOUT, shell=False)
             retCode = retProcess.wait()
             if(retCode != 0):
                 show_error_message(

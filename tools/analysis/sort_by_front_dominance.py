@@ -201,7 +201,8 @@ class SortByFront(object):
             html.append('<div class="sectionmessage">')
             html.append('<br>Below, there is a graph with the best solutions.<br><br></div>')
 
-            html.append('<div id="container2" style="min-width: 310px; height: 400px; margin: 0 auto">')
+            html.append('<div id="container2" '
+                        'style="min-width: 310px; height: 400px; margin: 0 auto">')
             html.append('<script type="text/javascript">')
             html.append(str(self.buildHighchart()))
             html.append('</script></div><br>')
@@ -494,7 +495,9 @@ class SortByFront(object):
                         disableInitialConsole: false,
                         readyFunction: jmol_isReady,
                         allowjavascript: true,
-                        script: "set antialiasDisplay;set showtiming;load /datasets/%s/display/%s;cartoons only;color  cartoons structure; spin on"
+                        script: "set antialiasDisplay;set showtiming; \
+                        load /datasets/%s/display/%s;cartoons only; \
+                        color  cartoons structure; spin on"
                         //,defaultModel: ":dopamine"
                         //,noscript: true
                         //console: "none", // default will be jmolApplet0_infodiv
@@ -520,7 +523,8 @@ class SortByFront(object):
             html.append('<div class="sectionmessage">')
             html.append('<br>Below, there is a graph with the best solutions.<br><br></div>')
 
-            html.append('<div id="container2" style="min-width: 310px; height: 400px; margin: 0 auto">')
+            html.append('<div id="container2" '
+                        'style="min-width: 310px; height: 400px; margin: 0 auto">')
             html.append('<script type="text/javascript">')
             html.append(str(self.buildHighchart()))
             html.append('</script></div><br>')
@@ -831,7 +835,6 @@ class SortByFront(object):
         @type self: koala.SortByFront.SortByFront
         """
 
-        # self.path_runs.set_path_execute()
         self.path_runs.set_execution_directory()
 
         copy_necessary_files(
@@ -839,9 +842,6 @@ class SortByFront(object):
             self.path_runs.get_path_execution(),
             self.framework.get_framework())
 
-        # self.framework.set_parameter(
-        #         'objective_analisys_dimo_source',
-        #         '/home/%s/programs/dimo/DIMO2' % get_logged_user())
         self.framework.set_parameter('Local_Execute', self.path_runs.get_path_execution())
         self.framework.set_parameter(
             'Path_Gromacs_Programs',

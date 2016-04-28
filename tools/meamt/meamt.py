@@ -99,8 +99,8 @@ class MEAMT(object):
 
             # images (e depois models)
             listaArquivosPdb = list_directory(
-                        self.path_runs.get_path_execution(),
-                        '*.pdb')
+                self.path_runs.get_path_execution(),
+                '*.pdb')
 
             if len(listaArquivosPdb) <= 20:
                 size = int(len(listaArquivosPdb) / 5)
@@ -128,14 +128,14 @@ class MEAMT(object):
                 for i in range(0, n):
                     fhtml.append(
                         '<td><a href="%s">%s</a></td>' % (
-                                listaArquivosPdb[idx], listaArquivosPdb[idx]))
+                            listaArquivosPdb[idx], listaArquivosPdb[idx]))
                     idx += 1
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, n):
                     sfsize = get_file_size(
-                            listaArquivosPdb[idx],
-                            self.opts.htmlfiledir)
+                        listaArquivosPdb[idx],
+                        self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
                     idx += 1
                 idx = idx_linha
@@ -156,14 +156,14 @@ class MEAMT(object):
                     for i in range(start, end):
                         fhtml.append(
                             '<td><a href="%s">%s</a></td>' % (
-                                    listaArquivosPdb[idx], listaArquivosPdb[idx]))
+                                listaArquivosPdb[idx], listaArquivosPdb[idx]))
                         idx += 1
                     idx = idx_linha
                     fhtml.append('</tr><tr>')
                     for i in range(start, end):
                         sfsize = get_file_size(
-                                listaArquivosPdb[idx],
-                                self.opts.htmlfiledir)
+                            listaArquivosPdb[idx],
+                            self.opts.htmlfiledir)
                         fhtml.append('<td>%s</td>' % (sfsize))
                         idx += 1
                     fhtml.append('</tr>')
@@ -182,14 +182,14 @@ class MEAMT(object):
                 for i in range(0, rest):
                     fhtml.append(
                         '<td><a href="%s">%s</a></td>' % (
-                                listaArquivosPdb[idx], listaArquivosPdb[idx]))
+                            listaArquivosPdb[idx], listaArquivosPdb[idx]))
                     idx += 1
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, rest):
                     sfsize = get_file_size(
-                            listaArquivosPdb[idx],
-                            self.opts.htmlfiledir)
+                        listaArquivosPdb[idx],
+                        self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
                     idx += 1
                 idx = idx_linha
@@ -354,7 +354,9 @@ class MEAMT(object):
                         disableInitialConsole: false,
                         readyFunction: jmol_isReady,
                         allowjavascript: true,
-                        script: "set antialiasDisplay;set showtiming;load async /datasets/%s/display/%s;cartoons only;color  cartoons structure; spin on"
+                        script: "set antialiasDisplay;set showtiming; \
+                        load async /datasets/%s/display/%s;cartoons only; \
+                        color  cartoons structure; spin on"
                         //,defaultModel: ":dopamine"
                         //,noscript: true
                         //console: "none", // default will be jmolApplet0_infodiv
@@ -404,8 +406,8 @@ class MEAMT(object):
 
             # images (e depois models)
             listaArquivosPdb = list_directory(
-                        self.path_runs.get_path_execution(),
-                        '*.pdb')
+                self.path_runs.get_path_execution(),
+                '*.pdb')
 
             if len(listaArquivosPdb) <= 20:
                 size = int(len(listaArquivosPdb) / 5)
@@ -434,14 +436,14 @@ class MEAMT(object):
                 for i in range(0, n):
                     fhtml.append(
                         '<td><a href="/datasets/%s/display/%s">%s</a></td>' % (
-                                self.opts.datasetID, listaArquivosPdb[idx], listaArquivosPdb[idx]))
+                            self.opts.datasetID, listaArquivosPdb[idx], listaArquivosPdb[idx]))
                     idx += 1
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, n):
                     sfsize = get_file_size(
-                            listaArquivosPdb[idx],
-                            self.opts.htmlfiledir)
+                        listaArquivosPdb[idx],
+                        self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
                     idx += 1
                 idx = idx_linha
@@ -480,8 +482,8 @@ class MEAMT(object):
                     fhtml.append('</tr><tr>')
                     for i in range(start, end):
                         sfsize = get_file_size(
-                                listaArquivosPdb[idx],
-                                self.opts.htmlfiledir)
+                            listaArquivosPdb[idx],
+                            self.opts.htmlfiledir)
                         fhtml.append('<td>%s</td>' % (sfsize))
                         idx += 1
                     idx = idx_linha
@@ -511,14 +513,14 @@ class MEAMT(object):
                 for i in range(0, rest):
                     fhtml.append(
                         '<td><a href="/datasets/%s/display/%s">%s</a></td>' % (
-                                self.opts.datasetID, listaArquivosPdb[idx], listaArquivosPdb[idx]))
+                            self.opts.datasetID, listaArquivosPdb[idx], listaArquivosPdb[idx]))
                     idx += 1
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, rest):
                     sfsize = get_file_size(
-                            listaArquivosPdb[idx],
-                            self.opts.htmlfiledir)
+                        listaArquivosPdb[idx],
+                        self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
                     idx += 1
                 idx = idx_linha
@@ -673,7 +675,6 @@ class MEAMT(object):
         @type self: koala.MEAMT.MEAMT
         """
         try:
-            # self.path_runs.set_path_execute()
             if(self.opts.inputEmail):
                 email = validate_email(self.opts.inputEmail)
                 self.path_runs.set_execution_directory(email)
@@ -681,16 +682,16 @@ class MEAMT(object):
                 self.path_runs.set_execution_directory()
 
             self.sequence = create_local_fasta_file(
-                    self.path_runs.get_path_execution(),
-                    self.opts.fromFasta,
-                    self.opts.inputFasta,
-                    self.opts.toolname,
-                    self.framework)
+                self.path_runs.get_path_execution(),
+                self.opts.fromFasta,
+                self.opts.inputFasta,
+                self.opts.toolname,
+                self.framework)
 
             SizePopulation = create_local_pop_file(
-                    self.path_runs.get_path_execution(),
-                    self.opts.inputPop,
-                    self.framework)
+                self.path_runs.get_path_execution(),
+                self.opts.inputPop,
+                self.framework)
 
             copy_necessary_files(
                 self.path_runs.get_path_execute(),
@@ -745,7 +746,7 @@ class MEAMT(object):
                 '&']
 
             retProcess = subprocess.Popen(
-                cl, 0, stdout=None,  stderr=subprocess.STDOUT, shell=False)
+                cl, 0, stdout=None, stderr=subprocess.STDOUT, shell=False)
             retCode = retProcess.wait()
             if(retCode != 0):
                 show_error_message(
@@ -770,8 +771,8 @@ class MEAMT(object):
             self.opts.htmlfiledir = htmldir
 
             result, filesHtml = get_result_files(
-                    self.path_runs.get_path_execution(),
-                    self.opts.toolname)
+                self.path_runs.get_path_execution(),
+                self.opts.toolname)
 
             send_output_files_html(self.opts.htmlfiledir, filesHtml)
             send_output_files_html(self.opts.htmlfiledir, [result])
@@ -780,9 +781,9 @@ class MEAMT(object):
                 if compress_files(pdbs, self.path_runs.get_path_execution(), "MEAMT"):
                     path_output, file_output = os.path.split(self.opts.outputZip)
                     send_output_results(
-                            path_output,
-                            file_output,
-                            os.path.join(self.path_runs.get_path_execution(), 'MEAMT.zip'))
+                        path_output,
+                        file_output,
+                        os.path.join(self.path_runs.get_path_execution(), 'MEAMT.zip'))
 
             self.makeHtml()
 
@@ -791,12 +792,10 @@ class MEAMT(object):
 
             if(self.opts.inputEmail):
                 send_email(
-                        'adefelicibus@gmail.com',
-                        email,
-                        '%s Execution on Galaxy - Cloud USP' % self.opts.toolname,
-                        get_message_email(self.opts.toolname),
-                        [],
-                        'smtp.gmail.com')
+                    email,
+                    '%s Execution on Galaxy - Cloud USP' % self.opts.toolname,
+                    get_message_email(self.opts.toolname),
+                    [])
 
         except Exception, e:
             show_error_message(str(e))

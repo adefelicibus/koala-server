@@ -4,6 +4,7 @@ import os
 from fabric.api import *
 from fabric.contrib.files import upload_template, append, sed, exists, comment
 import getpass
+import re
 
 CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
 
@@ -577,6 +578,7 @@ def createDirectoriesLocal():
         local('sudo mkdir -p %sprograms' % folder_local)
     if(not os.path.exists('%sexecute' % data_path)):
         local('sudo mkdir -p %sexecute' % data_path)
+        local('sudo mkdir -p %sexecute/out' % data_path)
 
 
 def installZlibLocal():
@@ -703,8 +705,6 @@ def installPyHighchartsLocal():
         local('sudo mkdir PyHighcharts')
         local('sudo chown %s:%s PyHighcharts' % (LOGGED_USER, LOGGED_USER))
         local('git clone https://github.com/adefelicibus/PyHighcharts.git')
-        with lcd('/usr/lib/python2.7/dist-packages'):
-            local('sudo ln -s %sprograms/PyHighcharts/ PyHighcharts' % folder_local)
 
 
 def install2PGCartesianLocal():
@@ -797,6 +797,9 @@ def buildEnvGalaxyLocal():
 
 def setKoalaLibLinksLocal():
     log('Creating links to Koala files local')
+    local(
+        'sudo ln -s %sprograms/PyHighcharts/ %sprograms/%s/.venv/lib/python2.7/site-packages/' % (
+            folder_local, folder_local, galaxy_project))
     local(
         'sudo ln -s %s/lib/koala/ %sprograms/%s/.venv/lib/python2.7/site-packages/koala' % (
             CURRENT_PATH, folder_local, galaxy_project))
@@ -915,8 +918,22 @@ def createDBKoalaLocal():
 
 
 def configureKoalaServer():
-    # TODO: configure koala.ini according to directory and others here
-    pass
+    re_folders = [re.sub('/', '\/', folder) for folder in 
+        [folder_local, galaxy_path, data_path]]
+
+    with lcd('%s/config' % CURRENT_PATH):
+        local("cat koala.ini | sed -r 's/path_gromacs:.*/\path_gromacs:"
+              " %sprograms\/gmx-4.6.5\/bin/' > tmpkoala.ini" % re_folders[0])
+        local("mv tmpkoala.ini koala.ini")
+        local("cat koala.ini | sed -r 's/path_execute:.*/\path_execute:"
+              " %sexecute/' > tmpkoala.ini" % re_folders[2])
+        local("mv tmpkoala.ini koala.ini")
+        local("cat koala.ini | sed -r 's/path_galaxy:.*/\path_galaxy:"
+              " %sprograms\/%s/' > tmpkoala.ini" % (re_folders[0], galaxy_project))
+        local("mv tmpkoala.ini koala.ini")
+        local("cat koala.ini | sed -r 's/build_conformation_2pg:.*/\\build_conformation_2pg:"
+              " %sprograms\/2pg_build_conformation/' > tmpkoala.ini" % re_folders[0])
+        local("mv tmpkoala.ini koala.ini")
 
 
 def configurePymol():

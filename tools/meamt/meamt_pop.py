@@ -41,15 +41,14 @@ class BuildPopulationMEAMT(object):
         @type self: koala.BuildPopulationMEAMT.BuildPopulationMEAMT
         """
         try:
-            # self.path_runs.set_path_execute()
             self.path_runs.set_execution_directory()
 
             self.sequence = create_local_fasta_file(
-                    self.path_runs.get_path_execution(),
-                    self.opts.fromFasta,
-                    self.opts.inputFasta,
-                    self.opts.toolname,
-                    self.framework)
+                self.path_runs.get_path_execution(),
+                self.opts.fromFasta,
+                self.opts.inputFasta,
+                self.opts.toolname,
+                self.framework)
 
             copy_necessary_files(
                 self.path_runs.get_path_execute(),
