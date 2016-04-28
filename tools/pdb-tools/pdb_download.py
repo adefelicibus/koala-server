@@ -44,15 +44,15 @@ class PDBDownload(object):
 
             pdb_files = []
             for i, pdbid in enumerate(pdbs):
-                url = "%s%s.pdb" % (pdb_org,  pdbid)
+                url = "%s%s.pdb" % (pdb_org, pdbid)
                 open_url(url, path_output, "%s.pdb" % pdbid)
                 pdb_files.append(os.path.join(path_output, "%s.pdb" % pdbid))
 
             send_multiple_outputs(
-                    path_output,
-                    pdb_files,
-                    self.opts.galaxydir,
-                    self.opts.outputID)
+                path_output,
+                pdb_files,
+                self.opts.galaxydir,
+                self.opts.outputID)
 
         except Exception, e:
             show_error_message(str(e))

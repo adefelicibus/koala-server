@@ -44,13 +44,13 @@ def get_message_email(tool_name):
         show_error_message("Error while getMessageEmail email!\n%s" % e)
 
 
-def send_email(de, para, assunto, mensagem, arquivos, servidor):
+def send_email(para, assunto, mensagem, arquivos):
 
         try:
             # Cria o objeto da mensagem
             msg = MIMEMultipart()
             # Define o cabeçalho
-            msg['From'] = de
+            msg['From'] = config.get('email_address', None)
             msg['To'] = para
             msg['Date'] = formatdate(localtime=True)
             msg['Subject'] = assunto
@@ -68,7 +68,7 @@ def send_email(de, para, assunto, mensagem, arquivos, servidor):
                 msg.attach(parte)
 
             # Conecta ao servidor SMTP
-            smtp = smtplib.SMTP(servidor, config.get('smtp_port', 587))
+            smtp = smtplib.SMTP(config.get('smtp_server'), config.get('smtp_port', 587))
             smtp.ehlo()
             smtp.starttls()
             smtp.ehlo()
@@ -76,7 +76,7 @@ def send_email(de, para, assunto, mensagem, arquivos, servidor):
             smtp.login(config.get('email_address', None), config.get('email_password', None))
             try:
                 # Envia o e-mail
-                smtp.sendmail(de, para, msg.as_string())
+                smtp.sendmail(config.get('email_address', None), para, msg.as_string())
             finally:
                 # Desconecta do servidor
                 smtp.close()

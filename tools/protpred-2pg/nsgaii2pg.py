@@ -156,7 +156,7 @@ class NSGAII2PG(object):
                 for i in range(0, n):
                     fhtml.append(
                         '<td><a href="%s">%s</a></td>' % (
-                                listaArquivosPdb[idx], listaArquivosPdb[idx]))
+                            listaArquivosPdb[idx], listaArquivosPdb[idx]))
                     idx += 1
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
@@ -182,14 +182,14 @@ class NSGAII2PG(object):
                     for i in range(start, end):
                         fhtml.append(
                             '<td><a href="%s">%s</a></td>' % (
-                                    listaArquivosPdb[idx], listaArquivosPdb[idx]))
+                                listaArquivosPdb[idx], listaArquivosPdb[idx]))
                         idx += 1
                     idx = idx_linha
                     fhtml.append('</tr><tr>')
                     for i in range(start, end):
                         sfsize = get_file_size(
-                                listaArquivosPdb[idx],
-                                self.opts.htmlfiledir)
+                            listaArquivosPdb[idx],
+                            self.opts.htmlfiledir)
                         fhtml.append('<td>%s</td>' % (sfsize))
                         idx += 1
                     fhtml.append('</tr>')
@@ -207,7 +207,7 @@ class NSGAII2PG(object):
                 for i in range(0, rest):
                     fhtml.append(
                         '<td><a href="%s">%s</a></td>' % (
-                                listaArquivosPdb[idx], listaArquivosPdb[idx]))
+                            listaArquivosPdb[idx], listaArquivosPdb[idx]))
                     idx += 1
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
@@ -377,7 +377,9 @@ class NSGAII2PG(object):
                         disableInitialConsole: false,
                         readyFunction: jmol_isReady,
                         allowjavascript: true,
-                        script: "set antialiasDisplay;set showtiming;load async /datasets/%s/display/%s;cartoons only;color  cartoons structure; spin on"
+                        script: "set antialiasDisplay;set showtiming; \
+                        load async /datasets/%s/display/%s;cartoons only; \
+                        color  cartoons structure; spin on"
                         //,defaultModel: ":dopamine"
                         //,noscript: true
                         //console: "none", // default will be jmolApplet0_infodiv
@@ -477,14 +479,14 @@ class NSGAII2PG(object):
                 for i in range(0, n):
                     fhtml.append(
                         '<td><a href="/datasets/%s/display/%s">%s</a></td>' % (
-                                self.opts.datasetID, listaArquivosPdb[idx], listaArquivosPdb[idx]))
+                            self.opts.datasetID, listaArquivosPdb[idx], listaArquivosPdb[idx]))
                     idx += 1
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, n):
                     sfsize = get_file_size(
-                            listaArquivosPdb[idx],
-                            self.opts.htmlfiledir)
+                        listaArquivosPdb[idx],
+                        self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
                     idx += 1
                 idx = idx_linha
@@ -523,8 +525,8 @@ class NSGAII2PG(object):
                     fhtml.append('</tr><tr>')
                     for i in range(start, end):
                         sfsize = get_file_size(
-                                listaArquivosPdb[idx],
-                                self.opts.htmlfiledir)
+                            listaArquivosPdb[idx],
+                            self.opts.htmlfiledir)
                         fhtml.append('<td>%s</td>' % (sfsize))
                         idx += 1
                     idx = idx_linha
@@ -554,14 +556,14 @@ class NSGAII2PG(object):
                 for i in range(0, rest):
                     fhtml.append(
                         '<td><a href="/datasets/%s/display/%s">%s</a></td>' % (
-                                self.opts.datasetID, listaArquivosPdb[idx], listaArquivosPdb[idx]))
+                            self.opts.datasetID, listaArquivosPdb[idx], listaArquivosPdb[idx]))
                     idx += 1
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, rest):
                     sfsize = get_file_size(
-                            listaArquivosPdb[idx],
-                            self.opts.htmlfiledir)
+                        listaArquivosPdb[idx],
+                        self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
                     idx += 1
                 idx = idx_linha
@@ -721,16 +723,16 @@ class NSGAII2PG(object):
                 self.path_runs.set_execution_directory()
 
             self.sequence = create_local_fasta_file(
-                    self.path_runs.get_path_execution(),
-                    self.opts.fromFasta,
-                    self.opts.inputFasta,
-                    self.opts.toolname,
-                    self.framework)
+                self.path_runs.get_path_execution(),
+                self.opts.fromFasta,
+                self.opts.inputFasta,
+                self.opts.toolname,
+                self.framework)
 
             SizePopulation = create_local_pop_file(
-                    self.path_runs.get_path_execution(),
-                    self.opts.inputPop,
-                    self.framework)
+                self.path_runs.get_path_execution(),
+                self.opts.inputPop,
+                self.framework)
 
             copy_necessary_files(
                 self.path_runs.get_path_execute(),
@@ -742,8 +744,8 @@ class NSGAII2PG(object):
             self.framework.set_parameter(
                 'SizePopulation', SizePopulation)
             self.framework.set_parameter(
-                    'SequenceAminoAcidsPathFileName',
-                    self.path_runs.get_path_execution() + 'fasta.txt')
+                'SequenceAminoAcidsPathFileName',
+                self.path_runs.get_path_execution() + 'fasta.txt')
             self.framework.set_parameter(
                 'How_Many_Rotation', self.opts.howManyRotation)
             self.framework.set_parameter(
@@ -751,13 +753,13 @@ class NSGAII2PG(object):
             self.framework.set_parameter(
                 'Local_Execute', self.path_runs.get_path_execution())
             self.framework.set_parameter(
-                    'Path_Gromacs_Programs',
-                    self.path_runs.get_path_gromacs())
+                'Path_Gromacs_Programs',
+                self.path_runs.get_path_gromacs())
             self.framework.set_parameter(
                 'NativeProtein', '%s1VII.pdb' % self.path_runs.get_path_execution())
             self.framework.set_parameter(
-                    'Database',
-                    '%sDatabase/' % self.path_runs.get_path_algorithms('build_conformation_2pg'))
+                'Database',
+                '%sDatabase/' % self.path_runs.get_path_algorithms('build_conformation_2pg'))
 
             NumberObjective, Fitness_Energy = format_fitness(
                 self.opts.inputFitness,
@@ -778,17 +780,17 @@ class NSGAII2PG(object):
             cl = [self.framework.get_command(), config, '&']
 
             retProcess = subprocess.Popen(
-                cl, 0, stdout=None,  stderr=subprocess.STDOUT, shell=False)
+                cl, 0, stdout=None, stderr=subprocess.STDOUT, shell=False)
             retCode = retProcess.wait()
             if(retCode != 0):
                 show_error_message(
                     "The 2PG framework finished wrong.\nContact the system administrator.")
 
             parse_pdb(
-                    self.path_runs.get_path_execution(),
-                    'pop_NON_DOMINATED_%s.pdb' % self.opts.numberGeration,
-                    20,
-                    'NSGAIISolutions')
+                self.path_runs.get_path_execution(),
+                'pop_NON_DOMINATED_%s.pdb' % self.opts.numberGeration,
+                20,
+                'NSGAIISolutions')
 
             if(self.opts.runMinimization == 'true'):
                 self.do_minimization("NSGAIISolutions")
@@ -823,9 +825,9 @@ class NSGAII2PG(object):
                 if compress_files(pdbs, self.path_runs.get_path_execution(), "2PGNSGAII"):
                     path_output, file_output = os.path.split(self.opts.outputZip)
                     send_output_results(
-                            path_output,
-                            file_output,
-                            os.path.join(self.path_runs.get_path_execution(), '2PGNSGAII.zip'))
+                        path_output,
+                        file_output,
+                        os.path.join(self.path_runs.get_path_execution(), '2PGNSGAII.zip'))
 
             self.makeHtml()
 
@@ -834,12 +836,10 @@ class NSGAII2PG(object):
 
             if(self.opts.inputEmail):
                 send_email(
-                        'adefelicibus@gmail.com',
-                        email,
-                        '%s Execution on Galaxy - Cloud USP' % self.opts.toolname,
-                        get_message_email(self.opts.toolname),
-                        [],
-                        'smtp.gmail.com')
+                    email,
+                    '%s Execution on Galaxy - Cloud USP' % self.opts.toolname,
+                    get_message_email(self.opts.toolname),
+                    [])
 
         except Exception, e:
             show_error_message(str(e))

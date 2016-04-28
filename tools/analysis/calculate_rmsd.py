@@ -212,14 +212,14 @@ class CalculateRMSD(object):
                     for i in range(start, end):
                         fhtml.append(
                             '<td><a href="%s">%s</a></td>' % (
-                                    listaArquivosPdb[idx], listaArquivosPdb[idx]))
+                                listaArquivosPdb[idx], listaArquivosPdb[idx]))
                         idx += 1
                     idx = idx_linha
                     fhtml.append('</tr><tr>')
                     for i in range(start, end):
                         sfsize = get_file_size(
-                                listaArquivosPdb[idx],
-                                self.opts.htmlfiledir)
+                            listaArquivosPdb[idx],
+                            self.opts.htmlfiledir)
                         fhtml.append('<td>%s</td>' % (sfsize))
                         idx += 1
                     fhtml.append('</tr>')
@@ -237,14 +237,14 @@ class CalculateRMSD(object):
                 for i in range(0, rest):
                     fhtml.append(
                         '<td><a href="%s">%s</a></td>' % (
-                                listaArquivosPdb[idx], listaArquivosPdb[idx]))
+                            listaArquivosPdb[idx], listaArquivosPdb[idx]))
                     idx += 1
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, rest):
                     sfsize = get_file_size(
-                            listaArquivosPdb[idx],
-                            self.opts.htmlfiledir)
+                        listaArquivosPdb[idx],
+                        self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
                     idx += 1
                 idx = idx_linha
@@ -409,7 +409,9 @@ class CalculateRMSD(object):
                         disableInitialConsole: false,
                         readyFunction: jmol_isReady,
                         allowjavascript: true,
-                        script: "set antialiasDisplay;set showtiming;load async /datasets/%s/display/%s;cartoons only;color  cartoons structure; spin on"
+                        script: "set antialiasDisplay;set showtiming; \
+                        load async /datasets/%s/display/%s;cartoons only; \
+                        color  cartoons structure; spin on"
                         //,defaultModel: ":dopamine"
                         //,noscript: true
                         //console: "none", // default will be jmolApplet0_infodiv
@@ -510,14 +512,14 @@ class CalculateRMSD(object):
                 for i in range(0, n):
                     fhtml.append(
                         '<td><a href="/datasets/%s/display/%s">%s</a></td>' % (
-                                self.opts.datasetID, listaArquivosPdb[idx], listaArquivosPdb[idx]))
+                            self.opts.datasetID, listaArquivosPdb[idx], listaArquivosPdb[idx]))
                     idx += 1
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, n):
                     sfsize = get_file_size(
-                            listaArquivosPdb[idx],
-                            self.opts.htmlfiledir)
+                        listaArquivosPdb[idx],
+                        self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
                     idx += 1
                 idx = idx_linha
@@ -549,16 +551,16 @@ class CalculateRMSD(object):
                     for i in range(start, end):
                         fhtml.append(
                             '<td><a href="/datasets/%s/display/%s">%s</a></td>' % (
-                                    self.opts.datasetID,
-                                    listaArquivosPdb[idx],
-                                    listaArquivosPdb[idx]))
+                                self.opts.datasetID,
+                                listaArquivosPdb[idx],
+                                listaArquivosPdb[idx]))
                         idx += 1
                     idx = idx_linha
                     fhtml.append('</tr><tr>')
                     for i in range(start, end):
                         sfsize = get_file_size(
-                                listaArquivosPdb[idx],
-                                self.opts.htmlfiledir)
+                            listaArquivosPdb[idx],
+                            self.opts.htmlfiledir)
                         fhtml.append('<td>%s</td>' % (sfsize))
                         idx += 1
                     idx = idx_linha
@@ -589,14 +591,14 @@ class CalculateRMSD(object):
                 for i in range(0, rest):
                     fhtml.append(
                         '<td><a href="/datasets/%s/display/%s">%s</a></td>' % (
-                                self.opts.datasetID, listaArquivosPdb[idx], listaArquivosPdb[idx]))
+                            self.opts.datasetID, listaArquivosPdb[idx], listaArquivosPdb[idx]))
                     idx += 1
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, rest):
                     sfsize = get_file_size(
-                            listaArquivosPdb[idx],
-                            self.opts.htmlfiledir)
+                        listaArquivosPdb[idx],
+                        self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
                     idx += 1
                 idx = idx_linha
@@ -755,7 +757,7 @@ class CalculateRMSD(object):
                     # os.remove("temporary_rmsd.xvg")
 
                     # Load Structures
-                    a = os.path.join(self.path_runs.get_path_execution(),  pdb)
+                    a = os.path.join(self.path_runs.get_path_execution(), pdb)
                     aname, ext = os.path.splitext(pdb)
                     b = os.path.join(self.path_runs.get_path_execution(), self.opts.inputPDBRefName)
                     bname, ext = os.path.splitext(self.opts.inputPDBRefName)
@@ -801,17 +803,17 @@ class CalculateRMSD(object):
                             raise Exception("The input file could not be read.\n%s" % e)
             else:
                     copy_pdbs_from_input(
-                            self.path_runs.get_path_execution(),
-                            self.opts.htmlfiledir,
-                            self.opts.inputnames,
-                            self.opts.inputPdbs)
+                        self.path_runs.get_path_execution(),
+                        self.opts.htmlfiledir,
+                        self.opts.inputnames,
+                        self.opts.inputPdbs)
 
             copy_pdb_reference(
                 self.opts.htmlfiledir,
                 self.path_runs.get_path_execution(),
                 self.opts.inputPDBRefName,
                 self.opts.inputPDBRef
-                )
+            )
 
             if(self.opts.renameAtoms == 'true'):
                 if not rename_atoms(
@@ -839,8 +841,8 @@ class CalculateRMSD(object):
             send_output_files_html(self.opts.htmlfiledir, pdbsToCopy)
 
             result, filesHtml = get_result_files(
-                    self.path_runs.get_path_execution(),
-                    self.opts.toolname)
+                self.path_runs.get_path_execution(),
+                self.opts.toolname)
 
             send_output_files_html(self.opts.htmlfiledir, filesHtml)
             send_output_files_html(self.opts.htmlfiledir, [result])

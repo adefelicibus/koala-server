@@ -130,8 +130,8 @@ class MonteCarlo2PG(object):
 
             # images (e depois models)
             listaArquivosPdb = list_directory(
-                    self.path_runs.get_path_execution(),
-                    'monte-carlo-solutions-*.pdb')
+                self.path_runs.get_path_execution(),
+                'monte-carlo-solutions-*.pdb')
 
             if len(listaArquivosPdb) <= 20:
                 size = int(len(listaArquivosPdb) / 5)
@@ -159,14 +159,14 @@ class MonteCarlo2PG(object):
                 for i in range(0, n):
                     fhtml.append(
                         '<td><a href="%s">%s</a></td>' % (
-                                listaArquivosPdb[idx], listaArquivosPdb[idx]))
+                            listaArquivosPdb[idx], listaArquivosPdb[idx]))
                     idx += 1
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, n):
                     sfsize = get_file_size(
-                            listaArquivosPdb[idx],
-                            self.opts.htmlfiledir)
+                        listaArquivosPdb[idx],
+                        self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
                     idx += 1
                 idx = idx_linha
@@ -187,14 +187,14 @@ class MonteCarlo2PG(object):
                     for i in range(start, end):
                         fhtml.append(
                             '<td><a href="%s">%s</a></td>' % (
-                                    listaArquivosPdb[idx], listaArquivosPdb[idx]))
+                                listaArquivosPdb[idx], listaArquivosPdb[idx]))
                         idx += 1
                     idx = idx_linha
                     fhtml.append('</tr><tr>')
                     for i in range(start, end):
                         sfsize = get_file_size(
-                                listaArquivosPdb[idx],
-                                self.opts.htmlfiledir)
+                            listaArquivosPdb[idx],
+                            self.opts.htmlfiledir)
                         fhtml.append('<td>%s</td>' % (sfsize))
                         idx += 1
                     fhtml.append('</tr>')
@@ -213,14 +213,14 @@ class MonteCarlo2PG(object):
                 for i in range(0, rest):
                     fhtml.append(
                         '<td><a href="%s">%s</a></td>' % (
-                                listaArquivosPdb[idx], listaArquivosPdb[idx]))
+                            listaArquivosPdb[idx], listaArquivosPdb[idx]))
                     idx += 1
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, rest):
                     sfsize = get_file_size(
-                            listaArquivosPdb[idx],
-                            self.opts.htmlfiledir)
+                        listaArquivosPdb[idx],
+                        self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
                     idx += 1
                 idx = idx_linha
@@ -381,7 +381,9 @@ class MonteCarlo2PG(object):
                         disableInitialConsole: false,
                         readyFunction: jmol_isReady,
                         allowjavascript: true,
-                        script: "set antialiasDisplay;set showtiming;load async /datasets/%s/display/%s;cartoons only;color  cartoons structure; spin on"
+                        script: "set antialiasDisplay;set showtiming; \
+                        load async /datasets/%s/display/%s;cartoons only; \
+                        color  cartoons structure; spin on"
                         //,defaultModel: ":dopamine"
                         //,noscript: true
                         //console: "none", // default will be jmolApplet0_infodiv
@@ -452,8 +454,8 @@ class MonteCarlo2PG(object):
 
             # images (e depois models)
             listaArquivosPdb = list_directory(
-                    self.path_runs.get_path_execution(),
-                    'monte-carlo-solutions-*.pdb')
+                self.path_runs.get_path_execution(),
+                'monte-carlo-solutions-*.pdb')
 
             if len(listaArquivosPdb) <= 20:
                 size = int(len(listaArquivosPdb) / 5)
@@ -482,14 +484,14 @@ class MonteCarlo2PG(object):
                 for i in range(0, n):
                     fhtml.append(
                         '<td><a href="/datasets/%s/display/%s">%s</a></td>' % (
-                                self.opts.datasetID, listaArquivosPdb[idx], listaArquivosPdb[idx]))
+                            self.opts.datasetID, listaArquivosPdb[idx], listaArquivosPdb[idx]))
                     idx += 1
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, n):
                     sfsize = get_file_size(
-                            listaArquivosPdb[idx],
-                            self.opts.htmlfiledir)
+                        listaArquivosPdb[idx],
+                        self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
                     idx += 1
                 idx = idx_linha
@@ -528,8 +530,8 @@ class MonteCarlo2PG(object):
                     fhtml.append('</tr><tr>')
                     for i in range(start, end):
                         sfsize = get_file_size(
-                                listaArquivosPdb[idx],
-                                self.opts.htmlfiledir)
+                            listaArquivosPdb[idx],
+                            self.opts.htmlfiledir)
                         fhtml.append('<td>%s</td>' % (sfsize))
                         idx += 1
                     idx = idx_linha
@@ -559,14 +561,14 @@ class MonteCarlo2PG(object):
                 for i in range(0, rest):
                     fhtml.append(
                         '<td><a href="/datasets/%s/display/%s">%s</a></td>' % (
-                                self.opts.datasetID, listaArquivosPdb[idx], listaArquivosPdb[idx]))
+                            self.opts.datasetID, listaArquivosPdb[idx], listaArquivosPdb[idx]))
                     idx += 1
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, rest):
                     sfsize = get_file_size(
-                            listaArquivosPdb[idx],
-                            self.opts.htmlfiledir)
+                        listaArquivosPdb[idx],
+                        self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
                     idx += 1
                 idx = idx_linha
@@ -716,7 +718,6 @@ class MonteCarlo2PG(object):
         """
 
         try:
-            # self.path_runs.set_path_execute()
             if self.opts.inputEmail:
                 email = validate_email(self.opts.inputEmail)
                 self.path_runs.set_execution_directory(email)
@@ -753,18 +754,18 @@ class MonteCarlo2PG(object):
             self.framework.set_parameter(
                 'TemperatureMC', self.opts.temperatureMC)
             self.framework.set_parameter(
-                    'SequenceAminoAcidsPathFileName',
-                    self.path_runs.get_path_execution() + 'fasta.txt')
+                'SequenceAminoAcidsPathFileName',
+                self.path_runs.get_path_execution() + 'fasta.txt')
             self.framework.set_parameter(
                 'Local_Execute', self.path_runs.get_path_execution())
             self.framework.set_parameter(
-                    'Path_Gromacs_Programs',
-                    self.path_runs.get_path_gromacs())
+                'Path_Gromacs_Programs',
+                self.path_runs.get_path_gromacs())
             self.framework.set_parameter(
                 'NativeProtein', '%s1VII.pdb' % self.path_runs.get_path_execution())
             self.framework.set_parameter(
-                    'Database',
-                    '%sDatabase/' % self.path_runs.get_path_algorithms('build_conformation_2pg'))
+                'Database',
+                '%sDatabase/' % self.path_runs.get_path_algorithms('build_conformation_2pg'))
 
             create_configuration_file(
                 self.path_runs.get_path_execution(), self.framework)
@@ -778,17 +779,17 @@ class MonteCarlo2PG(object):
             cl = [self.framework.get_command(), config, '&']
 
             retProcess = subprocess.Popen(
-                cl, 0, stdout=None,  stderr=subprocess.STDOUT, shell=False)
+                cl, 0, stdout=None, stderr=subprocess.STDOUT, shell=False)
             retCode = retProcess.wait()
             if(retCode != 0):
                 show_error_message(
                     "The 2PG framework finished wrong.\nContact the system administrator.")
 
             parse_pdb(
-                    self.path_runs.get_path_execution(),
-                    'monte_carlo_solutions.pdb',
-                    20,
-                    'monte-carlo-solutions-')
+                self.path_runs.get_path_execution(),
+                'monte_carlo_solutions.pdb',
+                20,
+                'monte-carlo-solutions-')
 
             if(self.opts.runMinimization == 'true'):
                 self.do_minimization("monte-carlo-solutions-")
@@ -811,9 +812,9 @@ class MonteCarlo2PG(object):
             self.opts.htmlfiledir = htmldir
 
             result, fileshtml = get_result_files(
-                    self.path_runs.get_path_execution(),
-                    self.opts.toolname,
-                    'monte-carlo-solutions-')
+                self.path_runs.get_path_execution(),
+                self.opts.toolname,
+                'monte-carlo-solutions-')
 
             send_output_files_html(self.opts.htmlfiledir, fileshtml)
             send_output_files_html(self.opts.htmlfiledir, [result])
@@ -822,9 +823,9 @@ class MonteCarlo2PG(object):
                 if compress_files(pdbs, self.path_runs.get_path_execution(), "2PG_Metropolis"):
                     path_output, file_output = os.path.split(self.opts.outputZip)
                     send_output_results(
-                            path_output,
-                            file_output,
-                            os.path.join(self.path_runs.get_path_execution(), '2PG_Metropolis.zip'))
+                        path_output,
+                        file_output,
+                        os.path.join(self.path_runs.get_path_execution(), '2PG_Metropolis.zip'))
 
             mc.makeHtml()
 
@@ -833,12 +834,10 @@ class MonteCarlo2PG(object):
 
             if(self.opts.inputEmail):
                 send_email(
-                        'adefelicibus@gmail.com',
-                        email,
-                        '%s Execution on Galaxy - Cloud USP' % self.opts.toolname,
-                        get_message_email(self.opts.toolname),
-                        [],
-                        'smtp.gmail.com')
+                    email,
+                    '%s Execution on Galaxy - Cloud USP' % self.opts.toolname,
+                    get_message_email(self.opts.toolname),
+                    [])
 
         except Exception, e:
             show_error_message(str(e))

@@ -171,14 +171,14 @@ class CalculateTMScore(object):
                 for i in range(0, n):
                     fhtml.append(
                         '<td><a href="%s">%s</a></td>' % (
-                                listaArquivosPdb[idx], listaArquivosPdb[idx]))
+                            listaArquivosPdb[idx], listaArquivosPdb[idx]))
                     idx += 1
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, n):
                     sfsize = get_file_size(
-                            listaArquivosPdb[idx],
-                            self.opts.htmlfiledir)
+                        listaArquivosPdb[idx],
+                        self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
                     idx += 1
                 idx = idx_linha
@@ -198,14 +198,14 @@ class CalculateTMScore(object):
                     for i in range(start, end):
                         fhtml.append(
                             '<td><a href="%s">%s</a></td>' % (
-                                    listaArquivosPdb[idx], listaArquivosPdb[idx]))
+                                listaArquivosPdb[idx], listaArquivosPdb[idx]))
                         idx += 1
                     idx = idx_linha
                     fhtml.append('</tr><tr>')
                     for i in range(start, end):
                         sfsize = get_file_size(
-                                listaArquivosPdb[idx],
-                                self.opts.htmlfiledir)
+                            listaArquivosPdb[idx],
+                            self.opts.htmlfiledir)
                         fhtml.append('<td>%s</td>' % (sfsize))
                         idx += 1
                     fhtml.append('</tr>')
@@ -223,14 +223,14 @@ class CalculateTMScore(object):
                 for i in range(0, rest):
                     fhtml.append(
                         '<td><a href="%s">%s</a></td>' % (
-                                listaArquivosPdb[idx], listaArquivosPdb[idx]))
+                            listaArquivosPdb[idx], listaArquivosPdb[idx]))
                     idx += 1
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, rest):
                     sfsize = get_file_size(
-                            listaArquivosPdb[idx],
-                            self.opts.htmlfiledir)
+                        listaArquivosPdb[idx],
+                        self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
                     idx += 1
                 idx = idx_linha
@@ -393,7 +393,9 @@ class CalculateTMScore(object):
                         disableInitialConsole: false,
                         readyFunction: jmol_isReady,
                         allowjavascript: true,
-                        script: "set antialiasDisplay;set showtiming;load async /datasets/%s/display/%s;cartoons only;color  cartoons structure; spin on"
+                        script: "set antialiasDisplay;set showtiming; \
+                        load async /datasets/%s/display/%s;cartoons only; \
+                        color  cartoons structure; spin on"
                         //,defaultModel: ":dopamine"
                         //,noscript: true
                         //console: "none", // default will be jmolApplet0_infodiv
@@ -494,14 +496,14 @@ class CalculateTMScore(object):
                 for i in range(0, n):
                     fhtml.append(
                         '<td><a href="/datasets/%s/display/%s">%s</a></td>' % (
-                                self.opts.datasetID, listaArquivosPdb[idx], listaArquivosPdb[idx]))
+                            self.opts.datasetID, listaArquivosPdb[idx], listaArquivosPdb[idx]))
                     idx += 1
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, n):
                     sfsize = get_file_size(
-                            listaArquivosPdb[idx],
-                            self.opts.htmlfiledir)
+                        listaArquivosPdb[idx],
+                        self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
                     idx += 1
                 idx = idx_linha
@@ -533,16 +535,16 @@ class CalculateTMScore(object):
                     for i in range(start, end):
                         fhtml.append(
                             '<td><a href="/datasets/%s/display/%s">%s</a></td>' % (
-                                    self.opts.datasetID,
-                                    listaArquivosPdb[idx],
-                                    listaArquivosPdb[idx]))
+                                self.opts.datasetID,
+                                listaArquivosPdb[idx],
+                                listaArquivosPdb[idx]))
                         idx += 1
                     idx = idx_linha
                     fhtml.append('</tr><tr>')
                     for i in range(start, end):
                         sfsize = get_file_size(
-                                listaArquivosPdb[idx],
-                                self.opts.htmlfiledir)
+                            listaArquivosPdb[idx],
+                            self.opts.htmlfiledir)
                         fhtml.append('<td>%s</td>' % (sfsize))
                         idx += 1
                     idx = idx_linha
@@ -573,14 +575,14 @@ class CalculateTMScore(object):
                 for i in range(0, rest):
                     fhtml.append(
                         '<td><a href="/datasets/%s/display/%s">%s</a></td>' % (
-                                self.opts.datasetID, listaArquivosPdb[idx], listaArquivosPdb[idx]))
+                            self.opts.datasetID, listaArquivosPdb[idx], listaArquivosPdb[idx]))
                     idx += 1
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, rest):
                     sfsize = get_file_size(
-                            listaArquivosPdb[idx],
-                            self.opts.htmlfiledir)
+                        listaArquivosPdb[idx],
+                        self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
                     idx += 1
                 idx = idx_linha
@@ -724,21 +726,21 @@ class CalculateTMScore(object):
                     name_reference, ext = os.path.splitext(self.opts.inputPDBRefName)
 
                     aux_command = self.command.replace(
-                            "@PATH@",
-                            self.path_runs.get_path_execute()).replace(
-                                "@MODEL@",
-                                (os.path.join(self.path_runs.get_path_execution(),  pdb))).replace(
-                                    "@NATIVE@",
-                                    (os.path.join(
-                                        self.path_runs.get_path_execution(),
-                                        self.opts.inputPDBRefName)))
+                        "@PATH@",
+                        self.path_runs.get_path_execute()).replace(
+                            "@MODEL@",
+                            (os.path.join(self.path_runs.get_path_execution(), pdb))).replace(
+                                "@NATIVE@",
+                                (os.path.join(
+                                    self.path_runs.get_path_execution(),
+                                    self.opts.inputPDBRefName)))
                     aux_command = aux_command.replace(
-                            "@PATHEXECUTE@",
-                            self.path_runs.get_path_execution()).replace(
-                                "@NAMEMODEL@",
-                                name_pdb).replace(
-                                    "@NAMENATIVE@",
-                                    name_reference)
+                        "@PATHEXECUTE@",
+                        self.path_runs.get_path_execution()).replace(
+                            "@NAMEMODEL@",
+                            name_pdb).replace(
+                                "@NAMENATIVE@",
+                                name_reference)
 
                     os.system(aux_command)  # TODO: USAR SUBPROCESS
 
@@ -785,17 +787,17 @@ class CalculateTMScore(object):
                             raise Exception("The input file could not be read.\n%s" % e)
             else:
                     copy_pdbs_from_input(
-                            self.path_runs.get_path_execution(),
-                            self.opts.htmlfiledir,
-                            self.opts.inputnames,
-                            self.opts.inputPdbs)
+                        self.path_runs.get_path_execution(),
+                        self.opts.htmlfiledir,
+                        self.opts.inputnames,
+                        self.opts.inputPdbs)
 
             copy_pdb_reference(
-                    self.opts.htmlfiledir,
-                    self.path_runs.get_path_execution(),
-                    self.opts.inputPDBRefName,
-                    self.opts.inputPDBRef
-                    )
+                self.opts.htmlfiledir,
+                self.path_runs.get_path_execution(),
+                self.opts.inputPDBRefName,
+                self.opts.inputPDBRef
+            )
 
             self.tmscore_value = self.getTMScoreValues()
 

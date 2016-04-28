@@ -149,7 +149,7 @@ class ProtPredEDAEDA(object):
                 for i in range(0, n):
                     fhtml.append(
                         '<td><a href="%s">%s</a></td>' % (
-                                listaArquivosPdb[idx], listaArquivosPdb[idx]))
+                            listaArquivosPdb[idx], listaArquivosPdb[idx]))
                     idx += 1
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
@@ -175,14 +175,14 @@ class ProtPredEDAEDA(object):
                     for i in range(start, end):
                         fhtml.append(
                             '<td><a href="%s">%s</a></td>' % (
-                                    listaArquivosPdb[idx], listaArquivosPdb[idx]))
+                                listaArquivosPdb[idx], listaArquivosPdb[idx]))
                         idx += 1
                     idx = idx_linha
                     fhtml.append('</tr><tr>')
                     for i in range(start, end):
                         sfsize = get_file_size(
-                                listaArquivosPdb[idx],
-                                self.opts.htmlfiledir)
+                            listaArquivosPdb[idx],
+                            self.opts.htmlfiledir)
                         fhtml.append('<td>%s</td>' % (sfsize))
                         idx += 1
                     fhtml.append('</tr>')
@@ -200,7 +200,7 @@ class ProtPredEDAEDA(object):
                 for i in range(0, rest):
                     fhtml.append(
                         '<td><a href="%s">%s</a></td>' % (
-                                listaArquivosPdb[idx], listaArquivosPdb[idx]))
+                            listaArquivosPdb[idx], listaArquivosPdb[idx]))
                     idx += 1
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
@@ -475,14 +475,14 @@ class ProtPredEDAEDA(object):
                 for i in range(0, n):
                     fhtml.append(
                         '<td><a href="/datasets/%s/display/%s">%s</a></td>' % (
-                                self.opts.datasetID, listaArquivosPdb[idx], listaArquivosPdb[idx]))
+                            self.opts.datasetID, listaArquivosPdb[idx], listaArquivosPdb[idx]))
                     idx += 1
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, n):
                     sfsize = get_file_size(
-                            listaArquivosPdb[idx],
-                            self.opts.htmlfiledir)
+                        listaArquivosPdb[idx],
+                        self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
                     idx += 1
                 idx = idx_linha
@@ -521,8 +521,8 @@ class ProtPredEDAEDA(object):
                     fhtml.append('</tr><tr>')
                     for i in range(start, end):
                         sfsize = get_file_size(
-                                listaArquivosPdb[idx],
-                                self.opts.htmlfiledir)
+                            listaArquivosPdb[idx],
+                            self.opts.htmlfiledir)
                         fhtml.append('<td>%s</td>' % (sfsize))
                         idx += 1
                     idx = idx_linha
@@ -552,14 +552,14 @@ class ProtPredEDAEDA(object):
                 for i in range(0, rest):
                     fhtml.append(
                         '<td><a href="/datasets/%s/display/%s">%s</a></td>' % (
-                                self.opts.datasetID, listaArquivosPdb[idx], listaArquivosPdb[idx]))
+                            self.opts.datasetID, listaArquivosPdb[idx], listaArquivosPdb[idx]))
                     idx += 1
                 idx = idx_linha
                 fhtml.append('</tr><tr>')
                 for i in range(0, rest):
                     sfsize = get_file_size(
-                            listaArquivosPdb[idx],
-                            self.opts.htmlfiledir)
+                        listaArquivosPdb[idx],
+                        self.opts.htmlfiledir)
                     fhtml.append('<td>%s</td>' % (sfsize))
                     idx += 1
                 idx = idx_linha
@@ -711,7 +711,6 @@ class ProtPredEDAEDA(object):
         @type self: koala.ProtPredEDA.ProtPredEDA
         """
         try:
-            # self.path_runs.set_path_execute()
             if self.opts.inputEmail:
                 email = validate_email(self.opts.inputEmail)
                 self.path_runs.set_execution_directory(email)
@@ -719,11 +718,11 @@ class ProtPredEDAEDA(object):
                 self.path_runs.set_execution_directory()
 
             self.sequence = create_local_fasta_file(
-                    self.path_runs.get_path_execution(),
-                    self.opts.fromFasta,
-                    self.opts.SequenceFile,
-                    self.opts.toolname,
-                    self.framework)
+                self.path_runs.get_path_execution(),
+                self.opts.fromFasta,
+                self.opts.SequenceFile,
+                self.opts.toolname,
+                self.framework)
 
             copy_necessary_files(
                 self.path_runs.get_path_execute(),
@@ -758,8 +757,8 @@ class ProtPredEDAEDA(object):
             if(self.opts.SamplingMode_EDA == "fgm"):
                 # FGM
                 self.framework.set_parameter(
-                        'MixtureComponents',
-                        self.opts.MixtureComponents_EDA)
+                    'MixtureComponents',
+                    self.opts.MixtureComponents_EDA)
                 self.framework.set_parameter('Threshold', self.opts.Threshold_EDA)
                 self.framework.set_parameter('Lambda', self.opts.Lambda)
 
@@ -775,7 +774,7 @@ class ProtPredEDAEDA(object):
             cl = [self.framework.get_command(), config, '&']
 
             retProcess = subprocess.Popen(
-                cl, 0, stdout=None,  stderr=None, shell=False)
+                cl, 0, stdout=None, stderr=None, shell=False)
             retCode = retProcess.wait()
             if(retCode != 0):
                 show_error_message(
@@ -815,10 +814,10 @@ class ProtPredEDAEDA(object):
                 if compress_files(pdbs, self.path_runs.get_path_execution(), "ProtPredEDA-EDA"):
                     path_output, file_output = os.path.split(self.opts.outputZip)
                     send_output_results(
-                            path_output,
-                            file_output,
-                            os.path.join(
-                                self.path_runs.get_path_execution(), 'ProtPredEDA-EDA.zip'))
+                        path_output,
+                        file_output,
+                        os.path.join(
+                            self.path_runs.get_path_execution(), 'ProtPredEDA-EDA.zip'))
 
             self.makeHtml()
 
@@ -827,12 +826,10 @@ class ProtPredEDAEDA(object):
 
             if(self.opts.inputEmail):
                 send_email(
-                        'adefelicibus@gmail.com',
-                        email,
-                        '%s Execution on Galaxy - Cloud USP' % self.opts.toolname,
-                        get_message_email(self.opts.toolname),
-                        [],
-                        'smtp.gmail.com')
+                    email,
+                    '%s Execution on Galaxy - Cloud USP' % self.opts.toolname,
+                    get_message_email(self.opts.toolname),
+                    [])
 
         except Exception, e:
             show_error_message(str(e))

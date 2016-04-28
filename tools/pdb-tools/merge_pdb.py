@@ -38,7 +38,6 @@ class MergePDB(object):
         @type self: koala.MergePDB.MergePDB
         """
 
-        # self.path_runs.set_path_execute()
         self.path_runs.set_execution_directory()
 
         if self.opts.compressedFile == '1':
@@ -55,10 +54,10 @@ class MergePDB(object):
                     raise Exception("The input file could not be read.\n%s" % e)
         else:
                 copy_pdbs_from_input(
-                        self.path_runs.get_path_execution(),
-                        self.opts.outputdir,
-                        self.opts.inputnames,
-                        self.opts.inputPDBs)
+                    self.path_runs.get_path_execution(),
+                    self.opts.outputdir,
+                    self.opts.inputnames,
+                    self.opts.inputPDBs)
 
         pdbs = list_directory(self.path_runs.get_path_execution(), "*.pdb")
 
