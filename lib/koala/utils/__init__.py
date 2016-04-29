@@ -228,6 +228,7 @@ class TimeJobExecution(object):
             minutes = dif.seconds / 60
 
         return [
+            dif.days,
             dif.seconds / 3600,
             minutes,
             dif.seconds - ((dif.seconds / 60) * 60)]
