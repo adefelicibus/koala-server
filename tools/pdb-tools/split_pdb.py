@@ -40,7 +40,8 @@ class SplitPDB(object):
 
             pdbs = parse_pdb(
                 self.path_runs.get_path_execution(),
-                os.path.join(self.path_runs.get_path_execution(), self.opts.pdbName))
+                os.path.join(self.path_runs.get_path_execution(), self.opts.pdbName),
+                maxNumber=int(self.opts.qtdeModels))
 
             path_output, file_output = os.path.split(self.opts.output)
 
@@ -70,6 +71,7 @@ if __name__ == '__main__':
     op.add_option('-e', '--createCompressFile', default=None)
     op.add_option('-c', '--outputID', default=None)
     op.add_option('-z', '--outputZip', default=None)
+    op.add_option('-q', '--qtdeModels', default=None)
     op.add_option('-r', '--galaxyroot', default=None)
     op.add_option('-g', '--galaxydir', default=None)
     op.add_option('-t', '--toolname', default=None)

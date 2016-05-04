@@ -1,5 +1,6 @@
 <tool id="split_pdb" name="Split models" version="1.0.0">
     <description>of a PDB file</description>
+    <code file="pdb_options.py" />
     <command interpreter="python">
 
         #if $create_compressed.chk_compress == True
@@ -10,12 +11,13 @@
 
         split_pdb.py
           -i "$input_pdb"
-          -n "${input_pdb.name}"
+          -n "$input_pdb.name"
           -o "$new_pdb"
           -d "$new_pdb.files_path"
           -c "$new_pdb.id"
           -e "$create_compressed.chk_compress"
           -z "$output_zip"
+          -q "$qtde_models"
           -g "$__new_file_path__"
           -r "$__root_dir__"
           -t "$toolname"
@@ -27,10 +29,10 @@
         <conditional name="create_compressed">
             <param name="chk_compress" type="boolean" label="Create a compressed file with all the splited files?" help="" checked="False"/>
         </conditional>
+        <param name="qtde_models" type="select" label="Number of models" dynamic_options="get_models(input_pdb.file_name)"/>
         <param type="hidden" name="toolname" value="SplitPDBTool"/>
     <!--
       Dar a opção de alterar o output:
-        - Escolher um número de arquivos para incluir no history
         - Permitir escolher qual model vai para o history
     -->
 
