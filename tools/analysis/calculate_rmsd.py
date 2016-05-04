@@ -335,7 +335,7 @@ class CalculateRMSD(object):
                         self.time_execution.get_job_start().strftime("%d/%m/%Y %H:%M:%S"))
             html.append('End: %s<br>' %
                         self.time_execution.get_job_end().strftime("%d/%m/%Y %H:%M:%S"))
-            html.append('Total time: ~%dh:%dm:%ds' % (dif[0], dif[1], dif[2]))
+            html.append('Total time: ~%dd %dh:%dm:%ds' % (dif[0], dif[1], dif[2], dif[3]))
             html.append('</div>')
 
             html.append('<hr>')
@@ -702,7 +702,7 @@ class CalculateRMSD(object):
                         self.time_execution.get_job_start().strftime("%d/%m/%Y %H:%M:%S"))
             html.append('End: %s<br>' %
                         self.time_execution.get_job_end().strftime("%d/%m/%Y %H:%M:%S"))
-            html.append('Total time: ~%dh:%dm:%ds' % (dif[0], dif[1], dif[2]))
+            html.append('Total time: ~%dd %dh:%dm:%ds' % (dif[0], dif[1], dif[2], dif[3]))
             html.append('</div>')
 
             html.append('<hr>')
