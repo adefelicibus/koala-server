@@ -10,29 +10,15 @@ import os
 from subprocess import Popen, PIPE
 import shutil
 from datetime import datetime
-import getpass
 
-# obtem usuario logado no linux
-user = getpass.getuser()
+from koala.utils.path import PathRuns
+
 log_file_structures_not_accepted_by_min_all = 'structures_not_accepted_by_min_all.log'
-
-
-def get_gromacs_version():
-    if os.path.exists("/home/"+user+"/programs/gmx-5.0.2/"):
-        gromacs_version = "5.0.2"
-    else:
-        gromacs_version = "4.6.5"
-    return gromacs_version
 
 
 # Log file of structures NOT accepted by pdb2gmx
 def structure_not_accepted_by_min_all(grofile, stderr):
     # create directory where is saved all structures that were not accepted by pdb2gmx
-    # directory = os.path.join(os.getcwd(),'no_accepted_by_pdb2gmx')
-    # if not os.path.exists(directory):
-    #   os.makedirs(directory)
-    # moves structure that was not accepted by pdb2gmx
-    # shutil.move(grofile, directory)
 
     # write information about error at log file
     f_log = open(log_file_structures_not_accepted_by_min_all, "a")
@@ -55,9 +41,8 @@ def structure_not_accepted_by_min_all(grofile, stderr):
             continue
 
 
-def min_all(source_name):
-    if (get_gromacs_version() == "5.0.2"):
-        gmx_path = "/home/"+user+"/programs/gmx-5.0.2/no_mpi/bin/"
+def min_all(gmx_path, gmx_version, source_name):
+    if (gmx_version == "5.0.2"):
         program = os.path.join(gmx_path, "gmx")
         process = Popen([
             program,
@@ -84,7 +69,6 @@ def min_all(source_name):
             stdout=PIPE, stderr=PIPE)
         stdout2, stderr2 = process2.communicate()
     else:
-        gmx_path = "/home/"+user+"/programs/gmx-4.6.5/no_mpi/bin/"
         program = os.path.join(gmx_path, "grompp")
         process = Popen([
             program,
@@ -131,8 +115,10 @@ def main():
     # Avoid GROMACS backup files
     os.environ["GMX_MAXBACKUP"] = "-1"
 
+    path_runs = PathRuns()
+
     # define e acessa diretório padrão de execução
-    diretorio = "/home/"+user+"/execute/"
+    diretorio = path_runs.get_path_execute()
     os.chdir(diretorio)
 
     # cria e acessa diretório temporário nomeado pela data completa atual sem espaços
@@ -148,16 +134,22 @@ def main():
     # define inputs
     source_name = sys.argv[4]
 
+    gmx_path = path_runs.get_path_gromacs()
+    gmx_version = path_runs.get_gromacs_version()
+
     # roda a funcao
-    result = min_all(source_name)
+    result = min_all(
+        gmx_path,
+        gmx_version,
+        source_name)
 
     # min_all ok
     if (result != 0):
 
         # arquivos de saída
-        gro = source_name+".gro"
+        gro = source_name + ".gro"
         top = "top.top"
-        log = source_name+".log"
+        log = source_name + ".log"
 
         # cópia dos arquivos de saída para o dataset
         shutil.copy(gro, sys.argv[5])

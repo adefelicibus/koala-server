@@ -65,6 +65,9 @@ class PathRuns(object):
     def get_path_gromacs(self):
         return self.config.get('path_gromacs', None)
 
+    def get_gromacs_version(self):
+        return self.config.get('gromacs_version', None)
+
 
 def clear_path_execute(path):
     try:

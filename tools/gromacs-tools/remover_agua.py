@@ -10,29 +10,15 @@ import os
 from subprocess import Popen, PIPE
 import shutil
 from datetime import datetime
-import getpass
 
-# obtem usuario logado no linux
-user = getpass.getuser()
+from koala.utils.path import PathRuns
+
 log_file_structures_not_accepted_by_remover_agua = 'structures_not_accepted_by_remover_agua.log'
-
-
-def get_gromacs_version():
-    if os.path.exists("/home/"+user+"/programs/gmx-5.0.2/"):
-        gromacs_version = "5.0.2"
-    else:
-        gromacs_version = "4.6.5"
-    return gromacs_version
 
 
 # Log file of structures NOT accepted by pdb2gmx
 def structure_not_accepted_by_remover_agua(grofile, stderr):
     # create directory where is saved all structures that were not accepted by pdb2gmx
-    # directory = os.path.join(os.getcwd(),'no_accepted_by_pdb2gmx')
-    # if not os.path.exists(directory):
-    #   os.makedirs(directory)
-    # moves structure that was not accepted by pdb2gmx
-    # shutil.move(grofile, directory)
 
     # write information about error at log file
     f_log = open(log_file_structures_not_accepted_by_remover_agua, "a")
@@ -55,9 +41,8 @@ def structure_not_accepted_by_remover_agua(grofile, stderr):
             continue
 
 
-def remover_agua(source_distance):
-    if (get_gromacs_version() == "5.0.2"):
-        gmx_path = "/home/"+user+"/programs/gmx-5.0.2/no_mpi/bin/"
+def remover_agua(gmx_path, gmx_version, source_distance):
+    if (gmx_version == "5.0.2"):
         program = os.path.join(gmx_path, "gmx")
         process = Popen([
             program,
@@ -69,7 +54,7 @@ def remover_agua(source_distance):
             '-on',
             'remover.ndx',
             '-select',
-            'not same residue as resname SOL and within '+source_distance+' of group Protein'],
+            'not same residue as resname SOL and within ' + source_distance + ' of group Protein'],
             stdout=PIPE, stderr=PIPE)
         stdout, stderr = process.communicate()
 
@@ -87,7 +72,6 @@ def remover_agua(source_distance):
             stdout=PIPE, stderr=PIPE)
         stdout2, stderr2 = process2.communicate()
     else:
-        gmx_path = "/home/"+user+"/programs/gmx-4.6.5/no_mpi/bin/"
         program = os.path.join(gmx_path, "g_select")
         process = Popen([
             program,
@@ -98,7 +82,7 @@ def remover_agua(source_distance):
             '-on',
             'remover.ndx',
             '-select',
-            'not same residue as resname SOL and within '+source_distance+' of group Protein'],
+            'not same residue as resname SOL and within ' + source_distance + ' of group Protein'],
             stdout=PIPE, stderr=PIPE)
         stdout, stderr = process.communicate()
 
@@ -142,7 +126,7 @@ def remover_agua(source_distance):
     arq.close()
     # Adiciona a última linha corrigida ao top_temporary
     # os.system('echo "SOL              ""$total_aguas" >> top_temporary')
-    arq_top_temp.write("SOL              "+str(cont))
+    arq_top_temp.write("SOL              " + str(cont))
     arq_top_temp.close()
     # Troca top_temporary por top.top, que agora tem o número de águas atualizado
     # os.system('mv top_temporary top.top')
@@ -169,8 +153,10 @@ def main():
     # Avoid GROMACS backup files
     os.environ["GMX_MAXBACKUP"] = "-1"
 
+    path_runs = PathRuns()
+
     # define e acessa diretório padrão de execução
-    diretorio = "/home/"+user+"/execute/"
+    diretorio = path_runs.get_path_execute()
     os.chdir(diretorio)
 
     # cria e acessa diretório temporário nomeado pela data completa atual sem espaços
@@ -186,8 +172,11 @@ def main():
     # define inputs
     source_distance = sys.argv[4]
 
+    gmx_path = path_runs.get_path_gromacs()
+    gmx_version = path_runs.get_gromacs_version()
+
     # roda a funcao
-    result = remover_agua(source_distance)
+    result = remover_agua(gmx_path, gmx_version, source_distance)
 
     # remover_agua ok
     if (result != 0):
