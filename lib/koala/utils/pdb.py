@@ -20,16 +20,21 @@ def parse_pdb(path, pdb_file, maxNumber=None, newName=None):
                 hearder.append(line)
             if line.startswith("MODEL"):
                 l = line.split(" ")
+                model = []
+                for ls in l:
+                    if ls:
+                        model.append(ls.strip())
+
                 if newName is None:
-                    new_pdb = os.path.join(path, '%s-M%s.pdb' % (name_f, str(l[8].strip())))
+                    new_pdb = os.path.join(path, '%s-M%s.pdb' % (name_f, model[1]))
                 else:
-                    new_pdb = os.path.join(path, '%s-M%s.pdb' % (newName, str(l[8].strip())))
+                    new_pdb = os.path.join(path, '%s-M%s.pdb' % (newName, model[1]))
 
                 new_pdb_f = file(new_pdb, 'wr')
 
-                new_pdbs.append('%s-M%s.pdb' % (name_f, str(l[8].strip())))
+                new_pdbs.append('%s-M%s.pdb' % (name_f, model[1]))
 
-                if int(str(l[8].strip())) > 1:  # se o model for diferente de 1, coloca o header
+                if int(model[1]) > 1:  # se o model for diferente de 1, coloca o header
                     for head in hearder:
                         new_pdb_f.write(head)
 
