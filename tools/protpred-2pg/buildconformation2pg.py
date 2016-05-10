@@ -40,18 +40,6 @@ class BuildConformation2PG(object):
         try:
             self.path_runs.set_execution_directory()
 
-            self.sequence = create_local_fasta_file(
-                self.path_runs.get_path_execution(),
-                self.opts.fromFasta,
-                self.opts.inputFasta,
-                self.opts.toolname,
-                self.framework)
-
-            copy_necessary_files(
-                self.path_runs.get_path_execute(),
-                self.path_runs.get_path_execution(),
-                self.framework.get_framework())
-
             self.framework.set_parameter(
                 'gromacs_energy_min', self.opts.gromacsEnergyMin)
             self.framework.set_parameter(
@@ -82,6 +70,18 @@ class BuildConformation2PG(object):
             self.framework.set_parameter(
                 'Database',
                 '%sDatabase/' % self.path_runs.get_path_algorithms('build_conformation_2pg'))
+
+            self.sequence = create_local_fasta_file(
+                self.path_runs.get_path_execution(),
+                self.opts.fromFasta,
+                self.opts.inputFasta,
+                self.opts.toolname,
+                self.framework)
+
+            copy_necessary_files(
+                self.path_runs.get_path_execute(),
+                self.path_runs.get_path_execution(),
+                self.framework.get_framework())
 
             create_configuration_file(
                 self.path_runs.get_path_execution(), self.framework)
@@ -132,4 +132,4 @@ if __name__ == '__main__':
     bc = BuildConformation2PG(opts)
     cProfile.run('bc.run_Build_Conformation()', 'profileout.txt')
 
-    clear_path_execute(bc.path_runs.get_path_execution())
+    # clear_path_execute(bc.path_runs.get_path_execution())
