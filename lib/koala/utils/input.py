@@ -153,7 +153,7 @@ def create_local_fasta_file(path, type_input, fasta_file, tool, framework):
 
         if tool in ('2PG_Random_Tool', '2PG_NSGA2_Tool', '2PG_MC_Metropolis', '2PG_Mono_Tool'):
             if type_input == '0':
-                arq_fasta.write("none:A|PDBID|CHAIN|SEQUENCE"+'\n')
+                arq_fasta.write("none:A|PDBID|CHAIN|SEQUENCE" + '\n')
                 arq_fasta.write(fasta_file)
                 sequence = fasta_file
                 caption = 'none'
@@ -166,16 +166,17 @@ def create_local_fasta_file(path, type_input, fasta_file, tool, framework):
                     arq_fasta.write(line)
 
         elif tool == '2PG_BuildConformation_Tool':
+            linha = ''
+            if type_input == '0':
+                header = "none:A|PDBID|CHAIN|SEQUENCE" + '\n'
+                linha = fasta_file + '\n'
+            elif type_input == '1':
+                input_fasta = file(fasta_file, "r")
+                lines = input_fasta.readlines()
+                header = lines[0]
+                linha = lines[1]
+
             if(framework.get_parameter_value('force_field') == 'amber99sb-ildn'):
-                linha = ''
-                if type_input == '0':
-                    header = "none:A|PDBID|CHAIN|SEQUENCE"+'\n'
-                    linha = fasta_file  # neste caso é só a sequência, mas a variável é a mesma
-                elif type_input == '1':
-                    input_fasta = file(fasta_file, "r")
-                    lines = input_fasta.readlines()
-                    header = lines[0]
-                    linha = lines[1]
 
                 if(framework.get_parameter_value('c_terminal_charge') == 'none' and
                         framework.get_parameter_value('n_terminal_charge') == 'none'):
@@ -183,17 +184,21 @@ def create_local_fasta_file(path, type_input, fasta_file, tool, framework):
                     arq_fasta.write(linha)
                 elif(framework.get_parameter_value('c_terminal_charge') == 'ACE' and
                         framework.get_parameter_value('n_terminal_charge') == 'none'):
+                    arq_fasta.write(header)
                     arq_fasta.write('X')
                     arq_fasta.write(linha)
+                    arq_fasta.write('\n')
                 else:
                     if(framework.get_parameter_value('n_terminal_charge') == 'NME' and
                             framework.get_parameter_value('c_terminal_charge') == 'none'):
                         linha = string.replace(linha, '\n', 'X')
                         a = list(linha)
                         linha = ''.join(a)
+                        arq_fasta.write(header)
                         arq_fasta.write(linha)
                         arq_fasta.write('\n')
                     else:
+                        arq_fasta.write(header)
                         arq_fasta.write('X')
                         linha = string.replace(linha, '\n', 'X')
                         a = list(linha)
@@ -201,8 +206,8 @@ def create_local_fasta_file(path, type_input, fasta_file, tool, framework):
                         arq_fasta.write(linha)
                         arq_fasta.write('\n')
             else:
-                for line in file(fasta_file, "r"):
-                    arq_fasta.write(line)
+                arq_fasta.write(header)
+                arq_fasta.write(linha)
         elif(tool == 'ProtPred_EDA'):
             if type_input == '0':
                 arq_fasta.write(fasta_file)
