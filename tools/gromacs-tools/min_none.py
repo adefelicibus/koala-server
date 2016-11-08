@@ -132,7 +132,10 @@ def main():
     shutil.copy(sys.argv[3], "top.top")
 
     # define inputs
-    source_name = sys.argv[4]
+    if sys.argv[4]:
+        source_name = sys.argv[4]
+    else:
+        source_name = 'min_none'
 
     gmx_path = path_runs.get_path_gromacs()
     gmx_version = path_runs.get_gromacs_version()

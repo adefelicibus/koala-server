@@ -13,7 +13,7 @@
         <param format="mdp" name="input_mdp" type="data" label="Source file MDP"/>
         <param format="gro" name="input_gro" type="data" label="Source file GRO"/>
         <param format="top" name="input_top" type="data" label="Source file TOP"/>
-        <param name="source_name" type="text" size="30" label="Default File Name"/>
+        <param name="source_name" type="text" size="30" optional="true" label="Default File Name"/>
     </inputs>
 
     <outputs>

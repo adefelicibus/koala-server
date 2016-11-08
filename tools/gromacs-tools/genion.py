@@ -64,7 +64,6 @@ def genion(gmx_path, gmx_version, concentration):
             '-neutral',
             '-conc',
             concentration],
-
             stdin=PIPE, stdout=PIPE, stderr=PIPE)
 
     else:
